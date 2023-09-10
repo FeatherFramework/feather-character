@@ -44,9 +44,9 @@ const handleVariantChange = (e) => {
     variantSelection.value = e
 }
 
-const handleGlobalChange = () => {
-    let primaryID = Number(primarySelection.value) + 1
-    let VariantID = Number(variantSelection.value) + 1
+const handleGlobalChange = (prime, variant) => {
+    let primaryID = Number(prime) + 1
+    let VariantID = Number(variant) + 1
 
     emit('dataChange', {
         primary: {
@@ -54,17 +54,17 @@ const handleGlobalChange = () => {
         },
         variant: {
             id: VariantID,
-            data: variantOptions.value[variantSelection.value] || []
+            ...variantOptions.value[variant] || []
         }
     })
 }
 
-watch(primarySelection, () => {
-    handleGlobalChange()
+watch(primarySelection, (cur) => {
+    handleGlobalChange(cur, variantSelection.value)
 })
 
-watch(variantSelection, () => {
-    handleGlobalChange()
+watch(variantSelection, (cur) => {
+    handleGlobalChange(primarySelection.value, cur)
 })
 
 </script>

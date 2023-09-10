@@ -51,6 +51,8 @@ RegisterNUICallback('SelectedClothes', function(args, nuicb)
     -- DO SOMETHING HERE! xD
     print("Clothing has changed!")
     feather.Print(args.data)
+    print(args.data.variant.hash)
+
     nuicb('ok')
 end)
 

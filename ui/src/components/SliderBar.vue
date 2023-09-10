@@ -11,7 +11,7 @@
 import { ref, watch } from "vue";
 
 
-const emit = defineEmits(["dataChange"])
+const emit = defineEmits(["dataChange", "variantReset"])
 
 const props = defineProps({
     // options: {
@@ -49,6 +49,7 @@ watch(curentval, (newVal) => {
 
 watch(() => props.reset, () => {
     curentval.value = props.default
+    emit('dataChange', curentval.value)
 })
 
 </script>
