@@ -6,10 +6,12 @@ end)
 
 
 RegisterServerEvent('feather-character:GetCharactersData',function ()
-    local _source = source
-    local Characters = feather.getUserCharacter(source)
+    local src = source
+    local Characters = feather.getUserCharacter(src)
     local charid = Characters.charIdentifier
 
+
+    --TODO: Lets swap this to use the core character API and cache. I (bytesizd) can help with this.
 	exports.ghmattimysql:execute("SELECT skinPlayer AND compPlayer FROM `characters` WHERE ? = ?",
 		{ charid },
 		function(result)
@@ -17,6 +19,4 @@ RegisterServerEvent('feather-character:GetCharactersData',function ()
                 TriggerClientEvent('feather-character:SendCharactersData')
             end
 		end)
-
-
 end)

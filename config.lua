@@ -36,13 +36,13 @@ Config.SpawnProps = {
 }
 
 Config.CameraCoords = {
-camera1 = {
-    x=117.77, 
-    y=0.01, 
-    z=103.76,
-    h=-90.51,
-    zoom =60.00
-}
+    camera1 = {
+        x=117.77, 
+        y=0.01, 
+        z=103.76,
+        h=-90.51,
+        zoom =60.00
+    }
 }
 
 Config.SpawnCoords = {

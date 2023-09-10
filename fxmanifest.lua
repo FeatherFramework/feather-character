@@ -7,12 +7,15 @@ description 'The Character service for the Feather Framework'
 author 'BCC Scripts'
 name 'feather-character'
 version '0.0.1'
-github ''
-github_type ''
+
+github_version_check 'false'
+github_version_type 'release'
+github_ui_check 'false'
+github_link 'https://github.com/FeatherFramework/feather-character'
 
 shared_scripts {
     "config.lua",
-    'clothing.lua'
+    'shared/data/*.lua'
 }
 
 server_scripts {
@@ -22,6 +25,18 @@ server_scripts {
 
 client_scripts {
     "client/client.lua",
-    'client/menu.lua'
+    "client/ui.lua",
+    "client/menu.lua"
 }
 
+ui_page {
+    "ui/shim.html"
+}
+
+files {
+    "ui/shim.html",
+    "ui/js/*.*",
+    "ui/css/*.*",
+    "ui/fonts/*.*",
+    "ui/img/*.*"
+}

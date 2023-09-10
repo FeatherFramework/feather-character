@@ -1,12 +1,13 @@
+--TODO: Remove this file once ui is done. This will be replaced.
 
 MenuData = {}
-TriggerEvent("redemrp_menu_base:getData",function(call)
+TriggerEvent("redemrp_menu_base:getData", function(call)
     MenuData = call
 end)
 
 -- Open Command
 RegisterCommand('length', function()
-print(json.encode(Clothes.Male.RingLh))
+    print(json.encode(Clothes.Male.RingLh))
 end)
 
 RegisterCommand('openMenu', function()
@@ -32,52 +33,49 @@ function ClothingCategories()
                 Category = i,
             }
         end
-
     else
-    for i, v in pairs(Clothes.Female) do
-        Elements[#Elements + 1] = {
-            label = v.CategoryName,
-            Clothes = v,
-            Category = i,
-        }
-       
+        for i, v in pairs(Clothes.Female) do
+            Elements[#Elements + 1] = {
+                label = v.CategoryName,
+                Clothes = v,
+                Category = i,
+            }
         end
     end
 
     if IsPedMale then
-        ClothingTable =Clothes.Male
+        ClothingTable = Clothes.Male
     else
-        ClothingTable =Clothes.Female
+        ClothingTable = Clothes.Female
     end
 
     Elements[#Elements + 1] = {
         label = 'Buy',
         value = 'Buy',
     }
-    
+
     MenuData.Open('default', GetCurrentResourceName(), 'menuapi',
 
-        {           
+        {
             title = 'Male Clothing Categories',
-            align = Config.MenuAlign, 
+            align = Config.MenuAlign,
             elements = Elements,
         },
         function(data, menu)
-			if data.current == 'backup' then
-				_G[data.trigger]()
-			end
-            if data.current.label then
-                ClothMenu(data.current,#ClothingTable[data.current.Category])
+            if data.current == 'backup' then
+                _G[data.trigger]()
             end
-   
-        end, 
-        function(data,menu)
+            if data.current.label then
+                ClothMenu(data.current, #ClothingTable[data.current.Category])
+            end
+        end,
+        function(data, menu)
             menu.close()
         end
     )
 end
 
-function ClothMenu(sentdata,maxamount)
+function ClothMenu(sentdata, maxamount)
     MenuData.CloseAll()
     local Elements = {
         {
@@ -91,20 +89,21 @@ function ClothMenu(sentdata,maxamount)
 
     }
     MenuData.Open('default', GetCurrentResourceName(), 'menuapi',
-        {           
+        {
             title = 'Male Clothing Menu',
-            align = Config.MenuAlign, 
+            align = Config.MenuAlign,
             elements = Elements,
             lastmenu = 'ClothingCategories',
         },
-        
+
         function(data, menu)
             if data.current.value == 0 then
-            ExecuteCommand('rc')
-            menu.setElements(Elements)
-            menu.refresh()
+                ExecuteCommand('rc')
+                menu.setElements(Elements)
+                menu.refresh()
             else
-                Citizen.InvokeNative(0xD3A7B003ED343FD9, PlayerPedId(), sentdata.Clothes[tostring(data.current.value)][1].hash, true, true, true)
+                Citizen.InvokeNative(0xD3A7B003ED343FD9, PlayerPedId(),
+                    sentdata.Clothes[tostring(data.current.value)][1].hash, true, true, true)
                 Citizen.InvokeNative(0xCC8CA3E88256E58F, PlayerPedId(), 0, 1, 1, 1, 0)
             end
             if #sentdata.Clothes[tostring(data.current.value)] > 1 then
@@ -129,7 +128,7 @@ function ClothMenu(sentdata,maxamount)
                 menu.setElements(Elements1)
                 menu.refresh()
             end
-        end, function(data,menu)
+        end, function(data, menu)
             menu.close()
             ClothingCategories()
         end
