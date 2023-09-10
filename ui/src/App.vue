@@ -14,10 +14,12 @@ import api from "./api";
 import { ref, onMounted, onUnmounted } from "vue";
 import "@/assets/styles/main.css";
 import { useCategoryStore } from '@/store/category';
+import { useConfigStore } from "@/store/config";
 
 const devmode = ref(false);
 const visible = ref(false);
 const category_store = useCategoryStore();
+const config_store = useConfigStore();
 
 
 onMounted(() => {
@@ -32,7 +34,8 @@ const onMessage = (event) => {
   switch (event.data.type) {
     case "toggle":
       visible.value = event.data.visible;
-      category_store.storeCategoryData('clothing', event.data.clothing)
+
+      config_store.storeData(event.data.config)
 
       api
         .post("UpdateState", {
@@ -41,6 +44,9 @@ const onMessage = (event) => {
         .catch((e) => {
           console.log(e.message);
         });
+      break;
+    case "updateclothing":
+      category_store.storeCategoryData('clothing', event.data.clothing)
       break;
     default:
       break;
@@ -167,4 +173,5 @@ body {
   100% {
     transform: translateX(0, -50%);
   }
-}</style>
+}
+</style>

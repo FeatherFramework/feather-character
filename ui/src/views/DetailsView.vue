@@ -1,12 +1,16 @@
 <script setup>
 import { ref } from "vue";
+import { useConfigStore } from "@/store/config";
 
 import api from "@/api"
 import router from "@/router";
 
+const config_store = useConfigStore();
+
+
 const firstname = ref('')
 const lastname = ref('')
-const dob = ref('')
+const dob = ref(config_store.config.defaults.dob.start)
 const sex = ref('male')
 
 const submit = () => {
@@ -46,9 +50,9 @@ const submit = () => {
                 </div>
             </div>
             <div>
-                <label for="dob">Start date:</label>
+                <label for="dob">Date of Birth</label>
                 <div class="relative max-w-sm">
-                    <input type="date" id="start" name="trip-start" v-model="dob" min="1806-01-01" max="1906-01-01" required
+                    <input type="date" id="start" name="trip-start" v-model="dob" :min="config_store.config.defaults.dob.min" :max="config_store.config.defaults.dob.max" required
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                 </div>
             </div>

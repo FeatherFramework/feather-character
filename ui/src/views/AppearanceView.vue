@@ -8,7 +8,7 @@ const HomeCategories = ref([
   },
   {
     name: "Heritage",
-    to: '/ '
+    to: '/'
   }
 ])
 

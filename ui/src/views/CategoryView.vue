@@ -4,7 +4,7 @@ import { ref } from "vue";
 const HomeCategories = ref([
   {
     name: "Appearance",
-    to: '/'
+    to: '/appearance'
   },
   {
     name: "Clothing",

@@ -1,5 +1,27 @@
 Config = {}
 
+Config.MutliSpawnCoords = {
+    { x = 0, y = 0, z = 0 },
+    { x = 1, y = 1, z = 1 },
+    { x = 2, y = 2, z = 2 },
+    { x = 3, y = 3, z = 3 }
+}
+
+
+Config.defaults = {
+    lang = 'en_us',
+    dob = {
+        start = '1826-01-01',
+        min = '1806-01-01',
+        max = '1906-01-01'
+    },
+    money = 0,
+    gold = 0,
+    tokens = 0,
+    xp = 0,
+    singlespawn = Config.MutliSpawnCoords[1] --Set to false for Multispawn
+}
+
 
 Config.SpawnProps = {
     obj1 = {

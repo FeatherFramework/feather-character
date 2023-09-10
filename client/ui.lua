@@ -1,22 +1,29 @@
 UIState = false
 
-local function getCharacterClothingCategories()
-    local Elements = {}
-
-    if IsPedMale(PlayerPedId()) then
-        return Clothes.Male
-    end
-
-    -- Default to female cause woman rule!
-    return Clothes.Female
-end
+local ActiveCharacterData = {}
 
 local function setNuiData()
     SendNUIMessage({
         type = 'toggle',
         visible = UIState,
-        config = {},
-        clothing = getCharacterClothingCategories()
+        config = {
+            defaults = Config.defaults
+        }
+    })
+end
+
+local function sendUIClothingData(sex)
+    local clothing = {}
+
+    if sex == "male" then
+        clothing = Clothes.Male
+    else
+        clothing = Clothes.Female
+    end
+
+    SendNUIMessage({
+        type = 'updateclothing',
+        clothing = clothing
     })
 end
 
@@ -51,5 +58,22 @@ RegisterNUICallback('SelectedDetails', function(args, nuicb)
     -- DO SOMETHING HERE! xD
     print("Character Details has changed!")
     feather.Print(args.data)
+
+    -- args.data contains the following
+    -- {
+    --     firstname,
+    --     lastname,
+    --     dob,
+    --     sex
+    -- }
+
+    ActiveCharacterData.firstname = args.data.firstname
+    ActiveCharacterData.lastname = args.data.lastname
+    ActiveCharacterData.dob = args.data.dob
+    ActiveCharacterData.sex = args.data.sex
+
+    -- The character details have been set, lets now send the proper Sex based clothing options to the UI for selection by player.
+    sendUIClothingData(args.data.sex)
+    
     nuicb('ok')
 end)
