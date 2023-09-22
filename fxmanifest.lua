@@ -15,6 +15,7 @@ github_link 'https://github.com/FeatherFramework/feather-character'
 
 shared_scripts {
     "config.lua",
+    'configchar.lua',
     'shared/data/*.lua'
 }
 
@@ -26,7 +27,8 @@ server_scripts {
 client_scripts {
     "client/client.lua",
     "client/ui.lua",
-    "client/menu.lua"
+    "client/menu.lua",
+    'client/charfunctions.lua'
 }
 
 ui_page {
