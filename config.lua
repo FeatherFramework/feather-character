@@ -1,5 +1,7 @@
 Config = {}
 
+Config.DevMode = true
+
 
 Config.defaults = {
     lang = 'en_us',
@@ -16,7 +18,6 @@ Config.defaults = {
 
 Config.MaxAllowedChars = 7
 
-
 Config.tempclothhash = {
     [1] = 'a_f_m_armtownfolk_01',
     [2] = 'a_f_m_armtownfolk_02',
@@ -25,9 +26,6 @@ Config.tempclothhash = {
     [5] = 'u_m_m_bwmstablehand_01',
     [6] = 'u_m_m_nbxbankerbounty_01',
     [7] = 'a_m_m_valfarmer_01',
-
-
-
 }
 
 Config.SpawnProps = {

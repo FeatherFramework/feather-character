@@ -51,18 +51,17 @@ end)
 RegisterNUICallback('SelectedClothes', function(args, nuicb)
     -- DO SOMETHING HERE! xD
     print("Clothing has changed!")
-    feather.Print(args.data)
-    print(args.data.variant.hash) 
+    FeatherCore.Print(args.data)
+    print(args.data.variant.hash)
     Citizen.InvokeNative(0xD3A7B003ED343FD9, PlayerPedId(), args.data.variant.hash, true, true, true)
     Citizen.InvokeNative(0xCC8CA3E88256E58F, PlayerPedId(), 0, 1, 1, 1, 0)
     nuicb('ok')
     print(args.data.primary.id)
-    if args.data.primary.id  == 0 then
+    if args.data.primary.id == 0 then
         Citizen.InvokeNative(0x77FF8D35EEC6BBC4, PlayerPedId(), 4, 0) -- outfits
 
-        Citizen.InvokeNative(0x0D7FFA1B2F69ED82,PlayerPedId(),args.data.variant.hash,0,0)
-        DefaultPedSetup(PlayerPedId(), ActiveCharacterData.sex )
-
+        Citizen.InvokeNative(0x0D7FFA1B2F69ED82, PlayerPedId(), args.data.variant.hash, 0, 0)
+        DefaultPedSetup(PlayerPedId(), ActiveCharacterData.sex)
     end
     if not ClothesTable[args.data.variant.hash] then
         ClothesTable[args.data.variant.hash] = 1
@@ -77,7 +76,7 @@ end)
 
 RegisterNUICallback('SelectedDetails', function(args, nuicb)
     -- DO SOMETHING HERE! xD
-    feather.Print(args.data)
+    FeatherCore.Print(args.data)
 
     ActiveCharacterData.firstname = args.data.firstname
     ActiveCharacterData.lastname = args.data.lastname

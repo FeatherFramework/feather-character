@@ -7,7 +7,9 @@
 # TODO
 - Better UI
 - Customizable UI
-- Spawn selector? (This might live in core, not sure yet.)
+- Spawn selector
+- Deduplicate the shared data.
+- Cleanup
 
 ## First time setup
 

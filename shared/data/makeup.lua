@@ -1,4 +1,4 @@
-overlayLookup = {
+OverlayLookup = {
     eyeliners = {
         label = 'Eyeliners',
         txt_id = 'eyeliner_tx_id',
@@ -40,16 +40,16 @@ overlayLookup = {
 }
 
 Makeup = {
-    eyeliners    = {
+    eyeliners = {
         { id = 0x29A2E58F, albedo = 0xA952BF75, ma = 0xDD55AF2A, },
     },
-    lipsticks    = {
+    lipsticks = {
         { id = 0x887E11E0, albedo = 0x96A5E4FB, normal = 0x1C77591C, ma = 0x4255A5F4, },
     },
-    shadows      = {
+    shadows   = {
         { id = 0x47BD7289, albedo = 0x5C5C98FC, ma = 0xE20345CC, },
     },
-    blush        = {
+    blush     = {
         { id = 0x6DB440FA, albedo = 0x43B1AACA, },
         { id = 0x47617455, albedo = 0x9CAD2EF0, },
         { id = 0x114D082D, albedo = 0xA52E3B98, },
@@ -57,7 +57,7 @@ Makeup = {
     },
 }
 
-texture_types = {
+TextureTypes = {
     ['Male'] = {
         albedo = joaat('head_fr1_sc08_soft_c0_001_ab'),
         normal = joaat('mp_head_mr1_000_nm'),
@@ -76,8 +76,8 @@ texture_types = {
     }
 }
 
-overlay_all_layers = {
-    eyeliners ={
+OverlayAllLayers = {
+    eyeliners = {
         name = 'eyeliners',
         visibility = 0,
         tx_id = 1,
@@ -93,7 +93,7 @@ overlay_all_layers = {
         var = 0,
         opacity = 1.0,
     },
-   lipsticks=  {
+    lipsticks = {
         name = 'lipsticks',
         visibility = 0,
         tx_id = 1,
@@ -109,7 +109,7 @@ overlay_all_layers = {
         var = 0,
         opacity = 1.0,
     },
- shadows =   {
+    shadows = {
         name = 'shadows',
         visibility = 0,
         tx_id = 1,
@@ -125,7 +125,7 @@ overlay_all_layers = {
         var = 0,
         opacity = 1.0,
     },
-  blush =   {
+    blush = {
         name = "blush",
         visibility = 0,
         tx_id = 1,
@@ -143,7 +143,7 @@ overlay_all_layers = {
     },
 }
 
-color_palettes = {
+ColorPalettes = {
     shadows = {
         0x3F6E70FF,
         0x0105607B,
@@ -253,75 +253,3 @@ color_palettes = {
         0xA4041CEF,
     }
 }
-
-local textureId = -1
-local is_overlay_change_active = false
-local current_texture_settings = texture_types["Male"]
-
-
-function ChangeOverlay(name,visibility,tx_id,tx_normal,tx_material,tx_color_type,tx_opacity,tx_unk,palette_id,palette_color_primary,palette_color_secondary,palette_color_tertiary,var,opacity)
-    for k,v in pairs(overlay_all_layers) do
-        if v.name==name then
-            v.visibility = visibility
-            if visibility ~= 0 then
-                v.tx_normal = tx_normal
-                v.tx_material = tx_material
-                v.tx_color_type = tx_color_type
-                v.tx_opacity =  tx_opacity
-                v.tx_unk =  tx_unk
-                if tx_color_type == 0 then
-                    v.palette = color_palettes[palette_id]
-                    v.palette_color_primary = palette_color_primary
-                    v.palette_color_secondary = palette_color_secondary
-                    v.palette_color_tertiary = palette_color_tertiary
-                end
-                if name == "shadows" or name == "eyeliners" or name == "lipsticks" then
-                    v.var = var
-                    v.tx_id = ConfigChar.overlays_info[name][1].id
-                else
-                    v.var = 0
-                    v.tx_id = ConfigChar.overlays_info[name].id
-                end
-                v.opacity = opacity
-            end
-        end
-    end
-    is_overlay_change_active = true
-end
-
-Citizen.CreateThread(function()
-    while true do
-        Citizen.Wait(0)
-        if is_overlay_change_active then
-            local ped = PlayerPedId()
-            if IsPedMale(ped) then
-                current_texture_settings = texture_types["Male"]
-            else
-                current_texture_settings = texture_types["Female"]
-            end
-            if textureId ~= -1 then
-                Citizen.InvokeNative(0xB63B9178D0F58D82,textureId)  -- reset texture
-                Citizen.InvokeNative(0x6BEFAA907B076859,textureId)  -- remove texture
-            end
-            textureId = Citizen.InvokeNative(0xC5E7204F322E49EB,current_texture_settings.albedo, current_texture_settings.normal, current_texture_settings.material);  -- create texture
-            for k,v in pairs(overlay_all_layers) do
-                if v.visibility ~= 0 then
-                    local overlay_id = Citizen.InvokeNative(0x86BB5FF45F193A02,textureId, v.tx_id , v.tx_normal, v.tx_material, v.tx_color_type, v.tx_opacity,v.tx_unk); -- create overlay
-                    if v.tx_color_type == 0 then
-                        Citizen.InvokeNative(0x1ED8588524AC9BE1,textureId,overlay_id,v.palette);    -- apply palette
-                        Citizen.InvokeNative(0x2DF59FFE6FFD6044,textureId,overlay_id,v.palette_color_primary,v.palette_color_secondary,v.palette_color_tertiary)  -- apply palette colours
-                    end
-                    Citizen.InvokeNative(0x3329AAE2882FC8E4,textureId,overlay_id, v.var);  -- apply overlay variant
-                    Citizen.InvokeNative(0x6C76BC24F8BB709A,textureId,overlay_id, v.opacity); -- apply overlay opacity
-                end
-            end
-            while not Citizen.InvokeNative(0x31DC8D3F216D8509,textureId) do  -- wait till texture fully loaded
-                Citizen.Wait(0)
-            end
-            Citizen.InvokeNative(0x0B46E25761519058,ped,`heads`,textureId)  -- apply texture to current component in category "heads"
-            Citizen.InvokeNative(0x92DAABA2C1C10B0E,textureId)      -- update texture
-            Citizen.InvokeNative(0xCC8CA3E88256E58F,ped, 0, 1, 1, 1, false);  -- refresh ped components
-            is_overlay_change_active = false
-        end
-    end
-end)

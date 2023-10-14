@@ -6156,7 +6156,7 @@ Clothes = {
                         hashname = "",
                         hash = 1435097709,
                     },
-                }   
+                }
             }
         },
         Suspender = {
@@ -6753,7 +6753,7 @@ Clothes = {
                     },
                 },
                 [7] = {
-    
+
                     [1] = {
                         hash = 1645678648,
                         title = "classic_frock",
