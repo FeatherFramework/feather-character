@@ -1,7 +1,5 @@
 
 local Obj1, Obj2, Obj3, Obj4, ped
-local camera, show
-
 local spawnedPeds = {}
 
 local firstprompt, secondprompt, thirdprompt
@@ -18,30 +16,8 @@ function SpawnProps()
         Config.SpawnProps.obj4.z, Config.SpawnProps.obj4.h, false, 'standard')
 end
 
-function StartCam(x, y, z, heading, zoom)
-    Citizen.InvokeNative(0x17E0198B3882C2CB, PlayerPedId())
-    DestroyAllCams(true)
-    camera = CreateCamWithParams("DEFAULT_SCRIPTED_CAMERA", x, y, z, -10.0, 00.00, heading, zoom, true, 0)
-    SetCamActive(camera, true)
-    RenderScriptCams(true, true, 500, true, true)
-end
-
-function SwitchCam(x, y, z, heading, zoom)
-    SetCamParams(camera, x, y, z, -10.0, 0.0, heading, zoom, 1500, 1, 3, 1)
-end
-
-function EndCam()
-    RenderScriptCams(false, true, 1000, true, false)
-    DestroyCam(camera, false)
-    camera = nil
-    DestroyAllCams(true)
-end
-
 function CleanupScript()
-    RenderScriptCams(false, true, 1000, true, false)
-    DestroyCam(camera, false)
-    camera = nil
-    DestroyAllCams(true)
+    CleanupCam()
 
     Obj1:Remove()
     Obj2:Remove()
@@ -50,7 +26,7 @@ function CleanupScript()
     for k, v in pairs(spawnedPeds) do
         v:Remove()
     end
-    show = false
+
     spawnedPeds = {}
 
     firstprompt:DeletePrompt()
