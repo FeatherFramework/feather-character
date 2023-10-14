@@ -1,14 +1,11 @@
-function DrawText(text, x, y, fontscale, fontsize, r, g, b, alpha, textcentred, shadow)
-    local str = CreateVarString(10, "LITERAL_STRING", text)
-    SetTextScale(fontscale, fontsize)
-    SetTextColor(r, g, b, alpha)
-    SetTextCentre(textcentred)
-    if shadow then
-        SetTextDropshadow(1, 0, 0, 255)
-    end
-    SetTextFontForCurrentCommand(6)
-    DisplayText(str, x, y)
-end
+
+local Obj1, Obj2, Obj3, Obj4, ped
+local camera, show
+
+local spawnedPeds = {}
+
+local firstprompt, secondprompt, thirdprompt
+local current, coords, active
 
 function SpawnProps()
     Obj1 = FeatherCore.Object:Create(Config.SpawnProps.obj1.name, Config.SpawnProps.obj1.x, Config.SpawnProps.obj1.y,
