@@ -93,3 +93,17 @@ end
 function ApplyShopItemToPed(ped, shopItemHash, immediately, isMultiplayer)
     Citizen.InvokeNative(0xD3A7B003ED343FD9, ped, shopItemHash, immediately, isMultiplayer, false)
 end
+
+function SetSex(sex)
+    if sex == 'male' then
+        LoadModel('mp_male')
+        SetPlayerModel(PlayerId(), joaat('mp_male'), false)
+        Citizen.InvokeNative(0x77FF8D35EEC6BBC4, PlayerPedId(), 4, 0) -- outfits
+        DefaultPedSetup(PlayerPedId(), true)
+    else
+        LoadModel('mp_female')
+        SetPlayerModel(PlayerId(), joaat('mp_female'), false)
+        Citizen.InvokeNative(0x77FF8D35EEC6BBC4, PlayerPedId(), 2, 0) -- outfits
+        DefaultPedSetup(PlayerPedId(), false)
+    end
+end

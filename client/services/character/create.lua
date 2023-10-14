@@ -5,6 +5,9 @@ function CreateNewCharacter()
     local obj = FeatherCore.Object:Create('p_package09', Config.SpawnCoords.gotocoords.x, Config.SpawnCoords.gotocoords.y,
         Config.SpawnCoords.gotocoords.z, 0, true, 'standard')
     local tobj = obj:GetObj()
+
+    SetSex('male')
+    playerPed = PlayerPedId()
     SetEntityAlpha(tobj, 0, true)
     TaskGoToEntity(playerPed, tobj, 10000, 0.2, 0.8, 1.0, 1)
     Wait(3000)

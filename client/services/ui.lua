@@ -28,6 +28,14 @@ local function sendUIClothingData(sex)
     })
 end
 
+local function sendUIAttributeData(sex)
+ 
+end
+
+local function sendUIMakeupData(sex)
+
+end
+
 function SetUIState(state)
     UIState = state
     setNuiData()
@@ -73,28 +81,17 @@ RegisterNUICallback('SelectedClothes', function(args, nuicb)
     print(json.encode(ClothesTable))
 end)
 
+RegisterNUICallback('SetSex', function(args, nuicb)
+    SetSex(args.data.sex)
+end)
+
 
 RegisterNUICallback('SelectedDetails', function(args, nuicb)
-    -- DO SOMETHING HERE! xD
-    FeatherCore.Print(args.data)
-
     ActiveCharacterData.firstname = args.data.firstname
     ActiveCharacterData.lastname = args.data.lastname
     ActiveCharacterData.dob = args.data.dob
     ActiveCharacterData.sex = args.data.sex
-
-    if ActiveCharacterData.sex == 'male' then
-        LoadModel('mp_male')
-        SetPlayerModel(PlayerId(), joaat('mp_male'), false)
-        Citizen.InvokeNative(0x77FF8D35EEC6BBC4, PlayerPedId(), 4, 0) -- outfits
-        DefaultPedSetup(PlayerPedId(), true)
-    else
-        LoadModel('mp_female')
-        SetPlayerModel(PlayerId(), joaat('mp_female'), false)
-        Citizen.InvokeNative(0x77FF8D35EEC6BBC4, PlayerPedId(), 2, 0) -- outfits
-        DefaultPedSetup(PlayerPedId(), false)
-    end
-
+    SetSex(ActiveCharacterData.sex)
     TriggerServerEvent('feather-character:SendDetailsToDB', ActiveCharacterData, json.encode(ClothesTable))
 
     -- The character details have been set, lets now send the proper Sex based clothing options to the UI for selection by player.
