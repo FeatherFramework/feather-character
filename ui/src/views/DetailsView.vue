@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { ref, watch  } from "vue";
 import { useConfigStore } from "@/store/config";
 
 import api from "@/api"
@@ -28,6 +28,17 @@ const submit = () => {
         console.log(e.message);
     });
 }
+
+watch(sex, async (newSex) => {
+    api.post("SetSex", {
+        data: {
+            sex: newSex
+        }
+    })
+    .catch((e) => {
+        console.log(e.message);
+    });
+})
 </script>
 
 <template>
