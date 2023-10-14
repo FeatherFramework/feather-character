@@ -32,7 +32,7 @@ RegisterServerEvent('feather-character:CheckForUsers', function()
         if string.match(v, "license:") then
             license = v
             print(license)
-            local license = MySQL.query.await("SELECT * FROM users WHERE license = license")
+            local license = MySQL.query.await("SELECT * FROM users WHERE license = license") --Migrate this to check the user cache (saves a db call)
             if license[1] then
                 local userid = license[1].id
                 print(userid)

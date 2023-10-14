@@ -30,6 +30,8 @@ client_scripts {
     'client/helpers/feathercore.lua',
     'client/helpers/*.lua',
     'client/services/*.lua',
+    'client/services/character/*.lua',
+    'client/services/character/main.lua',
     'client/main.lua'
 }
 
