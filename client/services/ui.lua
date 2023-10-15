@@ -1,7 +1,6 @@
 UIState = false
 
 local ActiveCharacterData = {}
-local ClothesTable = {}
 
 local function setNuiData()
     SendNUIMessage({
@@ -13,6 +12,7 @@ local function setNuiData()
     })
 end
 
+--TODO: Migrate this to the nuicallback callback/response
 local function sendUIClothingData(sex)
     local clothing = {}
 
@@ -57,28 +57,8 @@ RegisterNUICallback('UpdateState', function(args, nuicb)
 end)
 
 RegisterNUICallback('SelectedClothes', function(args, nuicb)
-    -- DO SOMETHING HERE! xD
-    print("Clothing has changed!")
-    FeatherCore.Print(args.data)
-    print(args.data.variant.hash)
-    Citizen.InvokeNative(0xD3A7B003ED343FD9, PlayerPedId(), args.data.variant.hash, true, true, true)
-    Citizen.InvokeNative(0xCC8CA3E88256E58F, PlayerPedId(), 0, 1, 1, 1, 0)
+    UpdateCharacterClothing(args)
     nuicb('ok')
-    print(args.data.primary.id)
-    if args.data.primary.id == 0 then
-        Citizen.InvokeNative(0x77FF8D35EEC6BBC4, PlayerPedId(), 4, 0) -- outfits
-
-        Citizen.InvokeNative(0x0D7FFA1B2F69ED82, PlayerPedId(), args.data.variant.hash, 0, 0)
-        DefaultPedSetup(PlayerPedId(), ActiveCharacterData.sex)
-    end
-    if not ClothesTable[args.data.variant.hash] then
-        ClothesTable[args.data.variant.hash] = 1
-    elseif ClothesTable[args.data.variant.hash] then
-        ClothesTable[args.data.variant.hash] = nil
-    end
-
-    --table.insert(ClothesTable, args.data.variant.hash)
-    print(json.encode(ClothesTable))
 end)
 
 RegisterNUICallback('SetSex', function(args, nuicb)
@@ -87,15 +67,16 @@ end)
 
 
 RegisterNUICallback('SelectedDetails', function(args, nuicb)
-    ActiveCharacterData.firstname = args.data.firstname
-    ActiveCharacterData.lastname = args.data.lastname
-    ActiveCharacterData.dob = args.data.dob
-    ActiveCharacterData.sex = args.data.sex
-    SetSex(ActiveCharacterData.sex)
-    TriggerServerEvent('feather-character:SendDetailsToDB', ActiveCharacterData, json.encode(ClothesTable))
+    SaveCharacterDetails(args)
 
     -- The character details have been set, lets now send the proper Sex based clothing options to the UI for selection by player.
     sendUIClothingData(args.data.sex)
+
+
+    -- TODO: Save the current state of character and that its still  in creation. Then have the UI pick back up where it left off.
+    if Config.DevMode == false then
+        TriggerServerEvent('feather-character:SendDetailsToDB', ActiveCharacterData, json.encode(ClothesTable))        
+    end
 
     nuicb('ok')
 end)

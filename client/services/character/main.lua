@@ -26,6 +26,7 @@ RegisterCommand('rc', function()
     local ismale = IsPedMale(PlayerPedId())
     local model
     if ismale then model = 'mp_male' else model = 'mp_female' end
+    
     LoadModel(model)
     SetPlayerModel(PlayerId(), joaat(model), false)
 

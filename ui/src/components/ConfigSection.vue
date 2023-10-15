@@ -2,11 +2,11 @@
     <div>
         <div class="primary">
             <div>{{ props.data.CategoryName }}</div>
-            <SliderBar :default="-1" :offset="1" :min="-1" :max="Object.keys(props.data.CategoryData).length - 1" @dataChange="handlePrimaryChange"></SliderBar>
+            <SliderBar :disabled="disabled" :default="-1" :offset="1" :min="-1" :max="Object.keys(props.data.CategoryData).length - 1" @dataChange="handlePrimaryChange"></SliderBar>
         </div>
 
         <div class="variant">
-            <SliderBar :default="0" :offset="1" :reset="change" :min="0" :max="Object.keys(variantOptions).length - 1" @dataChange="handleVariantChange"></SliderBar>
+            <SliderBar :disabled="disabled" :default="0" :offset="1" :reset="change" :min="0" :max="Object.keys(variantOptions).length - 1" @dataChange="handleVariantChange"></SliderBar>
         </div>
     </div>
 </template>
@@ -18,6 +18,10 @@ import { ref, onMounted, watch } from "vue";
 const props = defineProps({
     data: {
         required: true
+    },
+    disabled: {
+        required: false,
+        default: false
     }
 })
 
@@ -49,6 +53,7 @@ const handleGlobalChange = (prime, variant) => {
     let VariantID = Number(variant) + 1
 
     emit('dataChange', {
+        category: props.data.CategoryName,
         primary: {
             id: primaryID
         },

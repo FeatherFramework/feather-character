@@ -1,3 +1,43 @@
+local ActiveCharacterData = {}
+
+function SaveCharacterDetails(args) 
+    ActiveCharacterData.firstname = args.data.firstname
+    ActiveCharacterData.lastname = args.data.lastname
+    ActiveCharacterData.dob = args.data.dob
+    ActiveCharacterData.sex = args.data.sex
+    ActiveCharacterData.Clothing = {}
+    SetSex(ActiveCharacterData.sex)
+end
+
+function UpdateCharacterClothing(args)
+    local ismale = ActiveCharacterData.sex == 'male'
+    DefaultPedSetup(PlayerPedId(), ismale)
+
+    if args.data.primary.id == 0 then
+        -- Item removed.
+        Citizen.InvokeNative(0x0D7FFA1B2F69ED82, PlayerPedId(), ActiveCharacterData.Clothing[args.data.category].variant.hash, 0, 0)
+        ActiveCharacterData.Clothing[args.data.category] = nil
+    else
+        
+        --Remove item before applying the next item
+        if ActiveCharacterData.Clothing[args.data.category] ~= nil then
+            Citizen.InvokeNative(0x0D7FFA1B2F69ED82, PlayerPedId(), ActiveCharacterData.Clothing[args.data.category].variant.hash, 0, 0)
+        end
+
+        -- Item added
+        ActiveCharacterData.Clothing[args.data.category] = {
+            primary = args.data.primary,
+            variant = args.data.variant
+        }
+
+        local multiplayerVariant = true
+        Citizen.InvokeNative(0xD3A7B003ED343FD9, PlayerPedId(), args.data.variant.hash, multiplayerVariant, true, true)
+    end
+
+    DefaultPedSetup(PlayerPedId(), ismale)
+    Citizen.InvokeNative(0xCC8CA3E88256E58F, PlayerPedId(), 0, 1, 1, 1, 0) -- Refresh PedVariation
+end
+
 function CreateNewCharacter()
     local playerPed = PlayerPedId()
     SetFocusEntity(playerPed)

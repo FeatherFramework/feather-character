@@ -1,6 +1,6 @@
 <template>
     <div>
-        <input id="minmax-range" type="range" :min="props.min" :max="props.max" v-model="curentval"
+        <input id="minmax-range" type="range" :disabled="disabled" :min="props.min" :max="props.max" v-model="curentval"
             class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
         <label for="minmax-range" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ Number(curentval) + props.offset
         }}</label>
@@ -36,6 +36,10 @@ const props = defineProps({
     offset: {
         required: false,
         default: 0
+    },
+    disabled: {
+        required: false,
+        default: false
     }
 })
 
