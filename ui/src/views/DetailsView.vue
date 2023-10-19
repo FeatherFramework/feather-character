@@ -1,12 +1,14 @@
 <script setup>
 import { ref, watch  } from "vue";
 import { useConfigStore } from "@/store/config";
+import { useCategoryStore } from '@/store/category';
+
 
 import api from "@/api"
 import router from "@/router";
 
 const config_store = useConfigStore();
-
+const category_store = useCategoryStore();
 
 const firstname = ref('')
 const lastname = ref('')
@@ -21,7 +23,10 @@ const submit = () => {
             dob: dob.value,
             sex: sex.value
         }
-    }).then(() => {
+    }).then((response) => {
+        let resobject = JSON.parse(response.data)       
+        category_store.storeCategoryData('clothing', resobject.clothing)
+
         router.push('/category')
     })
     .catch((e) => {

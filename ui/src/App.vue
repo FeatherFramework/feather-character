@@ -13,12 +13,10 @@
 import api from "./api";
 import { ref, onMounted, onUnmounted } from "vue";
 import "@/assets/styles/main.css";
-import { useCategoryStore } from '@/store/category';
 import { useConfigStore } from "@/store/config";
 
 const devmode = ref(false);
 const visible = ref(false);
-const category_store = useCategoryStore();
 const config_store = useConfigStore();
 
 
@@ -44,9 +42,6 @@ const onMessage = (event) => {
         .catch((e) => {
           console.log(e.message);
         });
-      break;
-    case "updateclothing":
-      category_store.storeCategoryData('clothing', event.data.clothing)
       break;
     default:
       break;
