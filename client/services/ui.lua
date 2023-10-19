@@ -66,17 +66,19 @@ RegisterNUICallback('SetSex', function(args, nuicb)
 end)
 
 
-RegisterNUICallback('SelectedDetails', function(args, nuicb)
+RegisterNUICallback('SelectedDetails', function(args, cb)
+    
     SaveCharacterDetails(args)
-
     -- The character details have been set, lets now send the proper Sex based clothing options to the UI for selection by player.
-    sendUIClothingData(args.data.sex)
+    local clothing = {}
 
-
-    -- TODO: Save the current state of character and that its still  in creation. Then have the UI pick back up where it left off.
-    if Config.DevMode == false then
-        TriggerServerEvent('feather-character:SendDetailsToDB', ActiveCharacterData, json.encode(ClothesTable))        
+    if args.data.sex == "male" then
+        clothing = Clothes.Male
+    else
+        clothing = Clothes.Female
     end
 
-    nuicb('ok')
+    cb(json.encode({
+        clothing = clothing
+    }))
 end)
