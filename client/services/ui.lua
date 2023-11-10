@@ -17,9 +17,9 @@ local function sendUIClothingData(sex)
     local clothing = {}
 
     if sex == "male" then
-        clothing = Clothes.Male
+        clothing = CharacterConfig.Clothing.Clothes.Male
     else
-        clothing = Clothes.Female
+        clothing = CharacterConfig.Clothing.Clothes.Female
     end
 
     SendNUIMessage({
@@ -73,9 +73,9 @@ RegisterNUICallback('SelectedDetails', function(args, cb)
     local clothing = {}
 
     if args.data.sex == "male" then
-        clothing = Clothes.Male
+        clothing = CharacterConfig.Clothing.Clothes.Male
     else
-        clothing = Clothes.Female
+        clothing = CharacterConfig.Clothing.Clothes.Female
     end
 
     cb(json.encode({

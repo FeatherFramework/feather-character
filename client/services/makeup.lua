@@ -1,10 +1,10 @@
 local textureId = -1
 local is_overlay_change_active = false
-local current_texture_settings = TextureTypes["Male"]
+local current_texture_settings = CharacterConfig.General.TextureTypes["Male"]
 
 function ChangeOverlay(name, visibility, tx_id, tx_normal, tx_material, tx_color_type, tx_opacity, tx_unk, palette_id,
                        palette_color_primary, palette_color_secondary, palette_color_tertiary, var, opacity)
-    for k, v in pairs(OverlayAllLayers) do
+    for k, v in pairs(CharacterConfig.Attributes.OverlayAllLayers) do
         if v.name == name then
             v.visibility = visibility
             if visibility ~= 0 then
@@ -14,17 +14,17 @@ function ChangeOverlay(name, visibility, tx_id, tx_normal, tx_material, tx_color
                 v.tx_opacity = tx_opacity
                 v.tx_unk = tx_unk
                 if tx_color_type == 0 then
-                    v.palette = ColorPalettes[palette_id]
+                    v.palette = CharacterConfig.Attributes.ColorPalettes[palette_id]
                     v.palette_color_primary = palette_color_primary
                     v.palette_color_secondary = palette_color_secondary
                     v.palette_color_tertiary = palette_color_tertiary
                 end
                 if name == "shadows" or name == "eyeliners" or name == "lipsticks" then
                     v.var = var
-                    v.tx_id = ConfigChar.OverlaysInfo[name][1].id
+                    v.tx_id = CharacterConfig.Attributes.OverlaysInfo[name][1].id
                 else
                     v.var = 0
-                    v.tx_id = ConfigChar.OverlaysInfo[name].id
+                    v.tx_id = CharacterConfig.Attributes.OverlaysInfo[name].id
                 end
                 v.opacity = opacity
             end
@@ -39,9 +39,9 @@ Citizen.CreateThread(function()
         if is_overlay_change_active then
             local ped = PlayerPedId()
             if IsPedMale(ped) then
-                current_texture_settings = texture_types["Male"]
+                current_texture_settings = CharacterConfig.General.TextureTypes["Male"]
             else
-                current_texture_settings = texture_types["Female"]
+                current_texture_settings = CharacterConfig.General.TextureTypes["Female"]
             end
             if textureId ~= -1 then
                 Citizen.InvokeNative(0xB63B9178D0F58D82, textureId)                                                                                                   -- reset texture
@@ -49,7 +49,7 @@ Citizen.CreateThread(function()
             end
             textureId = Citizen.InvokeNative(0xC5E7204F322E49EB, current_texture_settings.albedo,
                 current_texture_settings.normal, current_texture_settings.material);                                                                                  -- create texture
-            for k, v in pairs(OverlayAllLayers) do
+            for k, v in pairs(CharacterConfig.Attributes.OverlayAllLayers) do
                 if v.visibility ~= 0 then
                     local overlay_id = Citizen.InvokeNative(0x86BB5FF45F193A02, textureId, v.tx_id, v.tx_normal,
                         v.tx_material, v.tx_color_type, v.tx_opacity, v.tx_unk);                                                                                         -- create overlay

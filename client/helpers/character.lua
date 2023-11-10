@@ -22,22 +22,22 @@ end
 
 function RemoveTagFromMetaPed(category)
     if category == "Coat" then
-        Citizen.InvokeNative(0xD710A5007C2AC539, PlayerPedId(), ClothingCategories.CoatClosed, 0)
+        Citizen.InvokeNative(0xD710A5007C2AC539, PlayerPedId(), CharacterConfig.Clothing.ClothingCategories.CoatClosed, 0)
     end
     if category == "CoatClosed" then
-        Citizen.InvokeNative(0xD710A5007C2AC539, PlayerPedId(), ClothingCategories.Coat, 0)
+        Citizen.InvokeNative(0xD710A5007C2AC539, PlayerPedId(), CharacterConfig.Clothing.ClothingCategories.Coat, 0)
     end
     if category == "Pant" then
         if not IsPedMale(PlayerPedId()) then
-            Citizen.InvokeNative(0xD710A5007C2AC539, PlayerPedId(), ClothingCategories.Skirt, 0)
+            Citizen.InvokeNative(0xD710A5007C2AC539, PlayerPedId(), CharacterConfig.Clothing.ClothingCategories.Skirt, 0)
         end
-        Citizen.InvokeNative(0xD710A5007C2AC539, PlayerPedId(), ClothingCategories.Boots, 0)
+        Citizen.InvokeNative(0xD710A5007C2AC539, PlayerPedId(), CharacterConfig.Clothing.ClothingCategories.Boots, 0)
     end
     if category == "Skirt" and not IsPedMale(PlayerPedId()) then
-        Citizen.InvokeNative(0xD710A5007C2AC539, PlayerPedId(), ClothingCategories.Pant, 0)
+        Citizen.InvokeNative(0xD710A5007C2AC539, PlayerPedId(), CharacterConfig.Clothing.ClothingCategories.Pant, 0)
     end
 
-    Citizen.InvokeNative(0xD710A5007C2AC539, PlayerPedId(), ClothingCategories[category], 0)
+    Citizen.InvokeNative(0xD710A5007C2AC539, PlayerPedId(), CharacterConfig.Clothing.ClothingCategories[category], 0)
     UpdatePedVariation(PlayerPedId())
 end
 
@@ -50,15 +50,15 @@ function DefaultPedSetup(ped, male)
     if male then
         --Citizen.InvokeNative(0x77FF8D35EEC6BBC4, ped, 0, true)
         compEyes = 612262189
-        compBody = tonumber("0x" .. ConfigChar.DefaultChar.Male[1].Body[1])
-        compHead = tonumber("0x" .. ConfigChar.DefaultChar.Male[1].Heads[1])
-        compLegs = tonumber("0x" .. ConfigChar.DefaultChar.Male[1].Legs[1])
+        compBody = tonumber("0x" .. CharacterConfig.General.DefaultChar.Male[1].Body[1])
+        compHead = tonumber("0x" .. CharacterConfig.General.DefaultChar.Male[1].Heads[1])
+        compLegs = tonumber("0x" .. CharacterConfig.General.DefaultChar.Male[1].Legs[1])
     else
         EquipMetaPedOutfitPreset(ped, 7, true)
         compEyes = 928002221
-        compBody = tonumber("0x" .. ConfigChar.DefaultChar.Female[1].Body[1])
-        compHead = tonumber("0x" .. ConfigChar.DefaultChar.Female[1].Heads[1])
-        compLegs = tonumber("0x" .. ConfigChar.DefaultChar.Female[1].Legs[1])
+        compBody = tonumber("0x" .. CharacterConfig.General.DefaultChar.Female[1].Body[1])
+        compHead = tonumber("0x" .. CharacterConfig.General.DefaultChar.Female[1].Heads[1])
+        compLegs = tonumber("0x" .. CharacterConfig.General.DefaultChar.Female[1].Legs[1])
         --ApplyShopItemToPed(ped, `CLOTHING_ITEM_F_BODIES_LOWER_001_V_001`, true, true)
         --ApplyShopItemToPed(ped, `CLOTHING_ITEM_F_BODIES_UPPER_001_V_001`, true, true)
     end

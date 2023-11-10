@@ -15,7 +15,10 @@ github_link 'https://github.com/FeatherFramework/feather-character'
 
 shared_scripts {
     'config.lua',
-    'shared/data/*.lua'
+    'shared/data/setup.lua',
+    'shared/data/general.lua',
+    'shared/data/clothing.lua',
+    'shared/data/attributes.lua'
 }
 
 server_scripts {

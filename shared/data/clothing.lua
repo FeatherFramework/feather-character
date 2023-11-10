@@ -1,4 +1,4 @@
-ClothingCategories = {
+CharacterConfig.Clothing.ClothingCategories = {
     Gunbelt        = 0x9B2C8B89,
     Mask           = 0x7505EF42,
     Holster        = 0xB6B6122D,
@@ -36,7 +36,7 @@ ClothingCategories = {
     HairAccesories = 0x8E84A2AA,
 }
 
-Clothes = {
+CharacterConfig.Clothing.Clothes = {
     Male = {
         RingLh = {
             CategoryName = 'Left Hand Ring',

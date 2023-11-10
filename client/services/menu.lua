@@ -1,3 +1,5 @@
+-- TODO: REMOVE ALL THIS STUFF AS MENUAPI/REDEMTP_MENU_BASE WILL NOT BE NEEDED.
+
 MenuData = {}
 TriggerEvent("redemrp_menu_base:getData", function(call)
     MenuData = call
@@ -12,7 +14,7 @@ end)
 function MakeupMenu()
     MenuData.CloseAll()
     local elements = {}
-    for k, v in pairs(OverlayAllLayers) do
+    for k, v in pairs(CharacterConfig.Attributes.OverlayAllLayers) do
         elements[#elements + 1] = {
             label = v.name,
         }
@@ -48,10 +50,10 @@ function OpenMakeupMenu(table)
 
     -- *texture
     elements[#elements + 1] = {
-        label = OverlayAllLayers[selection].name .. ' ' .. 'Texture',
+        label = CharacterConfig.Attributes.OverlayAllLayers[selection].name .. ' ' .. 'Texture',
         value = 1,
         min = 0,
-        max = #Makeup[selection],
+        max = #CharacterConfig.Attributes.Makeup[selection],
         type = "slider",
         texture = value,
 
@@ -59,7 +61,7 @@ function OpenMakeupMenu(table)
         tag = "texture"
     }
     elements[#elements + 1] = {
-        label = OverlayAllLayers[selection].name .. ' ' .. 'Opacity',
+        label = CharacterConfig.Attributes.OverlayAllLayers[selection].name .. ' ' .. 'Opacity',
         value = 1.0,
         min = 0,
         max = 0.9,
@@ -72,18 +74,18 @@ function OpenMakeupMenu(table)
     }
     --*Color
     local ColorValue = 0
-    for x, color in pairs(ConfigChar.ColorPalettes[selection]) do
-        if joaat(color) == OverlayAllLayers[selection] then
+    for x, color in pairs(CharacterConfig.Attributes.ColorPalettes[selection]) do
+        if joaat(color) == CharacterConfig.Attributes.OverlayAllLayers[selection] then
             ColorValue = x
         end
     end
 
     elements[#elements + 1] = {
-        label = OverlayAllLayers[selection].name .. ' ' .. 'Color',
+        label = CharacterConfig.Attributes.OverlayAllLayers[selection].name .. ' ' .. 'Color',
         value = ColorValue,
         min = 0,
         max = 25,
-        comp = ConfigChar.ColorPalettes[selection],
+        comp = CharacterConfig.Attributes.ColorPalettes[selection],
         type = "slider",
         palette = value,
 
@@ -92,33 +94,33 @@ function OpenMakeupMenu(table)
     }
 
     elements[#elements + 1] = {
-        label = OverlayAllLayers[selection].name .. ' ' .. 'Tint 1',
+        label = CharacterConfig.Attributes.OverlayAllLayers[selection].name .. ' ' .. 'Tint 1',
         value = 0,
         min = 0,
         max = 254,
-        comp = ConfigChar.ColorPalettes[selection],
+        comp = CharacterConfig.Attributes.ColorPalettes[selection],
         type = "slider",
         primarytint = value,
         desc = 'Color',
         tag = "color"
     }
     elements[#elements + 1] = {
-        label = OverlayAllLayers[selection].name .. ' ' .. 'Tint 2',
+        label = CharacterConfig.Attributes.OverlayAllLayers[selection].name .. ' ' .. 'Tint 2',
         value = 0,
         min = 0,
         max = 254,
-        comp = ConfigChar.ColorPalettes[selection],
+        comp = CharacterConfig.Attributes.ColorPalettes[selection],
         type = "slider",
         secondarytint = value,
         desc = 'Color',
         tag = "color"
     }
     elements[#elements + 1] = {
-        label = OverlayAllLayers[selection].name .. ' ' .. 'Tint 3',
+        label = CharacterConfig.Attributes.OverlayAllLayers[selection].name .. ' ' .. 'Tint 3',
         value = 0,
         min = 0,
         max = 254,
-        comp = ConfigChar.ColorPalettes[selection],
+        comp = CharacterConfig.Attributes.ColorPalettes[selection],
         type = "slider",
         tertiarytint = value,
 
@@ -136,12 +138,12 @@ function OpenMakeupMenu(table)
     if selection == "lipsticks" or selection == "shadows" or selection == "eyeliners" then
         --*Variant
         elements[#elements + 1] = {
-            label = OverlayAllLayers[selection].name .. ' ' .. 'Variation',
+            label = CharacterConfig.Attributes.OverlayAllLayers[selection].name .. ' ' .. 'Variation',
             value = 1,
             min = 0,
             max = variationvalue,
             type = "slider",
-            comp = ConfigChar.ColorPalettes[selection],
+            comp = CharacterConfig.Attributes.ColorPalettes[selection],
             variant = value,
             desc = 'variant',
             tag = "variant"
@@ -172,7 +174,7 @@ function OpenMakeupMenu(table)
             if data.current.label == "Add" then
                 if selection == "blush" then
                     print(elements.texture, data.current.palette, data.current.primarytint, data.current.secondarytint)
-                    ChangeOverlay(OverlayAllLayers[selection].name, 1, data.current.texture, 0, 0, 0, 1.0, 0,
+                    ChangeOverlay(CharacterConfig.Attributes.OverlayAllLayers[selection].name, 1, data.current.texture, 0, 0, 0, 1.0, 0,
                         data.current.palette, data.current.primarytint, data.current.secondarytint,
                         data.current.tertiarytint, 0, data.current.opacity)
                 end
@@ -188,7 +190,7 @@ function ClothingCategories()
     local Elements = {}
 
     if IsPedMale(PlayerPedId()) then
-        for i, v in pairs(Clothes.Male) do
+        for i, v in pairs(CharacterConfig.Clothing.Clothes.Male) do
             Elements[#Elements + 1] = {
                 label = v.CategoryName,
                 Clothes = v,
@@ -196,7 +198,7 @@ function ClothingCategories()
             }
         end
     else
-        for i, v in pairs(Clothes.Female) do
+        for i, v in pairs(CharacterConfig.Clothing.Clothes.Female) do
             Elements[#Elements + 1] = {
                 label = v.CategoryName,
                 Clothes = v,
@@ -206,9 +208,9 @@ function ClothingCategories()
     end
 
     if IsPedMale then
-        ClothingTable = Clothes.Male
+        ClothingTable = CharacterConfig.Clothing.Clothes.Male
     else
-        ClothingTable = Clothes.Female
+        ClothingTable = CharacterConfig.Clothing.Clothes.Female
     end
 
     MenuData.Open('default', GetCurrentResourceName(), 'menuapi',
@@ -296,7 +298,7 @@ end
 if Config.DevMode == true then
     -- Open Command
     RegisterCommand('length', function()
-        print(json.encode(Clothes.Male.RingLh))
+        print(json.encode(CharacterConfig.Clothing.Clothes.Male.RingLh))
     end)
 
     RegisterCommand('clothes', function()
