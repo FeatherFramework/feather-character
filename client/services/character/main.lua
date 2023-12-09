@@ -4,29 +4,18 @@ function CleanupScript()
     CleanupCam()
     CleanupCharacterSelect()
 
+    DisplayRadar(true)
     Citizen.InvokeNative(0xD0AFAFF5A51D72F7, PlayerPedId())
     FeatherCore.RPC.CallAsync("LeaveInstance", { id = 123 })
     FreezeEntityPosition(PlayerPedId(), false)
     SetEntityVisible(PlayerPedId(), true)
 end
 
----------------- Registered Net Events ------------------
-AddEventHandler('playerSpawned', function()
-    TriggerServerEvent('feather-character:CheckForUsers')
-end)
-
-AddEventHandler("onResourceStop", function(resourceName)
-    if resourceName == GetCurrentResourceName() then
-        CleanupScript()
-    end
-end)
-
--- Refresh Character
-RegisterCommand('rc', function()
+function LoadPlayer()
     local ismale = IsPedMale(PlayerPedId())
     local model
     if ismale then model = 'mp_male' else model = 'mp_female' end
-    
+
     LoadModel(model)
     SetPlayerModel(PlayerId(), joaat(model), false)
 
@@ -37,7 +26,28 @@ RegisterCommand('rc', function()
         Citizen.InvokeNative(0x77FF8D35EEC6BBC4, PlayerPedId(), 3, 0) -- outfits
         DefaultPedSetup(PlayerPedId(), ismale)
     end
+end
+
+---------------- Registered Net Events ------------------
+AddEventHandler('playerSpawned', function()
+    print('testing')
+    TriggerServerEvent('feather-character:CheckForUsers')
 end)
+
+
+
+AddEventHandler("onResourceStop", function(resourceName)
+    if resourceName == GetCurrentResourceName() then
+        CleanupScript()
+    end
+end)
+
+-- Refresh Character
+RegisterCommand('rc', function()
+    LoadPlayer()
+    TriggerServerEvent('feather-character:GetCharactersData', PlayerPedId())
+end)
+
 
 
 -- Devmode commands

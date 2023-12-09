@@ -31,7 +31,6 @@ function RemoveTagFromMetaPed(category)
         if not IsPedMale(PlayerPedId()) then
             Citizen.InvokeNative(0xD710A5007C2AC539, PlayerPedId(), CharacterConfig.Clothing.ClothingCategories.Skirt, 0)
         end
-        Citizen.InvokeNative(0xD710A5007C2AC539, PlayerPedId(), CharacterConfig.Clothing.ClothingCategories.Boots, 0)
     end
     if category == "Skirt" and not IsPedMale(PlayerPedId()) then
         Citizen.InvokeNative(0xD710A5007C2AC539, PlayerPedId(), CharacterConfig.Clothing.ClothingCategories.Pant, 0)

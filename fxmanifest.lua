@@ -34,7 +34,6 @@ client_scripts {
     'client/helpers/*.lua',
     'client/services/*.lua',
     'client/services/character/*.lua',
-    'client/services/character/main.lua',
     'client/main.lua'
 }
 

@@ -16,7 +16,7 @@ Config.defaults = {
     xp = 0,
 }
 
-Config.MaxAllowedChars = 7
+Config.MaxAllowedChars = 4
 
 Config.tempclothhash = {
     [1] = 'a_f_m_armtownfolk_01',

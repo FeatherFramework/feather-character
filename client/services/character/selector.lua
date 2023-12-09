@@ -1,6 +1,10 @@
 local Obj1, Obj2, Obj3, Obj4, ped
 local firstprompt, secondprompt, thirdprompt
 local spawnedPeds = {}
+local Clothing = {}
+RegisterNetEvent('feather-character:SendCharactersData', function(clothing)
+    SentClothing = json.decode(clothing)
+end)
 
 function CleanupCharacterSelect()
     Obj1:Remove()
@@ -29,7 +33,18 @@ function SpawnProps()
         Config.SpawnProps.obj4.z, Config.SpawnProps.obj4.h, false, 'standard')
 end
 
+RegisterCommand('spawnped', function()
+    local coords = GetEntityCoords(PlayerPedId())
+    local ped = FeatherCore.Ped:Create('mp_male', coords.x, coords.y, coords.z, 0, 'world', false, false)
+    local rawped = ped:GetPed()
+    TriggerServerEvent('feather-character:GetCharactersData', rawped) --trigger twice seems to put clothes on or else its weird
+    Citizen.InvokeNative(0x77FF8D35EEC6BBC4, rawped, 4, 1)            -- outfits
+    DefaultPedSetup(rawped, true)
+end)
+
+
 function SpawnCharacters(data)
+    local spawned = true
     local PromptGroup = FeatherCore.Prompt:SetupPromptGroup()                           --Setup Prompt Group
 
     firstprompt = PromptGroup:RegisterPrompt("Left", 0x20190AB4, 1, 1, true, 'click')   --Register your first prompt
@@ -39,34 +54,47 @@ function SpawnCharacters(data)
     local cameraspot = nil
     local charCamera = {}
 
-
     Maxchars = Config.MaxAllowedChars --Can only be an int value
     local repeatKey = 0
 
     SetEntityCoords(PlayerPedId(), Config.SpawnCoords.charspots[1].x,
         Config.SpawnCoords.charspots[1].y, Config.SpawnCoords.charspots[1].z, true, false, false, false)
-    SetEntityVisible(PlayerPedId(), false)
-    FreezeEntityPosition(PlayerPedId(), true)
     SetFocusEntity(PlayerPedId())
 
+
     for k, v in pairs(data) do
+        if k > Maxchars then -- Have this first its more optimal, only run the code below if not maxchars
+            break
+        end
+    
         charCamera[k] = v.id
-        ped = FeatherCore.Ped:Create(Config.tempclothhash[k], Config.SpawnCoords.charspots[k].x,
+        Clothing[k] = json.decode(v.clothing)
+    
+        -- Creates a new ped
+        local ped = FeatherCore.Ped:Create(v.model, Config.SpawnCoords.charspots[k].x,
             Config.SpawnCoords.charspots[k].y,
             Config.SpawnCoords.charspots[k].z, 0, 'world', false, false)
+        --Get the rawpedid of the ped that was JUST created
+        local RawPed = ped:GetPed()
+    
+        Citizen.InvokeNative(0x77FF8D35EEC6BBC4, RawPed, 4, 0) -- outfits
+        DefaultPedSetup(RawPed, true)
         ped:SetHeading(90.0)
         ped:Freeze(true)
-        local rawped = ped:GetPed()
-        Citizen.InvokeNative(0x77FF8D35EEC6BBC4, rawped, 4, 0) -- outfits
-        DefaultPedSetup(rawped, true)
-
         table.insert(spawnedPeds, ped)
+        for category, hash in pairs(Clothing[k]) do
+            AddComponent(RawPed,hash,category)
+        
+        end
     end
 
-    while true do
+
+    while spawned do
+        SetEntityVisible(PlayerPedId(), false)
+        FreezeEntityPosition(PlayerPedId(), true)
+
         Wait(5)
         PromptGroup:ShowGroup("Camera Controls")
-
         if firstprompt:HasCompleted() then
             if cameraspot == nil then
                 cameraspot = 1
@@ -98,11 +126,15 @@ function SpawnCharacters(data)
 
         if thirdprompt:HasCompleted() then
             if cameraspot ~= nil then
-                firstprompt:DeletePrompt()
-                secondprompt:DeletePrompt()
-                thirdprompt:DeletePrompt()
-                print(charCamera[cameraspot])
-                TriggerEvent('feather-character:SpawnSelect', cameraspot)
+                spawned = false
+                CleanupScript()
+                LoadPlayer()
+                TriggerServerEvent('feather-character:InitiateCharacter', charCamera[cameraspot])
+                TriggerServerEvent('feather-character:GetCharactersData',charCamera[cameraspot])
+                for category, hash in pairs(Clothing[cameraspot]) do
+                    AddComponent(PlayerPedId(),hash,category)
+                end
+                break
             end
         end
 
@@ -117,7 +149,6 @@ end
 --------- Net Events ------
 
 RegisterNetEvent('feather-character:SelectCharacterScreen', function(data)
-    print('Character(s) found going to select screen')
     SpawnProps()
     SetEntityVisible(PlayerPedId(), false)
     DisplayRadar(false)

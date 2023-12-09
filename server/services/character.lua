@@ -1,41 +1,43 @@
-RegisterServerEvent('feather-character:GetCharactersData', function()
-    local src = source
-    local Characters = FeatherCore.getUserCharacter(src)
-    local charid = Characters.charIdentifier
-
-
-    --TODO: Lets swap this to use the core character API and cache. I (bytesizd) can help with this.
-    exports.ghmattimysql:execute("SELECT skinPlayer AND compPlayer FROM `characters` WHERE ? = ?",
-        { charid },
-        function(result)
-            if result[1] then
-                TriggerClientEvent('feather-character:SendCharactersData')
-            end
-        end)
+RegisterServerEvent('feather-character:InitiateCharacter', function(id)
+    local _source = source
+    FeatherCore.Character.InitiateCharacter(_source, id)
 end)
 
+RegisterServerEvent('feather-character:GetCharactersData', function( id)
+    local _source = source
+    local activeuser
+    if id == nil then
+        activeuser = FeatherCore.Character.GetCharacterBySrc(_source)
+        id = activeuser.id
+    end
+    print(id)
+    local result = MySQL.query.await("SELECT * FROM characters WHERE id = @id", { ['id'] = id })
+    TriggerClientEvent('feather-character:SendCharactersData', _source, result[1].clothing)
+end)
 
-RegisterServerEvent('feather-character:SendDetailsToDB', function(args)
+RegisterServerEvent('feather-character:UpdateClothingDB', function(Clothing)
+    local _source = source
+    FeatherCore.Character.UpdateAttribute(_source, 'clothing', json.encode(Clothing))
+end)
+
+RegisterServerEvent('feather-character:SaveCharacterData', function(data, Clothing)
     local src = source
     local activeuser = FeatherCore.User.GetUserBySrc(src)
-    FeatherCore.Character.CreateCharacter(activeuser.id, 1, args.firstname, args.lastname, args.dob, Config.defaults.money,
+    FeatherCore.Character.CreateCharacter(activeuser.id, 1, data.firstname, data.lastname, data.model, data.dob,
+        Config.defaults.money,
         Config.defaults.gold, Config.defaults.tokens, Config.defaults.xp, Config.SpawnCoords.spawns[1].coords.x,
-        Config.SpawnCoords.spawns[1].coords.y, Config.SpawnCoords.spawns[1].coords.z, "en_us")
+        Config.SpawnCoords.spawns[1].coords.y, Config.SpawnCoords.spawns[1].coords.z, "en_us", json.encode(Clothing))
 end)
 
 
 
 RegisterServerEvent('feather-character:CheckForUsers', function()
     local _source = source
-    local license
     for k, v in ipairs(GetPlayerIdentifiers(_source)) do
         if string.match(v, "license:") then
-            license = v
-            print(license)
             local license = MySQL.query.await("SELECT * FROM users WHERE license = license") --Migrate this to check the user cache (saves a db call)
             if license[1] then
                 local userid = license[1].id
-                print(userid)
                 exports.ghmattimysql:execute("SELECT * FROM `characters` WHERE user_id = @userid",
                     { ['userid'] = userid },
                     function(result)
