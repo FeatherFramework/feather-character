@@ -1,5 +1,7 @@
 -- This is the main file for core character actions.
 
+
+
 function CleanupScript()
     CleanupCam()
     CleanupCharacterSelect()
@@ -11,26 +13,22 @@ function CleanupScript()
     SetEntityVisible(PlayerPedId(), true)
 end
 
-function LoadPlayer()
-    local ismale = IsPedMale(PlayerPedId())
-    local model
-    if ismale then model = 'mp_male' else model = 'mp_female' end
-
+function LoadPlayer(model)
     LoadModel(model)
     SetPlayerModel(PlayerId(), joaat(model), false)
-
-    if ismale then
+    if model == 'mp_male' then
         Citizen.InvokeNative(0x77FF8D35EEC6BBC4, PlayerPedId(), 4, 0) -- outfits
-        DefaultPedSetup(PlayerPedId(), ismale)
+        DefaultPedSetup(PlayerPedId(), true)
     else
         Citizen.InvokeNative(0x77FF8D35EEC6BBC4, PlayerPedId(), 3, 0) -- outfits
-        DefaultPedSetup(PlayerPedId(), ismale)
+        DefaultPedSetup(PlayerPedId(), false)
     end
 end
 
+
+
 ---------------- Registered Net Events ------------------
 AddEventHandler('playerSpawned', function()
-    print('testing')
     TriggerServerEvent('feather-character:CheckForUsers')
 end)
 
@@ -44,8 +42,13 @@ end)
 
 -- Refresh Character
 RegisterCommand('rc', function()
-    LoadPlayer()
-    TriggerServerEvent('feather-character:GetCharactersData', PlayerPedId())
+    LoadPlayer(CharModel)
+    for category, hash in pairs(SentClothing) do
+        AddComponent(PlayerPedId(),hash,category)
+    end
+    for category, hash in pairs(SentAttributes) do
+        AddComponent(PlayerPedId(),hash,category)
+    end
 end)
 
 

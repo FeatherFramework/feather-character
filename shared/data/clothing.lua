@@ -37,7 +37,7 @@ CharacterConfig.Clothing.ClothingCategories = {
     }
     
 CharacterConfig.Clothing.Clothes = {
-        Male = {
+        ['Male'] = {
             Upper = {
                 ClosedCoats = {
                     CategoryName = 'Closed Coats',
@@ -25000,7 +25000,7 @@ CharacterConfig.Clothing.Clothes = {
                 },
             }
         },
-        Female = {
+        ['Female'] = {
             Accessories = {
 
                 RingLh = {

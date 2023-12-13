@@ -1,41 +1,20 @@
 -- TODO: REMOVE ALL THIS STUFF AS MENUAPI/REDEMTP_MENU_BASE WILL NOT BE NEEDED.
-FeatherMenu = exports['feather-menu'].initiate()
 local FirstName = ''
 local LastName = ''
-local MyMenu = FeatherMenu:RegisterMenu('feather:character:menu', {
-    top = '40%',
-    left = '20%',
-    ['720width'] = '500px',
-    ['1080width'] = '600px',
-    ['2kwidth'] = '700px',
-    ['4kwidth'] = '900px',
-    style = {
-        -- ['height'] = '500px'
-        -- ['border'] = '5px solid white',
-        -- ['background-image'] = 'none',
-        -- ['background-color'] = '#515A5A'
-    },
-    contentslot = {
-        style = { --This style is what is currently making the content slot scoped and scrollable. If you delete this, it will make the content height dynamic to its inner content.
-            ['height'] = '500px',
-            ['min-height'] = '500px'
-        }
-    },
-    draggable = true,
-    canclose = true
-})
-local MainCharacterPage, ClothingCategoriesPage, UpperClothingPage, LowerClothingPage, AccClothingPage =
+
+ MainCharacterPage, ClothingCategoriesPage, UpperClothingPage, LowerClothingPage, AccClothingPage,CategoriesPage =
     MyMenu:RegisterPage('first:page'), MyMenu:RegisterPage('second:page'), MyMenu:RegisterPage('third:page'),
-    MyMenu:RegisterPage('fourth:page'), MyMenu:RegisterPage('fifth:page')
-local ClothingCategories, Model, MenuOpened = nil, 'mp_male', false
+    MyMenu:RegisterPage('fourth:page'), MyMenu:RegisterPage('fifth:page'), MyMenu:RegisterPage('sixth:page')
+
+Model, MenuOpened = nil, 'mp_male'
+
+
+local Gender = GetGender()
+
 
 local SelectedClothing = {}         -- This can keep track of what was selected data wise
 local SelectedClothingElements = {} --This table keeps track of your clothing elements
-if IsPedMale(PlayerPedId()) then
-    ClothingCategories = CharacterConfig.Clothing.Clothes.Male
-else
-    ClothingCategories = CharacterConfig.Clothing.Clothes.Female
-end
+
 
 RegisterCommand('test', function()
     if Header1 and SubHeader1 then
@@ -53,11 +32,11 @@ RegisterCommand('test', function()
         style = {}
     })
     MainCharacterPage:RegisterElement('button', {
-        label = 'Customize your Character',
+        label = "Customize Character",
         style = {
-        }
+        },
     }, function()
-        ClothingCategoriesPage:RouteTo()
+        CategoriesPage:RouteTo()
     end)
     MainCharacterPage:RegisterElement('input', {
         label = "First Name",
@@ -96,11 +75,12 @@ RegisterCommand('test', function()
     }, function(data)
         if data.value == "Male" then
             Model = 'mp_male'
+
         else
             Model = 'mp_female'
         end
         -- This gets triggered whenever the arrow selected value changes
-        print(Model)
+        LoadPlayer(Model)
     end)
     MainCharacterPage:RegisterElement('button', {
         label = "Save Clothing",
@@ -108,11 +88,11 @@ RegisterCommand('test', function()
         }
     }, function()
         print(json.encode(SelectedClothingElements))
+
         local data = { firstname = FirstName, lastname = LastName, dob = DOB, model = Model }
-        TriggerServerEvent('feather-character:SaveCharacterData', data, SelectedClothingElements)
+        TriggerServerEvent('feather-character:SaveCharacterData', data, SelectedClothingElements,SelectedAttributeElements)
     end)
 
-    --second page
     ClothingCategoriesPage:RegisterElement('header', {
         value = 'Clothing Selection',
         slot = "header",
@@ -126,7 +106,130 @@ RegisterCommand('test', function()
         MainCharacterPage:RouteTo()
     end)
 
-    for k, v in pairs(ClothingCategories) do
+    CategoriesPage:RegisterElement('button', {
+        label = 'Clothing',
+        style = {
+        }
+    }, function()
+        ClothingCategoriesPage:RouteTo()
+    end)
+    CategoriesPage:RegisterElement('button', {
+        label = 'Appearance',
+        style = {
+        }
+    }, function()
+        MainAppearanceMenu:RouteTo()
+    end)
+    CategoriesPage:RegisterElement('button', {
+        label = 'Heritage',
+        style = {
+        }
+    }, function()
+        SelectedHeritage = true
+        MainHeritageMenu:RouteTo()
+        if SelectedHeritage ~= nil then
+            HeritageSlider = MainHeritageMenu:RegisterElement('slider', {
+                label = "Heritage",
+                start = 0,
+                min = 1,
+                max = #CharacterConfig.General.DefaultChar[Gender],
+                steps = 1,
+            }, function(data)
+                Race = data.value
+                local Head = tonumber("0x" ..CharacterConfig.General.DefaultChar[Gender][Race].Heads[1])
+                local Body = tonumber("0x" ..CharacterConfig.General.DefaultChar[Gender][Race].Body[1])
+                local Legs = tonumber("0x" ..CharacterConfig.General.DefaultChar[Gender][Race].Legs[1])
+                -- This gets triggered whenever the sliders selected value changes
+                AddComponent(PlayerPedId(),Head,nil)
+                AddComponent(PlayerPedId(),Body,nil)
+                AddComponent(PlayerPedId(),Legs,nil)
+                HeritageDisplay:update({
+                    value = CharacterConfig.General.DefaultChar[Gender][Race].label,
+                })
+                HeadVariantSlider = HeadVariantSlider:update({
+                    value = 1,
+                    max = #CharacterConfig.General.DefaultChar[Gender][Race].Heads,
+                })
+                BodyVariantSlider = BodyVariantSlider:update({
+                    value = 1,
+                    max = #CharacterConfig.General.DefaultChar[Gender][Race].Body,
+                })
+                LegVariantSlider = LegVariantSlider:update({
+                    value = 1,
+                    max = #CharacterConfig.General.DefaultChar[Gender][Race].Legs,
+                })
+            end)
+            HeritageDisplay = MainHeritageMenu:RegisterElement('textdisplay', {
+                value = "European",
+                style = {}
+            })
+            HeadVariantSlider = MainHeritageMenu:RegisterElement('slider', {
+                label = "Head Variations",
+                start = 1,
+                min = 1,
+                max = #CharacterConfig.General.DefaultChar[Gender][1],
+                steps = 1,
+            }, function(data)
+                local value = data.value
+                local index = data.label
+                local Head = tonumber("0x" ..CharacterConfig.General.DefaultChar[Gender][Race].Heads[value])
+                AddComponent(PlayerPedId(),Head,nil)
+                SelectedAttributeElements['Head'] = Head
+                -- This gets triggered whenever the sliders selected value changes
+            end)
+            BodyVariantSlider = MainHeritageMenu:RegisterElement('slider', {
+                label = "Body Variations",
+                start = 1,
+                min = 1,
+                max = #CharacterConfig.General.DefaultChar[Gender][1],
+                steps = 1,
+            }, function(data)
+                local index = data.value
+                local Body = tonumber("0x" ..CharacterConfig.General.DefaultChar[Gender][Race].Body[index])
+                AddComponent(PlayerPedId(),Body,nil)
+                SelectedAttributeElements['Body'] = Body
+
+                -- This gets triggered whenever the sliders selected value changes
+            end)
+            LegVariantSlider = MainHeritageMenu:RegisterElement('slider', {
+                label = "Leg Variations",
+                start = 1,
+                min = 1,
+                max = #CharacterConfig.General.DefaultChar[Gender][1],
+                steps = 1,
+            }, function(data)
+                local index = data.value
+                local Legs = tonumber("0x" ..CharacterConfig.General.DefaultChar[Gender][Race].Legs[index])
+                AddComponent(PlayerPedId(),Legs,nil)
+                SelectedAttributeElements['Legs'] = Legs
+
+                -- This gets triggered whenever the sliders selected value changes
+            end)
+        
+            HeritageSlider = HeritageSlider:update({
+                label = 'Heritage',
+            })
+        
+
+
+        end
+
+    end)
+    --second page
+    CategoriesPage:RegisterElement('header', {
+        value = 'Clothing Selection',
+        slot = "header",
+        style = {}
+    })
+    CategoriesPage:RegisterElement('button', {
+        label = "Go Back",
+        style = {
+        },
+    }, function()
+        MainCharacterPage:RouteTo()
+    end)
+
+    for k, v in pairs(CharacterConfig.Clothing.Clothes[Gender]) do
         ClothingCategoriesPage:RegisterElement('button', {
             label = k,
             style = {
@@ -142,7 +245,7 @@ RegisterCommand('test', function()
                 ActivePage = AccClothingPage
                 ActivePage:RouteTo()
             end
-            for index, key in pairs(ClothingCategories[k]) do
+            for index, key in pairs(CharacterConfig.Clothing.Clothes[Gender][k]) do
                 table.insert(SelectedClothing, index)
                 if SelectedClothing[index .. 'Category'] == nil then
                     CategoryElement = ActivePage:RegisterElement('slider', {
@@ -153,6 +256,7 @@ RegisterCommand('test', function()
                         steps = 1
                     }, function(data)
                         MainComponent = data.value
+                        
                         if MainComponent > 0 then
                             SelectedClothing[index .. 'Variant'] = SelectedClothing[index .. 'Variant']:update({
                                 label = index .. ' variant',
@@ -160,13 +264,10 @@ RegisterCommand('test', function()
                                 max = #key.CategoryData[MainComponent], --#v.CategoryData[inputvalue],
                             })
                             AddComponent(PlayerPedId(), key.CategoryData[MainComponent][1].hash,index)
-                            local type = Citizen.InvokeNative(0xEC9A1261BF0CE510, PlayerPedId())
-                            ActiveCatagory = Citizen.InvokeNative(0x5FF9A878C3D115B8,
-                                key.CategoryData[MainComponent][1].hash, type, true)
                             SelectedClothingElements[index] = key.CategoryData[MainComponent][1].hash
-                            print(json.encode(SelectedClothingElements))
                         else
-                            Citizen.InvokeNative(0xDF631E4BCE1B1FC4, PlayerPedId(), ActiveCatagory, 0, 0)
+                            Citizen.InvokeNative(0x0D7FFA1B2F69ED82, PlayerPedId(), SelectedClothingElements[index], 0, 0)
+                            SelectedClothingElements[index] = nil
                             Citizen.InvokeNative(0xCC8CA3E88256E58F, PlayerPedId(), 0, 1, 1, 1, 0) -- Refresh PedVariation
                         end
                     end)
@@ -189,10 +290,6 @@ RegisterCommand('test', function()
                             ActiveCatagory = Citizen.InvokeNative(0x5FF9A878C3D115B8,
                                 key.CategoryData[MainComponent][VariantComponent].hash, type, true)
                             SelectedClothingElements[index] = key.CategoryData[MainComponent][VariantComponent].hash
-                            print(json.encode(SelectedClothingElements))
-                        else
-                            Citizen.InvokeNative(0xDF631E4BCE1B1FC4, PlayerPedId(), ActiveCatagory, 0, 0)
-                            Citizen.InvokeNative(0xCC8CA3E88256E58F, PlayerPedId(), 0, 1, 1, 1, 0) -- Refresh PedVariation
                         end
                     end)
 

@@ -1,85 +1,106 @@
 Features = {
-    0x84D6, 
-    0x3303, 
-    0x2FF9, 
-    0x4AD1, 
-    0xC04F, 
-    0xB6CE, 
-    0x2844, 
-    0xED30, 
-    0x6A0B, 
-    0xABCF, 
-    0x358D,
-    0x8D0A, 
-    0xEBAE, 
-    0x1DF6, 
-    0x3C0F, 
-    0xC3B2, 
-    0xE323, 
-    0x8B2B, 
-    0x1B6B, 
-    0xEE44, 
-    0xD266, 
-    0xA54E, 
-    0xDDFB, 
-    0x6E7F, 
-    0x3471, 
-    0x03F5,
-    0x34B1, 
-    0xF156, 
-    0x561E, 
-    0xF065, 
-    0xAA69, 
-    0x7AC3, 
-    0x410D, 
-    0x1A00, 
-    0x91C1, 
-    0xC375, 
-    0xBB4D, 
-    0xB0B0, 
-    0x5D16,
+    [0x84D6] = "Face width",
+    [0x3303] = "Eyelid height",
+    [0x2FF9] = "Eyelid width",
+    [0x4AD1] = "Eyes depth",
+    [0xC04F] = "Eyes angle",
+    [0xB6CE] = "Eyes distance",
+    [0x2844] = "Eyes height",
+    [0xED30] = "Eyebrow height",
+    [0x6A0B] = "Eyebrow width",
+    [0xABCF] = "Eyebrow depth",
+    [0x358D] = "Ears width",
+    [0x8D0A] = "Ears angle",
+    [0xEBAE] = "Ears height",
+    [0x1DF6] = "Earlobe size",
+    [0x3C0F] = "Cheekbones height",
+    [0xC3B2] = "Cheekbones width",
+    [0xE323] = "Cheekbones depth",
+    [0x8B2B] = "Jaw height",
+    [0x1B6B] = "Jaw width",
+    [0xEE44] = "Jaw depth",
+    [0xD266] = "Chin height",
+    [0xA54E] = "Chin width",
+    [0xDDFB] = "Chin depth",
+    [0x6E7F] = "Nose width",
+    [0x3471] = "Nose size",
+    [0x03F5] = "Nose height",
+    [0x34B1] = "Nose angle",
+    [0xF156] = "Nose curvature",
+    [0x561E] = "Nostrils distance",
+    [0xF065] = "Mouth width",
+    [0xAA69] = "Mouth depth",
+    [0x7AC3] = "Mouth y pos",
+    [0x410D] = "Mouth x pos",
+    [0x1A00] = "Upper lip height",
+    [0x91C1] = "Upper lip width",
+    [0xC375] = "Upper lip depth",
+    [0xBB4D] = "Lower lip height",
+    [0xB0B0] = "Lower lip width",
+    [0x5D16] = "Lower lip depth",
 }
 
 FeatureNames = {
-    "face_width",
-    "eyebrow_height",
-    "eyebrow_width",
-    "eyebrow_depth",
-    "ears_width",
-    "ears_angle",
-    "ears_height",
-    "earlobe_size",
-    "cheekbones_height",
-    "cheekbones_width",
-    "cheekbones_depth",
-    "jaw_height",
-    "jaw_width",
-    "jaw_depth",
-    "chin_height",
-    "chin_width",
-    "chin_depth",
-    "eyelid_height",
-    "eyelid_width",
-    "eyes_depth",
-    "eyes_angle",
-    "eyes_distance",
-    "eyes_height",
-    "nose_width",
-    "nose_size",
-    "nose_height",
-    "nose_angle",
-    "nose_curvature",
-    "nostrils_distance",
-    "mouth_width",
-    "mouth_depth",
-    "mouth_y_pos",
-    "mouth_x_pos",
-    "upper_lip_height",
-    "upper_lip_width",
-    "upper_lip_depth",
-    "lower_lip_height",
-    "lower_lip_width",
-    "lower_lip_depth",
+    Face = {
+        "Face width",
+    },
+    Eyes = {
+        "Eyelid height",
+        "Eyelid width",
+        "Eyes depth",
+        "Eyes angle",
+        "Eyes distance",
+        "Eyes height",
+    },
+    Eyebrows = {
+        "Eyebrow height",
+        "Eyebrow width",
+        "Eyebrow depth",
+    },
+    Ears = { 
+        "Ears width",
+        "Ears angle",
+        "Ears height",
+        "Earlobe size", 
+    },
+    Cheeks = {
+        "Cheekbones height",
+        "Cheekbones width",
+        "Cheekbones depth",
+    },
+    Jaw = {
+        "Jaw height",
+        "Jaw width",
+        "Jaw depth",
+    },
+    Chin = {
+        "Chin height",
+        "Chin width",
+        "Chin depth",
+    },
+    Nose = {
+        "Nose width",
+        "Nose size",
+        "Nose height",
+        "Nose angle",
+        "Nose curvature",
+        "Nostrils distance",
+    },
+    Mouth = {
+        "Mouth width",
+        "Mouth depth",
+        "Mouth y pos",
+        "Mouth x pos",
+        "Upper lip height",
+        "Upper lip width",
+        "Upper lip depth",
+        "Lower lip height",
+        "Lower lip width",
+        "Lower lip depth",
+    },
+
+
+
 }
 
 BODYTYPES = {
@@ -116,15 +137,15 @@ WAISTTYPES = {
 
 CHESTTYPE =
 {
-    1676751061, -- upperbody size -- smallest
-    1437242440, -- upperbody size
-    3025752508, -- upperbody size
-    3319526593, -- upperbody size
-    1492392695, -- upperbody size
-    1781382506, -- upperbody size
-    1824113282, -- upperbody size
-    2123392559, -- upperbody size
-    290229161,  -- upperbody size
-    870174923,  -- upperbody size
-    465805723,  -- upperbody size -- biggest
+    1676751061, -- Upperbody size -- smallest
+    1437242440, -- Upperbody size
+    3025752508, -- Upperbody size
+    3319526593, -- Upperbody size
+    1492392695, -- Upperbody size
+    1781382506, -- Upperbody size
+    1824113282, -- Upperbody size
+    2123392559, -- Upperbody size
+    290229161,  -- Upperbody size
+    870174923,  -- Upperbody size
+    465805723,  -- Upperbody size -- biggest
 }

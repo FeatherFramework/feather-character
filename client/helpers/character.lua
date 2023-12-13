@@ -5,6 +5,14 @@ function LoadModel(sex)
     end
 end
 
+function GetGender()
+    if not IsPedMale(PlayerPedId()) then
+        return "Female"
+    end
+
+    return "Male"
+end
+
 function UpdatePedVariation(ped)
     Citizen.InvokeNative(0xAAB86462966168CE, ped, true)                           -- UNKNOWN "Fixes outfit"- always paired with _UPDATE_PED_VARIATION
     Citizen.InvokeNative(0xCC8CA3E88256E58F, ped, false, true, true, true, false) -- _UPDATE_PED_VARIATION
@@ -16,7 +24,6 @@ function AddComponent(ped, comp, category)
     end
     Citizen.InvokeNative(0xD3A7B003ED343FD9, ped, comp, false, true, true)
     Citizen.InvokeNative(0x66b957aac2eaaeab, ped, comp, 0, 0, 1, 1) -- _UPDATE_SHOP_ITEM_WEARABLE_STATE
-    Citizen.InvokeNative(0xAAB86462966168CE, ped, 1)
     UpdatePedVariation(ped)
 end
 

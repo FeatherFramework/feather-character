@@ -1,9 +1,13 @@
 local Obj1, Obj2, Obj3, Obj4, ped
 local firstprompt, secondprompt, thirdprompt
+CharModel = nil
+
 local spawnedPeds = {}
 local Clothing = {}
-RegisterNetEvent('feather-character:SendCharactersData', function(clothing)
+local Attributes = {}
+RegisterNetEvent('feather-character:SendCharactersData', function(clothing, attributes)
     SentClothing = json.decode(clothing)
+    SentAttributes = json.decode(attributes)
 end)
 
 function CleanupCharacterSelect()
@@ -63,31 +67,41 @@ function SpawnCharacters(data)
 
 
     for k, v in pairs(data) do
-        if k > Maxchars then -- Have this first its more optimal, only run the code below if not maxchars
+        if k == Maxchars then -- Have this first its more optimal, only run the code below if not maxchars
             break
         end
-    
         charCamera[k] = v.id
         Clothing[k] = json.decode(v.clothing)
-    
+        Attributes[k] = json.decode(v.attributes)
+        CharModel = v.model
+
         -- Creates a new ped
         local ped = FeatherCore.Ped:Create(v.model, Config.SpawnCoords.charspots[k].x,
             Config.SpawnCoords.charspots[k].y,
             Config.SpawnCoords.charspots[k].z, 0, 'world', false, false)
         --Get the rawpedid of the ped that was JUST created
         local RawPed = ped:GetPed()
-    
+
         Citizen.InvokeNative(0x77FF8D35EEC6BBC4, RawPed, 4, 0) -- outfits
-        DefaultPedSetup(RawPed, true)
+        if v.model == 'mp_male' then
+            DefaultPedSetup(RawPed, true)
+        else
+            DefaultPedSetup(RawPed, false)
+        end
         ped:SetHeading(90.0)
         ped:Freeze(true)
         table.insert(spawnedPeds, ped)
-        for category, hash in pairs(Clothing[k]) do
-            AddComponent(RawPed,hash,category)
-        
+        if Clothing[k] ~= nil then
+            for category, hash in pairs(Clothing[k]) do
+                AddComponent(RawPed, hash, category)
+            end
+        end
+        if Attributes[k] ~= nil then
+            for category, hash in pairs(Attributes[k]) do
+                AddComponent(RawPed, hash, category)
+            end
         end
     end
-
 
     while spawned do
         SetEntityVisible(PlayerPedId(), false)
@@ -128,11 +142,14 @@ function SpawnCharacters(data)
             if cameraspot ~= nil then
                 spawned = false
                 CleanupScript()
-                LoadPlayer()
+                LoadPlayer(CharModel)
                 TriggerServerEvent('feather-character:InitiateCharacter', charCamera[cameraspot])
-                TriggerServerEvent('feather-character:GetCharactersData',charCamera[cameraspot])
+                TriggerServerEvent('feather-character:GetCharactersData', charCamera[cameraspot])
                 for category, hash in pairs(Clothing[cameraspot]) do
-                    AddComponent(PlayerPedId(),hash,category)
+                    AddComponent(PlayerPedId(), hash, category)
+                end
+                for category, hash in pairs(Attributes[cameraspot]) do
+                    AddComponent(PlayerPedId(), hash, category)
                 end
                 break
             end

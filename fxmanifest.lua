@@ -18,7 +18,9 @@ shared_scripts {
     'shared/data/setup.lua',
     'shared/data/general.lua',
     'shared/data/clothing.lua',
-    'shared/data/attributes.lua'
+    'shared/data/attributes.lua',
+    'shared/data/features.lua',
+    'shared/data/hair.lua',
 }
 
 server_scripts {
@@ -33,8 +35,8 @@ client_scripts {
     'client/helpers/feathercore.lua',
     'client/helpers/*.lua',
     'client/services/*.lua',
+    'client/main.lua',
     'client/services/character/*.lua',
-    'client/main.lua'
 }
 
 ui_page {
