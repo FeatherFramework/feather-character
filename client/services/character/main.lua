@@ -1,19 +1,38 @@
 -- This is the main file for core character actions.
 
+
+
 function CleanupScript()
     CleanupCam()
     CleanupCharacterSelect()
 
+    DisplayRadar(true)
     Citizen.InvokeNative(0xD0AFAFF5A51D72F7, PlayerPedId())
     FeatherCore.RPC.CallAsync("LeaveInstance", { id = 123 })
     FreezeEntityPosition(PlayerPedId(), false)
     SetEntityVisible(PlayerPedId(), true)
 end
 
+function LoadPlayer(model)
+    LoadModel(model)
+    SetPlayerModel(PlayerId(), joaat(model), false)
+    if model == 'mp_male' then
+        Citizen.InvokeNative(0x77FF8D35EEC6BBC4, PlayerPedId(), 4, 0) -- outfits
+        DefaultPedSetup(PlayerPedId(), true)
+    else
+        Citizen.InvokeNative(0x77FF8D35EEC6BBC4, PlayerPedId(), 3, 0) -- outfits
+        DefaultPedSetup(PlayerPedId(), false)
+    end
+end
+
+
+
 ---------------- Registered Net Events ------------------
 AddEventHandler('playerSpawned', function()
     TriggerServerEvent('feather-character:CheckForUsers')
 end)
+
+
 
 AddEventHandler("onResourceStop", function(resourceName)
     if resourceName == GetCurrentResourceName() then
@@ -23,21 +42,15 @@ end)
 
 -- Refresh Character
 RegisterCommand('rc', function()
-    local ismale = IsPedMale(PlayerPedId())
-    local model
-    if ismale then model = 'mp_male' else model = 'mp_female' end
-    
-    LoadModel(model)
-    SetPlayerModel(PlayerId(), joaat(model), false)
-
-    if ismale then
-        Citizen.InvokeNative(0x77FF8D35EEC6BBC4, PlayerPedId(), 4, 0) -- outfits
-        DefaultPedSetup(PlayerPedId(), ismale)
-    else
-        Citizen.InvokeNative(0x77FF8D35EEC6BBC4, PlayerPedId(), 3, 0) -- outfits
-        DefaultPedSetup(PlayerPedId(), ismale)
+    LoadPlayer(CharModel)
+    for category, hash in pairs(SentClothing) do
+        AddComponent(PlayerPedId(),hash,category)
+    end
+    for category, hash in pairs(SentAttributes) do
+        AddComponent(PlayerPedId(),hash,category)
     end
 end)
+
 
 
 -- Devmode commands
