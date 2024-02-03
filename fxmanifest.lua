@@ -32,6 +32,7 @@ server_scripts {
 }
 
 client_scripts {
+    '@feather-core/shared/services/dataview.lua',
     'client/helpers/feathercore.lua',
     'client/helpers/*.lua',
     'client/services/*.lua',

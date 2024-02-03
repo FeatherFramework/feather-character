@@ -12,30 +12,6 @@ local function setNuiData()
     })
 end
 
---TODO: Migrate this to the nuicallback callback/response
-local function sendUIClothingData(sex)
-    local clothing = {}
-
-    if sex == "male" then
-        clothing = CharacterConfig.Clothing.Clothes.Male
-    else
-        clothing = CharacterConfig.Clothing.Clothes.Female
-    end
-
-    SendNUIMessage({
-        type = 'updateclothing',
-        clothing = clothing
-    })
-end
-
-local function sendUIAttributeData(sex)
- 
-end
-
-local function sendUIMakeupData(sex)
-
-end
-
 function SetUIState(state)
     UIState = state
     setNuiData()
