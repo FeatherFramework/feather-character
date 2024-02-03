@@ -6,6 +6,7 @@ function StartCam(x, y, z, heading, zoom)
     camera = CreateCamWithParams("DEFAULT_SCRIPTED_CAMERA", x, y, z, -10.0, 00.00, heading, zoom, true, 0)
     SetCamActive(camera, true)
     RenderScriptCams(true, true, 500, true, true)
+    return camera
 end
 
 function SwitchCam(x, y, z, heading, zoom)
@@ -17,11 +18,5 @@ function EndCam()
     DestroyCam(camera, false)
     camera = nil
     DestroyAllCams(true)
-end
-
-function CleanupCam()
-    RenderScriptCams(false, true, 1000, true, false)
-    DestroyCam(camera, false)
-    camera = nil
-    DestroyAllCams(true)
+    SetFocusEntity(PlayerPedId())
 end

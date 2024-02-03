@@ -3,10 +3,9 @@
 
 
 function CleanupScript()
-    CleanupCam()
-    CleanupCharacterSelect()
-
     DisplayRadar(true)
+    EndCam()
+    CleanupCharacterSelect()
     Citizen.InvokeNative(0xD0AFAFF5A51D72F7, PlayerPedId())
     FeatherCore.RPC.CallAsync("LeaveInstance", { id = 123 })
     FreezeEntityPosition(PlayerPedId(), false)
@@ -37,7 +36,7 @@ end)
 AddEventHandler("onResourceStop", function(resourceName)
     if resourceName == GetCurrentResourceName() then
         CleanupScript()
-    end
+        end
 end)
 
 -- Refresh Character
@@ -56,7 +55,7 @@ end)
 -- Devmode commands
 if Config.DevMode == true then
     RegisterCommand('spawn', function()
-        TriggerEvent('feather-character:SelectCharacterScreen')
+        TriggerEvent('feather-character:SpawnSelect')
     end)
 
     RegisterCommand('new', function()
@@ -97,4 +96,5 @@ if Config.DevMode == true then
     RegisterCommand('endscript', function()
         CleanupScript()
     end)
+
 end

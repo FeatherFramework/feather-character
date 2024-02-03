@@ -40,6 +40,56 @@ Features = {
     [0x5D16] = "Lower lip depth",
 }
 
+Features.Eyes = {
+    ['Male'] = {
+        {
+            color = 'Brown',
+            hash = 612262189
+        },
+        {
+            color = 'Light Blue',
+            hash = 1864171073
+        },
+        {
+            color = 'Blue',
+            hash = 4030267507
+        },
+        {
+            color = 'Dark Blue',
+            hash = 1552505114
+        },
+
+        {
+            color = 'Grey',
+            hash = 329402181
+        },
+        {
+            color = 'Light Grey',
+            hash = 2195072443
+        },
+        {
+            color = 'Green',
+            hash = 2739887825
+        },
+    },
+    ['Female'] = {
+        928002221,
+        3117725108,
+        2273169671,
+        2489772761,
+        1647937151,
+        3773694950,
+        3450854762,
+        3703470983,
+        2836599857,
+        625380794,
+        869083847,
+        3045109292,
+        2210319017,
+        2451302243,
+    }
+}
+
 FeatureNames = {
     Face = {
         "Face width",
@@ -57,11 +107,11 @@ FeatureNames = {
         "Eyebrow width",
         "Eyebrow depth",
     },
-    Ears = { 
+    Ears = {
         "Ears width",
         "Ears angle",
         "Ears height",
-        "Earlobe size", 
+        "Earlobe size",
     },
     Cheeks = {
         "Cheekbones height",
@@ -87,10 +137,6 @@ FeatureNames = {
         "Nostrils distance",
     },
     Mouth = {
-        "Mouth width",
-        "Mouth depth",
-        "Mouth y pos",
-        "Mouth x pos",
         "Upper lip height",
         "Upper lip width",
         "Upper lip depth",
@@ -134,6 +180,9 @@ WAISTTYPES = {
     -867801909,
     1960266524, -- biggest
 }
+
+
+
 
 CHESTTYPE =
 {

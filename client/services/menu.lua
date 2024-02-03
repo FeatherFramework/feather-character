@@ -2,35 +2,30 @@
 local FirstName = ''
 local LastName = ''
 
- MainCharacterPage, ClothingCategoriesPage, UpperClothingPage, LowerClothingPage, AccClothingPage,CategoriesPage =
+MainCharacterPage, ClothingCategoriesPage, UpperClothingPage, LowerClothingPage, AccClothingPage, CategoriesPage, ColorPage =
     MyMenu:RegisterPage('first:page'), MyMenu:RegisterPage('second:page'), MyMenu:RegisterPage('third:page'),
-    MyMenu:RegisterPage('fourth:page'), MyMenu:RegisterPage('fifth:page'), MyMenu:RegisterPage('sixth:page')
+    MyMenu:RegisterPage('fourth:page'), MyMenu:RegisterPage('fifth:page'), MyMenu:RegisterPage('sixth:page'),
+    MyMenu:RegisterPage('seventh:page')
 
-Model, MenuOpened = nil, 'mp_male'
-
-
-local Gender = GetGender()
+Model = 'mp_male'
 
 
 local SelectedClothing = {}         -- This can keep track of what was selected data wise
 local SelectedClothingElements = {} --This table keeps track of your clothing elements
+local SelectedColoring
 
-
-RegisterCommand('test', function()
-    if Header1 and SubHeader1 then
+RegisterNetEvent('feather-character:CreateCharacterMenu', function()
+    PageOpened = true
+    local fov = 20.0
+    if Header1 then
         Header1:unRegister()
-        SubHeader1:unRegister()
     end
     Header1 = MainCharacterPage:RegisterElement('header', {
-        value = 'My First Menu',
+        value = 'Character Creation',
         slot = "header",
         style = {}
     })
-    SubHeader1 = MainCharacterPage:RegisterElement('subheader', {
-        value = "First Page",
-        slot = "header",
-        style = {}
-    })
+
     MainCharacterPage:RegisterElement('button', {
         label = "Customize Character",
         style = {
@@ -65,6 +60,32 @@ RegisterCommand('test', function()
         -- This gets triggered whenever the input value changes
         DOB = data.value
     end)
+
+    local CharDesc = ''
+    MainCharacterPage:RegisterElement('textarea', {
+        label = "Character Description",
+        placeholder = "Enter text",
+        rows = "5",
+        resize = false,
+        style = {
+        }
+    }, function(data)
+        CharDesc = data.value
+    end)
+
+    MainCharacterPage:RegisterElement('input', {
+        label = "Image Link",
+        placeholder = "Link",
+        style = {
+        }
+    }, function(data)
+        print(data.value)
+        -- This gets triggered whenever the input value changes
+        ImgLink = data.value
+    end)
+    if ImgLink == nil then
+        ImgLink = 'None'
+    end
     MainCharacterPage:RegisterElement('arrows', {
         label = "Gender",
         start = 1,
@@ -75,7 +96,6 @@ RegisterCommand('test', function()
     }, function(data)
         if data.value == "Male" then
             Model = 'mp_male'
-
         else
             Model = 'mp_female'
         end
@@ -83,14 +103,23 @@ RegisterCommand('test', function()
         LoadPlayer(Model)
     end)
     MainCharacterPage:RegisterElement('button', {
-        label = "Save Clothing",
+        label = "Save Character",
         style = {
         }
     }, function()
-        print(json.encode(SelectedClothingElements))
-
-        local data = { firstname = FirstName, lastname = LastName, dob = DOB, model = Model }
-        TriggerServerEvent('feather-character:SaveCharacterData', data, SelectedClothingElements,SelectedAttributeElements)
+        local data = {
+            firstname = FirstName,
+            lastname = LastName,
+            dob = DOB,
+            model = Model,
+            desc = CharDesc,
+            img =  ImgLink,
+            Clothing = SelectedClothingElements,
+            Attributes = SelectedAttributeElements
+        }
+        FeatherCore.RPC.Call("SaveCharacterData", { data }, function(result)
+            TriggerEvent('feather-character:SpawnSelect', result)
+        end)
     end)
 
     ClothingCategoriesPage:RegisterElement('header', {
@@ -105,14 +134,6 @@ RegisterCommand('test', function()
     }, function()
         MainCharacterPage:RouteTo()
     end)
-
-    CategoriesPage:RegisterElement('button', {
-        label = 'Clothing',
-        style = {
-        }
-    }, function()
-        ClothingCategoriesPage:RouteTo()
-    end)
     CategoriesPage:RegisterElement('button', {
         label = 'Appearance',
         style = {
@@ -121,99 +142,29 @@ RegisterCommand('test', function()
         MainAppearanceMenu:RouteTo()
     end)
     CategoriesPage:RegisterElement('button', {
+        label = 'Body',
+        style = {
+        }
+    }, function()
+        SelectedBody = true
+        MakeBodySliders()
+        MainBodyMenu:RouteTo()
+    end)
+    CategoriesPage:RegisterElement('button', {
+        label = 'Clothing',
+        style = {
+        }
+    }, function()
+        ClothingCategoriesPage:RouteTo()
+    end)
+    CategoriesPage:RegisterElement('button', {
         label = 'Heritage',
         style = {
         }
     }, function()
         SelectedHeritage = true
+        MakeHeritageSliders()
         MainHeritageMenu:RouteTo()
-        if SelectedHeritage ~= nil then
-            HeritageSlider = MainHeritageMenu:RegisterElement('slider', {
-                label = "Heritage",
-                start = 0,
-                min = 1,
-                max = #CharacterConfig.General.DefaultChar[Gender],
-                steps = 1,
-            }, function(data)
-                Race = data.value
-                local Head = tonumber("0x" ..CharacterConfig.General.DefaultChar[Gender][Race].Heads[1])
-                local Body = tonumber("0x" ..CharacterConfig.General.DefaultChar[Gender][Race].Body[1])
-                local Legs = tonumber("0x" ..CharacterConfig.General.DefaultChar[Gender][Race].Legs[1])
-                -- This gets triggered whenever the sliders selected value changes
-                AddComponent(PlayerPedId(),Head,nil)
-                AddComponent(PlayerPedId(),Body,nil)
-                AddComponent(PlayerPedId(),Legs,nil)
-                HeritageDisplay:update({
-                    value = CharacterConfig.General.DefaultChar[Gender][Race].label,
-                })
-                HeadVariantSlider = HeadVariantSlider:update({
-                    value = 1,
-                    max = #CharacterConfig.General.DefaultChar[Gender][Race].Heads,
-                })
-                BodyVariantSlider = BodyVariantSlider:update({
-                    value = 1,
-                    max = #CharacterConfig.General.DefaultChar[Gender][Race].Body,
-                })
-                LegVariantSlider = LegVariantSlider:update({
-                    value = 1,
-                    max = #CharacterConfig.General.DefaultChar[Gender][Race].Legs,
-                })
-            end)
-            HeritageDisplay = MainHeritageMenu:RegisterElement('textdisplay', {
-                value = "European",
-                style = {}
-            })
-            HeadVariantSlider = MainHeritageMenu:RegisterElement('slider', {
-                label = "Head Variations",
-                start = 1,
-                min = 1,
-                max = #CharacterConfig.General.DefaultChar[Gender][1],
-                steps = 1,
-            }, function(data)
-                local value = data.value
-                local index = data.label
-                local Head = tonumber("0x" ..CharacterConfig.General.DefaultChar[Gender][Race].Heads[value])
-                AddComponent(PlayerPedId(),Head,nil)
-                SelectedAttributeElements['Head'] = Head
-                -- This gets triggered whenever the sliders selected value changes
-            end)
-            BodyVariantSlider = MainHeritageMenu:RegisterElement('slider', {
-                label = "Body Variations",
-                start = 1,
-                min = 1,
-                max = #CharacterConfig.General.DefaultChar[Gender][1],
-                steps = 1,
-            }, function(data)
-                local index = data.value
-                local Body = tonumber("0x" ..CharacterConfig.General.DefaultChar[Gender][Race].Body[index])
-                AddComponent(PlayerPedId(),Body,nil)
-                SelectedAttributeElements['Body'] = Body
-
-                -- This gets triggered whenever the sliders selected value changes
-            end)
-            LegVariantSlider = MainHeritageMenu:RegisterElement('slider', {
-                label = "Leg Variations",
-                start = 1,
-                min = 1,
-                max = #CharacterConfig.General.DefaultChar[Gender][1],
-                steps = 1,
-            }, function(data)
-                local index = data.value
-                local Legs = tonumber("0x" ..CharacterConfig.General.DefaultChar[Gender][Race].Legs[index])
-                AddComponent(PlayerPedId(),Legs,nil)
-                SelectedAttributeElements['Legs'] = Legs
-
-                -- This gets triggered whenever the sliders selected value changes
-            end)
-        
-            HeritageSlider = HeritageSlider:update({
-                label = 'Heritage',
-            })
-        
-
-
-        end
-
     end)
     --second page
     CategoriesPage:RegisterElement('header', {
@@ -238,9 +189,17 @@ RegisterCommand('test', function()
             if k == "Upper" then
                 ActivePage = UpperClothingPage
                 ActivePage:RouteTo()
+                SwitchCam(Config.CameraCoords.creation.x - 0.4, Config.CameraCoords.creation.y,
+                    Config.CameraCoords.creation.z + 0.4,
+                    Config.CameraCoords.creation.h, Config.CameraCoords.creation.zoom - 30.0)
+                CamZ = Config.CameraCoords.creation.z + 0.5
             elseif k == "Lower" then
                 ActivePage = LowerClothingPage
                 ActivePage:RouteTo()
+                SwitchCam(Config.CameraCoords.creation.x - 0.4, Config.CameraCoords.creation.y,
+                    Config.CameraCoords.creation.z - 0.2,
+                    Config.CameraCoords.creation.h, Config.CameraCoords.creation.zoom - 30.0)
+                CamZ = Config.CameraCoords.creation.z - 0.2
             elseif k == "Accessories" then
                 ActivePage = AccClothingPage
                 ActivePage:RouteTo()
@@ -256,14 +215,17 @@ RegisterCommand('test', function()
                         steps = 1
                     }, function(data)
                         MainComponent = data.value
-                        
+
                         if MainComponent > 0 then
                             SelectedClothing[index .. 'Variant'] = SelectedClothing[index .. 'Variant']:update({
                                 label = index .. ' variant',
                                 value = 1,
                                 max = #key.CategoryData[MainComponent], --#v.CategoryData[inputvalue],
                             })
-                            AddComponent(PlayerPedId(), key.CategoryData[MainComponent][1].hash,index)
+                            AddComponent(PlayerPedId(), key.CategoryData[MainComponent][1].hash, index)
+                            local type = Citizen.InvokeNative(0xEC9A1261BF0CE510, PlayerPedId())
+                            ActiveCatagory = Citizen.InvokeNative(0x5FF9A878C3D115B8,
+                                key.CategoryData[MainComponent][1].hash, type, true)
                             SelectedClothingElements[index] = key.CategoryData[MainComponent][1].hash
                         else
                             Citizen.InvokeNative(0x0D7FFA1B2F69ED82, PlayerPedId(), SelectedClothingElements[index], 0, 0)
@@ -274,7 +236,7 @@ RegisterCommand('test', function()
                     VariantElement = ActivePage:RegisterElement('slider', {
                         label = index .. ' variant',
                         start = 1,
-                        min = 0,
+                        min = 1,
                         max = 5, --#v.CategoryData[inputvalue],
                         steps = 1
                     }, function(data)
@@ -285,14 +247,30 @@ RegisterCommand('test', function()
                                 max = #key.CategoryData[MainComponent], --#v.CategoryData[inputvalue],
                             })
 
-                            AddComponent(PlayerPedId(), key.CategoryData[MainComponent][VariantComponent].hash,index)
+                            AddComponent(PlayerPedId(), key.CategoryData[MainComponent][VariantComponent].hash, index)
                             local type = Citizen.InvokeNative(0xEC9A1261BF0CE510, PlayerPedId())
                             ActiveCatagory = Citizen.InvokeNative(0x5FF9A878C3D115B8,
                                 key.CategoryData[MainComponent][VariantComponent].hash, type, true)
                             SelectedClothingElements[index] = key.CategoryData[MainComponent][VariantComponent].hash
                         end
                     end)
+                    if Config.DyeClothes then
+                        local Button = ActivePage:RegisterElement('button', {
+                            label = "Dye your " .. index,
+                            style = {
+                            },
+                        }, function()
+                            ColorPage:RouteTo()
+                            ColorClothing(ActiveCatagory, index)
+                        end)
+                        local Line = ActivePage:RegisterElement('line', {
+                            slot = "content",
+                            style = {}
+                        })
+                        Line = Line:update({})
 
+                        Button = Button:update({})
+                    end
                     -- Store your elements with unique keys so that we can easily retrieve these later when data needs to be updated. We are appenting strings so that it stays unique.
                     SelectedClothing[index .. 'Category'] = CategoryElement
                     SelectedClothing[index .. 'Variant'] = VariantElement
@@ -300,11 +278,15 @@ RegisterCommand('test', function()
                         label = index,
                         max = #key.CategoryData, --#v.CategoryData[inputvalue],
                     })
-
                     VariantElement = VariantElement:update({
                         label = index .. ' variant',
                         max = #key.CategoryData, --#v.CategoryData[inputvalue],
                     })
+                    Line = ActivePage:RegisterElement('line', {
+                        slot = "content",
+                        style = {}
+                    })
+                    Line = Line:update({})
                 end
             end
         end)
@@ -327,6 +309,50 @@ RegisterCommand('test', function()
     }, function()
         ClothingCategoriesPage:RouteTo()
     end)
+    UpperClothingPage:RegisterElement('pagearrows', {
+        slot = 'content',
+        total = ' Zoom Cam In',
+        current = 'Zoom Cam Out ',
+        style = {},
+    }, function(data)
+        if data.value == 'forward' then
+            fov = fov - 1.0
+            SetCamFov(CharacterCamera, fov)
+        else
+            fov = fov + 1.0
+            SetCamFov(CharacterCamera, fov)
+        end
+    end)
+    UpperClothingPage:RegisterElement('pagearrows', {
+        slot = 'content',
+        total = ' Move Cam Up',
+        current = 'Move Cam Down ',
+        style = {},
+    }, function(data)
+        if data.value == 'forward' then
+            CamZ = CamZ + 0.1
+            SetCamCoord(CharacterCamera, Config.CameraCoords.creation.x - 0.2, Config.CameraCoords.creation.y, CamZ)
+        else
+            print(CamZ)
+            CamZ = CamZ - 0.1
+            SetCamCoord(CharacterCamera, Config.CameraCoords.creation.x - 0.2, Config.CameraCoords.creation.y, CamZ)
+        end
+    end)
+    UpperClothingPage:RegisterElement('pagearrows', {
+        slot = 'content',
+        total = ' Rotate Right ',
+        current = 'Rotate Left ',
+        style = {},
+    }, function(data)
+        if data.value == 'forward' then
+            local heading = GetEntityHeading(PlayerPedId())
+            SetEntityHeading(PlayerPedId(), heading + 10.0)
+        else
+            local heading = GetEntityHeading(PlayerPedId())
+            SetEntityHeading(PlayerPedId(), heading - 10.0)
+        end
+    end)
+
     --fourth page
     LowerClothingPage:RegisterElement('header', {
         value = 'Clothing Selection',
@@ -344,7 +370,49 @@ RegisterCommand('test', function()
     }, function()
         ClothingCategoriesPage:RouteTo()
     end)
-
+    LowerClothingPage:RegisterElement('pagearrows', {
+        slot = 'content',
+        total = ' Zoom Cam In',
+        current = 'Zoom Cam Out ',
+        style = {},
+    }, function(data)
+        if data.value == 'forward' then
+            fov = fov - 1.0
+            SetCamFov(CharacterCamera, fov)
+        else
+            fov = fov + 1.0
+            SetCamFov(CharacterCamera, fov)
+        end
+    end)
+    LowerClothingPage:RegisterElement('pagearrows', {
+        slot = 'content',
+        total = ' Move Cam Up',
+        current = 'Move Cam Down ',
+        style = {},
+    }, function(data)
+        if data.value == 'forward' then
+            CamZ = CamZ + 0.1
+            SetCamCoord(CharacterCamera, Config.CameraCoords.creation.x - 0.2, Config.CameraCoords.creation.y, CamZ)
+        else
+            print(CamZ)
+            CamZ = CamZ - 0.1
+            SetCamCoord(CharacterCamera, Config.CameraCoords.creation.x - 0.2, Config.CameraCoords.creation.y, CamZ)
+        end
+    end)
+    LowerClothingPage:RegisterElement('pagearrows', {
+        slot = 'content',
+        total = ' Rotate Right ',
+        current = 'Rotate Left ',
+        style = {},
+    }, function(data)
+        if data.value == 'forward' then
+            local heading = GetEntityHeading(PlayerPedId())
+            SetEntityHeading(PlayerPedId(), heading + 10.0)
+        else
+            local heading = GetEntityHeading(PlayerPedId())
+            SetEntityHeading(PlayerPedId(), heading - 10.0)
+        end
+    end)
     --fifth page
     AccClothingPage:RegisterElement('header', {
         value = 'Clothing Selection',
@@ -362,6 +430,77 @@ RegisterCommand('test', function()
     }, function()
         ClothingCategoriesPage:RouteTo()
     end)
+    AccClothingPage:RegisterElement('pagearrows', {
+        slot = 'content',
+        total = ' Zoom Cam In',
+        current = 'Zoom Cam Out ',
+        style = {},
+    }, function(data)
+        if data.value == 'forward' then
+            fov = fov - 1.0
+            SetCamFov(CharacterCamera, fov)
+        else
+            fov = fov + 1.0
+            SetCamFov(CharacterCamera, fov)
+        end
+    end)
+    AccClothingPage:RegisterElement('pagearrows', {
+        slot = 'content',
+        total = ' Move Cam Up',
+        current = 'Move Cam Down ',
+        style = {},
+    }, function(data)
+        if data.value == 'forward' then
+            CamZ = CamZ + 0.1
+            SetCamCoord(CharacterCamera, Config.CameraCoords.creation.x - 0.2, Config.CameraCoords.creation.y, CamZ)
+        else
+            print(CamZ)
+            CamZ = CamZ - 0.1
+            SetCamCoord(CharacterCamera, Config.CameraCoords.creation.x - 0.2, Config.CameraCoords.creation.y, CamZ)
+        end
+    end)
+    AccClothingPage:RegisterElement('pagearrows', {
+        slot = 'content',
+        total = ' Rotate Right ',
+        current = 'Rotate Left ',
+        style = {},
+    }, function(data)
+        if data.value == 'forward' then
+            local heading = GetEntityHeading(PlayerPedId())
+            SetEntityHeading(PlayerPedId(), heading + 10.0)
+        else
+            local heading = GetEntityHeading(PlayerPedId())
+            SetEntityHeading(PlayerPedId(), heading - 10.0)
+        end
+    end)
+
+    ColorPage:RegisterElement('header', {
+        value = 'My First Menu',
+        slot = "header",
+        style = {}
+    })
+    ColorPage:RegisterElement('subheader', {
+        value = "First Page",
+        slot = "header",
+        style = {}
+    })
+    ColorPage:RegisterElement('button', {
+        label = "Go Back",
+        style = {},
+    }, function()
+        ColorElement1:unRegister()
+        ColorElement2:unRegister()
+        ColorElement3:unRegister()
+        SelectedColoring = nil
+        ClothingCategoriesPage:RouteTo()
+    end)
+    ColorPage:RegisterElement('bottomline', {
+        slot = "header",
+        style = {
+
+        }
+    })
+
 
     MyMenu:Open({
         cursorFocus = true,
@@ -370,26 +509,240 @@ RegisterCommand('test', function()
     })
 end)
 
+
+CharInfoMenu = FeatherMenu:RegisterMenu('feather:characterinfo:menu', {
+    top = '5%',
+    left = '5%',
+    ['720width'] = '500px',
+    ['1080width'] = '600px',
+    ['2kwidth'] = '700px',
+    ['4kwidth'] = '900px',
+    style = {
+    },
+    contentslot = {
+        style = { --This style is what is currently making the content slot scoped and scrollable. If you delete this, it will make the content height dynamic to its inner content.
+            ['height'] = '700px',
+            ['width'] = '300px',
+            ['min-height'] = '300px'
+        }
+    },
+    draggable = false,
+    canclose = false
+})
+local Name, Money, Job, Birthday, Description, ID, Img = {}, {}, {}, {}, {}, {}, {}
+RegisterNetEvent('feather-character:CharacterSelectMenu', function(Info, CameraSpot, CharAmount, Clothing, Attributes)
+    for k, v in ipairs(Info) do
+        Name[k] = v.first_name .. " " .. v.last_name
+        Money[k] = v.dollars
+        Job[k] = v.job
+        Birthday[k] = v.dob
+        Description[k] = v.description
+        ID[k] = v.id
+        Img[k] = json.decode(v.img)
+    end
+    local CharacterSelectPage = CharInfoMenu:RegisterPage('first:page')
+
+    local header = CharacterSelectPage:RegisterElement('header', {
+        value = 'Character Menu',
+        slot = "header",
+        style = {}
+    })
+    CharacterSelectPage:RegisterElement('line', {
+        slot = "content",
+        style = {}
+    })
+    local nametext = CharacterSelectPage:RegisterElement('textdisplay', {
+        value = "Name: " .. Name[CameraSpot],
+        style = {}
+    })
+    CharacterSelectPage:RegisterElement('line', {
+        slot = "content",
+        style = {}
+    })
+    local moneytext = CharacterSelectPage:RegisterElement('textdisplay', {
+        value = "Money: " .. Money[CameraSpot],
+        style = {}
+    })
+    CharacterSelectPage:RegisterElement('line', {
+        slot = "content",
+        style = {}
+    })
+    local jobtext = CharacterSelectPage:RegisterElement('textdisplay', {
+        value = "Job: " .. Job[CameraSpot],
+        style = {}
+    })
+    CharacterSelectPage:RegisterElement('line', {
+        slot = "content",
+        style = {}
+    })
+    local dobtext = CharacterSelectPage:RegisterElement('textdisplay', {
+        value = "Date of Birth: "
+            .. '\n' .. ' ' .. Birthday[CameraSpot],
+        style = {}
+    })
+    CharacterSelectPage:RegisterElement('line', {
+        slot = "content",
+        style = {}
+    })
+    local descriptext1 = CharacterSelectPage:RegisterElement('textdisplay', {
+        value = "Character Description: ",
+        style = {}
+    })
+    local descriptext2 = CharacterSelectPage:RegisterElement('textdisplay', {
+        value = Description[CameraSpot],
+        style = {}
+    })
+    CharacterSelectPage:RegisterElement('bottomline', {
+        slot = "footer",
+    })
+    CharacterSelectPage:RegisterElement('pagearrows', {
+        slot = "footer",
+        style = {},
+    }, function(data)
+        if data.value == 'forward' then
+            if CameraSpot <= CharAmount then
+                CameraSpot = CameraSpot + 1
+            end
+            if CameraSpot > CharAmount then
+                CameraSpot = 1
+            end
+            SwitchCam(Config.CameraCoords.charcamera[CameraSpot].x, Config.CameraCoords.charcamera[CameraSpot].y,
+                Config.CameraCoords.charcamera[CameraSpot].z, Config.CameraCoords.charcamera[CameraSpot].h,
+                Config.CameraCoords.charcamera[CameraSpot].zoom)
+            TriggerEvent('feather-character:CharacterSelectMenu', Info, CameraSpot, CharAmount, Clothing, Attributes)
+        else
+            if CameraSpot == 1 then
+                CameraSpot = CharAmount
+            end
+            if CameraSpot <= CharAmount then
+                CameraSpot = CameraSpot - 1
+            end
+            SwitchCam(Config.CameraCoords.charcamera[CameraSpot].x, Config.CameraCoords.charcamera[CameraSpot].y,
+                Config.CameraCoords.charcamera[CameraSpot].z, Config.CameraCoords.charcamera[CameraSpot].h,
+                Config.CameraCoords.charcamera[CameraSpot].zoom)
+            TriggerEvent('feather-character:CharacterSelectMenu', Info, CameraSpot, CharAmount, Clothing, Attributes)
+        end
+    end)
+    CharacterSelectPage:RegisterElement('button', {
+        label = "Select",
+        style = {
+        },
+    }, function()
+        if CameraSpot ~= nil then
+            Spawned = false
+            CleanupScript()
+            LoadPlayer(CharModel)
+            TriggerServerEvent('feather-character:InitiateCharacter', ID[CameraSpot])
+            TriggerServerEvent('feather-character:GetCharactersData', ID[CameraSpot])
+            for category, hash in pairs(Clothing[CameraSpot]) do
+                AddComponent(PlayerPedId(), hash, category)
+            end
+            for category, hash in pairs(Attributes[CameraSpot]) do
+                AddComponent(PlayerPedId(), hash, category)
+            end
+        end
+    end)
+    CharacterSelectPage:RegisterElement('button', {
+        label = "Create New Character",
+        style = {
+        }
+    }, function()
+        TriggerEvent('feather-character:CreateNewCharacter')
+    end)
+    if Img[CameraSpot] ~= 'None' then
+        CharacterSelectPage:RegisterElement("html", {
+            value = {
+                [[
+                    <img width="200px" height="100px" style="display: block; margin:10px auto;" src="]] ..
+                Img[CameraSpot] .. [[ " />
+                ]]
+            },
+        })
+    end
+
+    CharInfoMenu:Open({
+        cursorFocus = true,
+        menuFocus = true,
+        startupPage = CharacterSelectPage,
+    })
+end)
+
+
+
+
+function ColorClothing(ActiveCatagory, index)
+    local componentIndex = GetComponentIndexByCategory(PlayerPedId(), ActiveCatagory)
+    local drawable, albedo, normal, material = GetMetaPedAssetGuids(PlayerPedId(), componentIndex)
+    local palette, tint0, tint1, tint2 = GetMetaPedAssetTint(PlayerPedId(), componentIndex)
+
+    Wait(250)
+    if SelectedColoring == nil then
+        ColorElement1 = ColorPage:RegisterElement('slider', {
+            label = 'Color 1',
+            start = 1,
+            min = 1,
+            max = 254, --#v.CategoryData[inputvalue],
+            steps = 1
+        }, function(data)
+            Color1 = data.value
+            if MainComponent > 0 then
+                RemoveTagFromMetaPed(index)
+                AddComponent(PlayerPedId(), SelectedClothingElements[index], nil)
+                SetMetaPedTag(PlayerPedId(), drawable, albedo, normal, material, palette, Color1, tint1, tint2)
+                UpdatePedVariation(PlayerPedId())
+            end
+        end)
+        ColorElement2 = ColorPage:RegisterElement('slider', {
+            label = 'Color 2',
+            start = 1,
+            min = 1,
+            max = 254, --#v.CategoryData[inputvalue],
+            steps = 1
+        }, function(data)
+            Color2 = data.value
+            if MainComponent > 0 then
+                RemoveTagFromMetaPed(index)
+                AddComponent(PlayerPedId(), SelectedClothingElements[index], nil)
+                SetMetaPedTag(PlayerPedId(), drawable, albedo, normal, material, palette, Color1, Color2, tint2)
+                UpdatePedVariation(PlayerPedId())
+            end
+        end)
+        ColorElement3 = ColorPage:RegisterElement('slider', {
+            label = 'Color 3',
+            start = 1,
+            min = 1,
+            max = 254, --#v.CategoryData[inputvalue],
+            steps = 1
+        }, function(data)
+            Color3 = data.value
+            if MainComponent > 0 then
+                RemoveTagFromMetaPed(index)
+                AddComponent(PlayerPedId(), SelectedClothingElements[index], nil)
+                SetMetaPedTag(PlayerPedId(), drawable, albedo, normal, material, palette, Color1, Color2, Color3)
+                UpdatePedVariation(PlayerPedId())
+            end
+        end)
+
+
+        ColorElement1 = ColorElement1:update({
+            label = "Color 1",
+        })
+        ColorElement2 = ColorElement2:update({
+            label = "Color 2",
+        })
+        ColorElement3 = ColorElement3:update({
+            label = "Color 3",
+        })
+    end
+    SelectedColoring = true
+end
+
 RegisterNetEvent('FeatherMenu:closed', function(data)
     MenuOpened = false
     Header1:unRegister()
     SubHeader1:unRegister()
-    print(MenuOpened)
 end)
 
-
-function TableToString(o)
-    if type(o) == 'table' then
-        local s = '{ '
-        for k, v in pairs(o) do
-            if type(k) ~= 'number' then k = '"' .. k .. '"' end
-            s = s .. '[' .. k .. '] = ' .. TableToString(v) .. ','
-        end
-        return s .. '} '
-    else
-        return tostring(o)
-    end
-end
 
 --[[MenuData = {}
 TriggerEvent("redemrp_menu_base:getData", function(call)

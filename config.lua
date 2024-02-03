@@ -2,6 +2,11 @@ Config = {}
 
 Config.DevMode = true
 
+Config.DyeClothes = false
+
+Config.Heights = {
+    0.8, 0.85, 0.9, 0.95, 1.0, 1.05, 1.1, 1.15, 1.2
+}
 
 Config.defaults = {
     lang = 'en_us',
@@ -17,16 +22,6 @@ Config.defaults = {
 }
 
 Config.MaxAllowedChars = 4
-
-Config.tempclothhash = {
-    [1] = 'a_f_m_armtownfolk_01',
-    [2] = 'a_f_m_armtownfolk_02',
-    [3] = 'a_f_m_lowersdtownfolk_01',
-    [4] = 'a_m_m_lowersdtownfolk_01',
-    [5] = 'u_m_m_bwmstablehand_01',
-    [6] = 'u_m_m_nbxbankerbounty_01',
-    [7] = 'a_m_m_valfarmer_01',
-}
 
 Config.SpawnProps = {
     obj1 = {
@@ -100,45 +95,38 @@ Config.SpawnCoords = {
 
     },
 
-    spawns = {
+    towns = {
         {
             --set to train coords still
-            name = 'Saint Denis',                                               --Name of Area
-            arrival = 'Train',                                                  --Method of arriving (Train,Wagon,Horse,Boat)
+            name = 'Saint Denis',                                                           --Name of Area
+            arrival = 'Train',                                                              --Method of arriving (Train,Wagon,Horse,Boat)
             --tip = " " --Info to give to the player, don't include if not wanting
-            cameracoords = { x = 2813.99, y = -1437.91, z = 43.54, h = 90.0, zoom = 60.0 }, --Coords character will spawn at
-            coords = { x = 2813.99, y = -1437.91, z = 43.54 },                  --Coords character will spawn at
-
+            cameracoords = { x = 2849.20, y = -1619.75, z = 97.54, h = 33.30, zoom = 80.0 }, --Coords character will spawn at
+            startcoords = { x = 2790.99, y = -1384.91, z = 46.45,h =143.0 },                              --Coords character will spawn at
+            gotocoords = { x = 2724.99, y = -1448.91, z = 46.45,h = 143.0 },
         },
         {
             --set wagon coords still
-            name = 'Rhodes',                                                        --Name of Area
-            arrival = 'Wagon',                                                      --Method of arriving (Train,Wagon,Horse,Boat)
+            name = 'Rhodes',                                                                --Name of Area
+            arrival = 'Wagon',                                                              --Method of arriving (Train,Wagon,Horse,Boat)
             --tip = " " --Info to give to the player, don't include if not wanting
             cameracoords = { x = 2813.99, y = -1437.91, z = 43.54, h = 90.0, zoom = 60.0 }, --Coords character will spawn at
-            coords = { x = 2813.99, y = -1437.91, z = 43.54 },                      --Coords character will spawn at
+            coords = { x = 2813.99, y = -1437.91, z = 43.54 },                              --Coords character will spawn at
         },
         {
-            name = 'Valentine',                                                   --Name of Area
-            arrival = 'Horse',                                                    --Method of arriving (Train,Wagon,Horse,Boat)
+            name = 'Valentine',                                                            --Name of Area
+            arrival = 'Horse',                                                             --Method of arriving (Train,Wagon,Horse,Boat)
             --tip = " " --Info to give to the player, don't include if not wanting
             cameracoords = { x = -165.59, y = 632.28, z = 114.03, h = 90.0, zoom = 60.0 }, --Coords character will spawn at
-            coords = { x = 2813.99, y = -1437.91, z = 43.54 },                    --Coords character will spawn at
+            coords = { x = 2813.99, y = -1437.91, z = 43.54 },                             --Coords character will spawn at
         },
         {
-            name = 'Blackwater',                                                  --Name of Area
-            arrival = 'Boat',                                                     --Method of arriving (Train,Wagon,Horse,Boat)
+            name = 'Blackwater',                                                            --Name of Area
+            arrival = 'Boat',                                                               --Method of arriving (Train,Wagon,Horse,Boat)
             --tip = " " --Info to give to the player, don't include if not wanting
             cameracoords = { x = -720.31, y = -1278.59, z = 42.23, h = 90.0, zoom = 60.0 }, --Coords character will spawn at
-            coords = { x = 2813.99, y = -1437.91, z = 43.54 },                    --Coords character will spawn at
+            coords = { x = 2813.99, y = -1437.91, z = 43.54 },                              --Coords character will spawn at
 
         },
     }
-}
-
-
-Config.Locales = {
-    ["welcome"] = "Welcome to ",
-    ["arrive"] = "You will arrive by ",
-    ["press"] = "Press <- or -> to cycle through options",
 }
