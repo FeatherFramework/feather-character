@@ -42,35 +42,20 @@ Features = {
 
 Features.Eyes = {
     ['Male'] = {
-        {
-            color = 'Brown',
-            hash = 612262189
-        },
-        {
-            color = 'Light Blue',
-            hash = 1864171073
-        },
-        {
-            color = 'Blue',
-            hash = 4030267507
-        },
-        {
-            color = 'Dark Blue',
-            hash = 1552505114
-        },
-
-        {
-            color = 'Grey',
-            hash = 329402181
-        },
-        {
-            color = 'Light Grey',
-            hash = 2195072443
-        },
-        {
-            color = 'Green',
-            hash = 2739887825
-        },
+        612262189,
+        3065185688,
+        1864171073,
+        1552505114,
+        46507404,
+        4030267507,
+        642477207,
+        329402181,
+        2501331517,
+        2195072443,
+        3096645940,
+        3983864603,
+        2739887825,
+        2432743988,
     },
     ['Female'] = {
         928002221,
@@ -91,44 +76,40 @@ Features.Eyes = {
 }
 
 FeatureNames = {
-    Face = {
-        "Face width",
-    },
-    Eyes = {
+    ['Eyes and Brows'] = {
         "Eyelid height",
         "Eyelid width",
         "Eyes depth",
         "Eyes angle",
         "Eyes distance",
         "Eyes height",
-    },
-    Eyebrows = {
         "Eyebrow height",
         "Eyebrow width",
         "Eyebrow depth",
     },
-    Ears = {
+
+    ['Ears'] = {
         "Ears width",
         "Ears angle",
         "Ears height",
-        "Earlobe size",
+        "Ears depth"
     },
-    Cheeks = {
+    ['Cheeks'] = {
         "Cheekbones height",
         "Cheekbones width",
         "Cheekbones depth",
     },
-    Jaw = {
+    ['Jaw'] = {
         "Jaw height",
         "Jaw width",
         "Jaw depth",
     },
-    Chin = {
+    ['Chin'] = {
         "Chin height",
         "Chin width",
         "Chin depth",
     },
-    Nose = {
+    ['Nose'] = {
         "Nose width",
         "Nose size",
         "Nose height",
@@ -136,7 +117,7 @@ FeatureNames = {
         "Nose curvature",
         "Nostrils distance",
     },
-    Mouth = {
+    ['Mouth'] = {
         "Upper lip height",
         "Upper lip width",
         "Upper lip depth",
@@ -180,9 +161,6 @@ WAISTTYPES = {
     -867801909,
     1960266524, -- biggest
 }
-
-
-
 
 CHESTTYPE =
 {

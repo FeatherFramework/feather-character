@@ -1,6 +1,12 @@
 -- TODO: REMOVE ALL THIS STUFF AS MENUAPI/REDEMTP_MENU_BASE WILL NOT BE NEEDED.
 FeatherMenu = exports['feather-menu'].initiate()
 
+RegisterCommand('brow', function()
+    ChangeOverlay("eyebrows", tonumber(1), tonumber(1), 0, 0, 1, 1.0, 0, tonumber(1), tonumber(1), tonumber(0), tonumber(0), tonumber(1), tonumber(1.0),Albedo)
+
+end)
+
+
 MyMenu = FeatherMenu:RegisterMenu('feather:character:menu', {
     top = '1%',
     left = '1%',
@@ -22,14 +28,12 @@ MyMenu = FeatherMenu:RegisterMenu('feather:character:menu', {
 })
 
 MainAppearanceMenu = MyMenu:RegisterPage('appearance:page')
-
-Gender = GetGender()
-
+FaceActive = nil
 SelectedAttributes = {}        -- This can keep track of what was selected data wise
 SelectedAttributeElements = {} --This table keeps track of your clothing elements
 
 MainAppearanceMenu:RegisterElement('header', {
-    value = 'My First Menu',
+    value = 'Appearance Menu',
     slot = "header",
     style = {}
 })
@@ -45,64 +49,32 @@ MainAppearanceMenu:RegisterElement('button', {
     }
 }, function()
     HairCategoryPage = MyMenu:RegisterPage('eyes:page')
+    SwitchCam(Config.CameraCoords.creation.x - 0.25, Config.CameraCoords.creation.y,
+        Config.CameraCoords.creation.z + 0.7, Config.CameraCoords.creation.h, 0.0)
     CreateHairPage()
     HairCategoryPage:RouteTo()
 end)
 
-for key, v in pairs(FeatureNames) do
-    MainAppearanceMenu:RegisterElement('button', {
-        label = key,
-        style = {
-        }
-    }, function()
-        if key == 'Eyes' then
-            EyesPage = MyMenu:RegisterPage('eyes:page')
-            CreateEyesPage()
-            EyesPage:RouteTo()
-        end
-        if key == 'Cheeks' then
-            CheekPage = MyMenu:RegisterPage('cheeks:page')
-            CreateCheekPage()
-            CheekPage:RouteTo()
-        end
-        if key == 'Chin' then
-            ChinPage = MyMenu:RegisterPage('chin:page')
-            CreateChinPage()
-            ChinPage:RouteTo()
-        end
-        if key == 'Eyebrows' then
-            EyebrowPage = MyMenu:RegisterPage('eyebrows:page')
-            CreateEyebrowPage()
-            EyebrowPage:RouteTo()
-        end
-        if key == 'Ears' then
-            EarPage = MyMenu:RegisterPage('ears:page')
-            CreateEarsPage()
-            EarPage:RouteTo()
-        end
-        if key == 'Face' then
-            FacePage = MyMenu:RegisterPage('face:page')
-            CreateFacePage()
-            FacePage:RouteTo()
-        end
-        if key == 'Jaw' then
-            JawPage = MyMenu:RegisterPage('jaw:page')
-            CreateJawPage()
-            JawPage:RouteTo()
-        end
-        if key == 'Mouth' then
-            MouthPage = MyMenu:RegisterPage('mouth:page')
-            CreateMouthPage()
-            MouthPage:RouteTo()
-        end
-    end)
-end
+MainAppearanceMenu:RegisterElement('button', {
+    label = 'Facial Features',
+    style = {
+    }
+}, function()
+    ChangeOverlay("eyebrows", 1, 1, 1, 0, 0, 1.0, 0, 1, 1, 0, 0, 1, 1.0,Albedo)
+
+    FacialMenu = MyMenu:RegisterPage('face:page')
+    SwitchCam(Config.CameraCoords.creation.x - 0.25, Config.CameraCoords.creation.y,
+        Config.CameraCoords.creation.z + 0.7, Config.CameraCoords.creation.h, 0.0)
+    FacialFeaturesPage()
+    FacialMenu:RouteTo()
+end)
+
+
 MainAppearanceMenu:RegisterElement('button', {
     label = "Save Appearance",
     style = {
     }
 }, function()
-    print(json.encode(SelectedAttributeElements))
     TriggerServerEvent('feather-character:UpdateAttributeDB', SelectedAttributeElements)
 end)
 
@@ -113,6 +85,75 @@ MainAppearanceMenu:RegisterElement('button', {
 }, function()
     MainCharacterPage:RouteTo()
 end)
+
+function FacialFeaturesPage()
+    if FaceActive == nil then
+        FacialMenu:RegisterElement('header', {
+            value = 'Facial Features',
+            slot = "header",
+            style = {}
+        })
+        FacialMenu:RegisterElement('subheader', {
+            value = "First Page",
+            slot = "header",
+            style = {}
+        })
+        for key, v in pairs(FeatureNames) do
+            FaceButton = FacialMenu:RegisterElement('button', {
+                label = key,
+                style = {
+                }
+            }, function()
+                if key == 'Eyes and Brows' then
+                    EyesPage = MyMenu:RegisterPage('eyes:page')
+
+                    EyesAnim("mood_normal_eyes_wide")
+                    CreateEyesPage()
+                    EyesPage:RouteTo()
+                end
+                if key == 'Cheeks' then
+                    CheekPage = MyMenu:RegisterPage('cheeks:page')
+                    CreateCheekPage()
+                    CheekPage:RouteTo()
+                end
+                if key == 'Chin' then
+                    ChinPage = MyMenu:RegisterPage('chin:page')
+                    CreateChinPage()
+                    ChinPage:RouteTo()
+                end
+                if key == 'Eyebrows' then
+                    EyebrowPage = MyMenu:RegisterPage('eyebrows:page')
+                    CreateEyebrowPage()
+                    EyebrowPage:RouteTo()
+                end
+                if key == 'Ears' then
+                    EarPage = MyMenu:RegisterPage('ears:page')
+                    CreateEarsPage()
+                    EarPage:RouteTo()
+                end
+                if key == 'Jaw' then
+                    JawPage = MyMenu:RegisterPage('jaw:page')
+                    CreateJawPage()
+                    JawPage:RouteTo()
+                end
+                if key == 'Mouth' then
+                    MouthPage = MyMenu:RegisterPage('mouth:page')
+                    CreateMouthPage()
+                    MouthPage:RouteTo()
+                end
+            end)
+        end
+        FacialMenu:RegisterElement('button', {
+            label = "Go Back",
+            style = {
+            },
+        }, function()
+            SwitchCam(Config.CameraCoords.creation.x, Config.CameraCoords.creation.y,
+                Config.CameraCoords.creation.z, Config.CameraCoords.creation.h, Config.CameraCoords.creation.zoom)
+            MainAppearanceMenu:RouteTo()
+        end)
+    end
+end
 
 --second page
 function CreateEyesPage()
@@ -131,13 +172,9 @@ function CreateEyesPage()
         style = {
         },
     }, function()
+        StopAnimTask(PlayerPedId(), 'FACE_HUMAN@GEN_MALE@BASE', 'mood_normal_eyes_wide', true)
         MainAppearanceMenu:RouteTo()
     end)
-
-    local imgPath =
-    [[
-    <img width="250px" height="250px" style="margin: 0 auto;" src="nui://feather-character/ui/img/%s.png"/>
-    ]]
 
     EyesPage:RegisterElement('button', {
         label = "Eye Height and Depth",
@@ -167,37 +204,43 @@ function CreateEyesPage()
         CreateEyeDistance()
         EyesPage:RouteTo()
     end)
-
+    EyesPage:RegisterElement('button', {
+        label = "Eyelid Width and Height",
+        style = {
+        },
+    }, function()
+        if EyeGrid then
+            EyeGrid:unRegister()
+        end
+        if EyeGrid2 then
+            EyeGrid2:unRegister()
+        end
+        CreateEyeDistance()
+        EyesPage:RouteTo()
+    end)
+    EyesPage:RegisterElement('button', {
+        label = "Eyebrows",
+        style = {
+        },
+    }, function()
+        if EyeGrid then
+            EyeGrid:unRegister()
+        end
+        if EyeGrid2 then
+            EyeGrid2:unRegister()
+        end
+        CreateEyeDistance()
+        EyesPage:RouteTo()
+    end)
     EyesPage:RegisterElement('slider', {
         label = "Eye Color",
         start = 0,
-        min = 0,
+        min = 1,
         max = #Features.Eyes[Gender],
         steps = 1,
     }, function(data)
-        local coords = GetEntityCoords(PlayerPedId())
-        print(Features.Eyes[Gender][data.value].color)
-        StartAnimation("mood_normal_eyes_wide")
-        AddComponent(PlayerPedId(), Features.Eyes[Gender][data.value].hash, nil)
-        StartCam(coords.x, coords.y - 1, coords.z + 0.7, 2.0, 30.0)
-
-        if EyePic and data.value > 0 then
-            EyePic:unRegister()
-            EyePic = EyesPage:RegisterElement("html", {
-
-            })
-            EyePic:update({
-                value = {
-                    imgPath:format(data.value)
-                }
-            })
-            EyesPage:RouteTo()
-        end
+        AddComponent(PlayerPedId(), Features.Eyes[Gender][data.value], nil)
     end)
-
-    EyePic = EyesPage:RegisterElement("html", {
-
-    })
 end
 
 function CreateEyePlacement()
@@ -211,28 +254,14 @@ function CreateEyePlacement()
         arrowsteps = 10,
         precision = 1
     }, function(data)
-        print(data.value.x)
-        print(data.value.y)
-
         SetCharExpression(PlayerPedId(), 60996, tonumber(data.value.x))
         SetCharExpression(PlayerPedId(), 56827, tonumber(data.value.y))
         UpdatePedVariation(PlayerPedId())
     end)
+end
 
-    EyeGrid2 = EyesPage:RegisterElement('gridslider', {
-        leftlabel = 'Eye Distance -',
-        rightlabel = 'Eye Distance +',
-        toplabel = 'Eye Angle +',
-        bottomlabel = 'Eye Angle -',
-        maxx = 1,
-        arrowsteps = 10,
-        precision = 1
-    }, function(data)
-        SetCharExpression(PlayerPedId(), 42318, tonumber(data.value.x))
-        SetCharExpression(PlayerPedId(), 53862, tonumber(data.value.y))
+function CreateEyebrowPage()
 
-        UpdatePedVariation(PlayerPedId())
-    end)
 end
 
 function CreateEyeDistance()
@@ -242,12 +271,12 @@ function CreateEyeDistance()
         toplabel = 'Eye Angle +',
         bottomlabel = 'Eye Angle -',
         maxx = 1,
+        maxy = 1,
         arrowsteps = 10,
         precision = 1
     }, function(data)
         SetCharExpression(PlayerPedId(), 42318, tonumber(data.value.x))
         SetCharExpression(PlayerPedId(), 53862, tonumber(data.value.y))
-
         UpdatePedVariation(PlayerPedId())
     end)
 end
@@ -328,15 +357,58 @@ function CreateEyebrowPage()
     }, function()
         MainAppearanceMenu:RouteTo()
     end)
-    for key, v in pairs(FeatureNames.Eyebrows) do
-        EyebrowPage:RegisterElement('button', {
-            label = v,
-            style = {
-            }
-        }, function()
+    EyebrowPage:RegisterElement('button', {
+        label = "Go Back",
+        style = {
+        },
+    }, function()
 
-        end)
-    end
+    end)
+
+    EyebrowPage:RegisterElement('arrows', {
+        label = "Visibility",
+        start = 0.0,
+        options = {
+            0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0
+        },
+
+    }, function(data)
+        -- This gets triggered whenever the arrow selected value changes
+
+        print(TableToString(data.value))
+    end)
+
+    EyebrowPage:RegisterElement('slider', {
+        label = "Variant",
+        start = 1,
+        min = 0,
+        max = 100,
+        steps = 1,
+        -- persist = false,
+        -- sound = {
+        --     action = "SELECT",
+        --     soundset = "RDRO_Character_Creator_Sounds"
+        -- },
+    }, function(data)
+        print(TableToString(data.value))
+    end)
+
+
+
+    EyebrowGrid = EyesPage:RegisterElement('gridslider', {
+        leftlabel = 'Eyebrow Width -',
+        rightlabel = 'Eyebrow Width +',
+        toplabel = 'Eyebrow Height +',
+        bottomlabel = 'Eyebrow Height -',
+        maxx = 1,
+        maxy = 1,
+        arrowsteps = 10,
+        precision = 1
+    }, function(data)
+        SetCharExpression(PlayerPedId(), 42318, tonumber(data.value.x))
+        SetCharExpression(PlayerPedId(), 53862, tonumber(data.value.y))
+        UpdatePedVariation(PlayerPedId())
+    end)
 end
 
 function CreateEarsPage()
@@ -359,35 +431,6 @@ function CreateEarsPage()
     end)
     for key, v in pairs(FeatureNames.Ears) do
         EarPage:RegisterElement('button', {
-            label = v,
-            style = {
-            }
-        }, function()
-
-        end)
-    end
-end
-
-function CreateFacePage()
-    FacePage:RegisterElement('header', {
-        value = 'My First Menu',
-        slot = "header",
-        style = {}
-    })
-    FacePage:RegisterElement('subheader', {
-        value = "First Page",
-        slot = "header",
-        style = {}
-    })
-    FacePage:RegisterElement('button', {
-        label = "Go Back",
-        style = {
-        },
-    }, function()
-        MainAppearanceMenu:RouteTo()
-    end)
-    for key, v in pairs(FeatureNames.Face) do
-        FacePage:RegisterElement('button', {
             label = v,
             style = {
             }
@@ -774,19 +817,6 @@ function CreateHairandBeardPage()
 
         }
     })
-    HairandBeardPage:RegisterElement('button', {
-        label = "Go Back",
-        style = {
-        },
-    }, function()
-        HairCategoryPage:RouteTo()
-        CategoryElement:unRegister()
-        VariantElement:unRegister()
-        TextElement:unRegister()
-        for k, v in pairs(HairandBeards[Gender]) do
-            SelectedAttributes[k .. 'Category'] = nil
-        end
-    end)
 end
 
 RegisterNetEvent('FeatherMenu:closed', function(data)

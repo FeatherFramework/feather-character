@@ -8,7 +8,7 @@ CharacterConfig.General.DefaultChar = {
                 "D7CDC6AE", "DC8DA4BA", "DFBFB8F4", "ED8EDA8E", "E79A7372", "E78826B1", "F0FB1DF0" },
             ["Body"] = { "206061DB", "16E292A1", "206061DB", "4AEEDD87", "4BD8F4A1", "BA59624D", "F6496128" },
             ["Legs"] = { "84BAA309", "8AD16414", "A615E02", "E4B584D5", "F11CF1FA", "F2EA7BDE" },
-            ["HeadTexture"] = { "mp_head_mr1_sc08_c0_000_ab" },
+            ["HeadTexture"] = {  GetHashKey("mp_head_mr1_sc08_c0_000_ab") },
         },
         {
             label = 'Hispanic',
@@ -18,7 +18,7 @@ CharacterConfig.General.DefaultChar = {
                 "F4696EBC", "F3CE707E" },
             ["Body"] = { "3825D527", "5A929214", "82F14D87", "99E82863", "DF522C3A" },
             ["Legs"] = { "15ACBB1D", "97596A2A", "EA27EDE2", "F91940A6", "9EE7070B", "D7F34979" },
-            ["HeadTexture"] = { "mp_head_mr1_sc02_c0_000_ab" },
+            ["HeadTexture"] = {  GetHashKey("mp_head_mr1_sc02_c0_000_ab") },
         },
         {
             label = 'Asian',
@@ -27,7 +27,7 @@ CharacterConfig.General.DefaultChar = {
                 "E718D713" },
             ["Body"] = { "465F719A", "6D582255", "8CC97681", "B0D24F3F" },
             ["Legs"] = { "47FE9FC0", "64F9856B", "B0F62B29", "ACAE409" },
-            ["HeadTexture"] = { "mp_head_mr1_sc03_c0_000_ab" },
+            ["HeadTexture"] = { GetHashKey("mp_head_mr1_sc03_c0_000_ab")},
         },
         {
             label = 'Native Dark',
@@ -36,7 +36,7 @@ CharacterConfig.General.DefaultChar = {
                 "C2978B19" },
             ["Body"] = { "34C3B131", "5C1686B", "8C9686C8", "BF787383" },
             ["Legs"] = { "F5E0272A", "B897BFA0", "C17616E", "73710076", "B897BFA0" },
-            ["HeadTexture"] = { "MP_head_fr1_sc01_c0_000_ab" },
+            ["HeadTexture"] = { GetHashKey("MP_head_fr1_sc01_c0_000_ab") },
         },
         {
             label = 'Native',
@@ -46,7 +46,7 @@ CharacterConfig.General.DefaultChar = {
                 "9B593624", "A9918F1E", "AF4B1442", "E2BED257", "F769DA58", "FEC87D01", "FEB1F6D4" },
             ["Body"] = { "4824ED39", "3B6F503", "5EA984F8", "B4485D23", "6BB6BC48" },
             ["Legs"] = { "D3A7708B", "5B835093", "DDF48A5D", "35D1FB67", "364F2807" },
-            ["HeadTexture"] = { "mp_head_mr1_sc04_c0_000_ab" },
+            ["HeadTexture"] = {  GetHashKey("mp_head_mr1_sc04_c0_000_ab") },
         },
         {
             label = 'African',
@@ -56,7 +56,7 @@ CharacterConfig.General.DefaultChar = {
                 "B6316BD4", "BF97F8A1", "FAEAC26" },
             ["Body"] = { "69B6305B", "BA09D8ED", "C8EA5978", "CD7F8895" },
             ["Legs"] = { "52CC3F25", "6577142C", "6CBCE93C", "887C4C70", "EF9D2DAE" },
-            ["HeadTexture"] = { "mp_head_fr1_sc05_c0_000_ab" },
+            ["HeadTexture"] = {  GetHashKey("mp_head_fr1_sc05_c0_000_ab") },
         },
     },
     ["Female"] = {
@@ -67,7 +67,7 @@ CharacterConfig.General.DefaultChar = {
                 "AAC2D8A9", "9D251F06", "945686CF" },
             ["Body"] = { "489AFE52", "64181923", "8DCF7A49", "928DAD43", "B1D3B3A", "D878696D" },
             ["Legs"] = { "11A244CC", "3B653032", "41021120", "A0736DA7", "C3BFA017", "F0CD92EC" },
-            ["HeadTexture"] = { "mp_head_fr1_sc08_c0_000_ab" },
+            ["HeadTexture"] = {  GetHashKey("mp_head_fr1_sc08_c0_000_ab") },
         },
         {
             label = 'Hispanic',
@@ -76,7 +76,7 @@ CharacterConfig.General.DefaultChar = {
                 "B240A051", "B00FC4DB", "A2B1D14C" },
             ["Body"] = { "8002D0F8", "6C25B6F6", "8223BCC5", "2BE27CC4", "C1CF0BC1" },
             ["Legs"] = { "18916A9B", "4D38CBC5", "98975DF3", "DC1AD9D2", "E74007F9" },
-            ["HeadTexture"] = { "mp_head_fr1_sc02_c0_000_ab" },
+            ["HeadTexture"] = {  GetHashKey("mp_head_fr1_sc02_c0_000_ab") },
         },
         {
             label = 'Asian',
@@ -85,7 +85,7 @@ CharacterConfig.General.DefaultChar = {
                 "C6B7F1F6", "AAB53384", "A4372E08", "98B8DD4C" },
             ["Body"] = { "2C4FE0C5", "3708268F", "7145337D", "79D35251", "B2850A03" },
             ["Legs"] = { "3E152D7E", "C9903FE8", "CC543A45", "24CF58B7", "1684BC22" },
-            ["HeadTexture"] = { "mp_head_fr1_sc03_c0_000_ab" },
+            ["HeadTexture"] = {  GetHashKey("mp_head_fr1_sc03_c0_000_ab") },
         },
         {
             label = 'Native Dark',
@@ -95,7 +95,7 @@ CharacterConfig.General.DefaultChar = {
                 "9B4BDB4C", "9409E68", "93DA499" },
             ["Body"] = { "5B4E1547", "58D8EA30", "87363366", "D0C5A9AE", "DC86C81" },
             ["Legs"] = { "CEAB4EC0", "DBE4E491", "5B4E1547", "F9609455", "3DBEB4BD" },
-            ["HeadTexture"] = { "mp_head_fr1_sc05_c0_000_ab" },
+            ["HeadTexture"] = {  GetHashKey("mp_head_fr1_sc05_c0_000_ab") },
         },
         {
             label = 'Native',
@@ -105,7 +105,7 @@ CharacterConfig.General.DefaultChar = {
                 "B059132E", "A6F0329C" },
             ["Body"] = { "80DB09DE", "93925FA2", "94778799", "56617DB6", "E36416C" },
             ["Legs"] = { "31BE7295", "71821457", "9D6CD26", "A29CE6D7", "A65CF97E" },
-            ["HeadTexture"] = { "mp_head_fr1_sc01_c0_000_ab" },
+            ["HeadTexture"] = { GetHashKey("mp_head_fr1_sc01_c0_000_ab") },
         },
         {
             label = 'African',
@@ -115,26 +115,26 @@ CharacterConfig.General.DefaultChar = {
                 "986F1565", "9C879729", "93F68D87" },
             ["Body"] = { "35A7C9FB", "1B088705", "A1AEFBDB", "E28C4D3B", "C05A25AD" },
             ["Legs"] = { "27B700C2", "4BA188D", "AAD70276", "EDE17D5F", "F4F5A364" },
-            ["HeadTexture"] = { "mp_head_fr1_sc04_c0_000_ab" },
+            ["HeadTexture"] = { GetHashKey("mp_head_fr1_sc04_c0_000_ab") },
         }
     }
 }
 
 CharacterConfig.General.TextureTypes = {
-    ['Male'] = {
-        albedo = joaat('head_fr1_sc08_soft_c0_001_ab'),
-        normal = joaat('mp_head_mr1_000_nm'),
-        material = 0x50A4BBA9,
-        color_type = 1,
-        texture_opacity = 1.0,
-        unk_arg = 0,
+    ["Male"] = {
+        albedo=GetHashKey("head_fr1_sc08_soft_c0_001_ab"),
+        normal=GetHashKey("mp_head_mr1_000_nm"),
+        material=0x50A4BBA9,
+        color_type=1,
+        texture_opacity=1.0,
+        unk_arg=0,
     },
-    ['Female'] = {
-        albedo = joaat('mp_head_fr1_sc08_c0_000_ab'),
-        normal = joaat('head_fr1_mp_002_nm'),
-        material = 0x7FC5B1E1,
-        color_type = 1,
-        texture_opacity = 1.0,
-        unk_arg = 0,
+    ["Female"] = {
+        albedo=GetHashKey("mp_head_fr1_sc08_c0_000_ab"),
+        normal=GetHashKey("head_fr1_mp_002_nm"),
+        material=0x7FC5B1E1, 
+        color_type=1,
+        texture_opacity=1.0,
+        unk_arg=0,
     }
 }

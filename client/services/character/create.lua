@@ -50,8 +50,8 @@ function UpdateCharacterClothing(args)
 end
 
 function CreateNewCharacter()
+    Albedo = (CharacterConfig.General.DefaultChar[Gender][1].HeadTexture[1])
     SetSex('male')
-
     Wait(500)
     local obj = FeatherCore.Object:Create('p_package09', Config.SpawnCoords.gotocoords.x, Config.SpawnCoords.gotocoords
         .y,
@@ -66,7 +66,21 @@ function CreateNewCharacter()
         Config.CameraCoords.creation.z,
         Config.CameraCoords.creation.h, Config.CameraCoords.creation.zoom)
     ToggleUIState()
-    TriggerEvent('feather-character:CreateCharacterMenu')
+    while true do
+        Wait(0)
+        local pcoords = GetEntityCoords(PlayerPedId())
+        if GetDistanceBetweenCoords(pcoords.x, pcoords.y, pcoords.z, Config.SpawnCoords.gotocoords.x, Config.SpawnCoords.gotocoords.y,
+                Config.SpawnCoords.gotocoords.z, true) < 1.0 then
+            TriggerEvent('feather-character:CreateCharacterMenu')
+            CreatingCharacter = true
+            while CreatingCharacter do
+                Wait(0)
+                DrawLightWithRange(Config.SpawnCoords.gotocoords.x, Config.SpawnCoords.gotocoords.y-0.5,
+                    Config.SpawnCoords.gotocoords.z+1.5, 250, 250, 250, 7.0, 50.0)
+            end
+            break
+        end
+    end
 end
 
 --------- Net Events ------

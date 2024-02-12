@@ -99,12 +99,13 @@ Config.SpawnCoords = {
         {
             --set to train coords still
             name = 'Saint Denis',                                                           --Name of Area
-            arrival = 'Train',                                                              --Method of arriving (Train,Wagon,Horse,Boat)
+            arrival = 'Wagon',                                                              --Method of arriving (Train,Wagon,Horse,Boat)
             --tip = " " --Info to give to the player, don't include if not wanting
             cameracoords = { x = 2849.20, y = -1619.75, z = 97.54, h = 33.30, zoom = 80.0 }, --Coords character will spawn at
-            startcoords = { x = 2790.99, y = -1384.91, z = 46.45,h =143.0 },                              --Coords character will spawn at
-            gotocoords = { x = 2724.99, y = -1448.91, z = 46.45,h = 143.0 },
+            startcoords = { x = 2774.99, y = -1351.91, z = 46.45,h =143.0 },                              --Coords character will spawn at
+            gotocoords = { x = 2714.99, y = -1424.91, z = 46.45,h = 143.0 },
         },
+
         {
             --set wagon coords still
             name = 'Rhodes',                                                                --Name of Area

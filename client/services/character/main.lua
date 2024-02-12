@@ -35,6 +35,8 @@ end)
 
 AddEventHandler("onResourceStop", function(resourceName)
     if resourceName == GetCurrentResourceName() then
+        CreatingCharacter = false
+        DeleteEntity(Mount)
         CleanupScript()
         end
 end)

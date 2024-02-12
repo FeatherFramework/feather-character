@@ -1,3 +1,5 @@
+
+
 MainHeritageMenu = MyMenu:RegisterPage('heritage:page')
 
 MainHeritageMenu:RegisterElement('header', {
@@ -33,7 +35,7 @@ function MakeHeritageSliders ()
     if SelectedHeritage ~= nil then
         HeritageSlider = MainHeritageMenu:RegisterElement('slider', {
             label = "Heritage",
-            start = 0,
+            start = 1,
             min = 1,
             max = #CharacterConfig.General.DefaultChar[Gender],
             steps = 1,
@@ -42,6 +44,9 @@ function MakeHeritageSliders ()
             local Head = tonumber("0x" ..CharacterConfig.General.DefaultChar[Gender][Race].Heads[1])
             local Body = tonumber("0x" ..CharacterConfig.General.DefaultChar[Gender][Race].Body[1])
             local Legs = tonumber("0x" ..CharacterConfig.General.DefaultChar[Gender][Race].Legs[1])
+            local Albedo = tonumber(CharacterConfig.General.DefaultChar[Gender][Race].HeadTexture[1])
+            SelectedAttributeElements['Albedo'] = Albedo
+
             -- This gets triggered whenever the sliders selected value changes
             AddComponent(PlayerPedId(),Head,nil)
             AddComponent(PlayerPedId(),Body,nil)
@@ -74,8 +79,12 @@ function MakeHeritageSliders ()
             steps = 1,
         }, function(data)
             local value = data.value
-            local index = data.label
-            local Head = tonumber("0x" ..CharacterConfig.General.DefaultChar[Gender][Race].Heads[value])
+            local Head
+            if Race == nil then
+                 Head = tonumber("0x" ..CharacterConfig.General.DefaultChar[Gender][1].Heads[value])
+            else
+                 Head = tonumber("0x" ..CharacterConfig.General.DefaultChar[Gender][Race].Heads[value])
+            end
             AddComponent(PlayerPedId(),Head,nil)
             SelectedAttributeElements['Head'] = Head
             -- This gets triggered whenever the sliders selected value changes
@@ -87,8 +96,13 @@ function MakeHeritageSliders ()
             max = #CharacterConfig.General.DefaultChar[Gender][1],
             steps = 1,
         }, function(data)
-            local index = data.value
-            local Body = tonumber("0x" ..CharacterConfig.General.DefaultChar[Gender][Race].Body[index])
+            local value = data.value
+            local Body
+            if Race == nil then
+                Body = tonumber("0x" ..CharacterConfig.General.DefaultChar[Gender][1].Body[value])
+            else
+                Body = tonumber("0x" ..CharacterConfig.General.DefaultChar[Gender][Race].Body[value])
+            end
             AddComponent(PlayerPedId(),Body,nil)
             SelectedAttributeElements['Body'] = Body
 
@@ -101,8 +115,13 @@ function MakeHeritageSliders ()
             max = #CharacterConfig.General.DefaultChar[Gender][1],
             steps = 1,
         }, function(data)
-            local index = data.value
-            local Legs = tonumber("0x" ..CharacterConfig.General.DefaultChar[Gender][Race].Legs[index])
+            local value = data.value
+            local Legs
+            if Race == nil then
+                Legs = tonumber("0x" ..CharacterConfig.General.DefaultChar[Gender][1].Legs[value])
+            else
+                Legs = tonumber("0x" ..CharacterConfig.General.DefaultChar[Gender][Race].Legs[value])
+            end
             AddComponent(PlayerPedId(),Legs,nil)
             SelectedAttributeElements['Legs'] = Legs
 
@@ -112,7 +131,8 @@ function MakeHeritageSliders ()
         HeritageSlider = HeritageSlider:update({
             label = 'Heritage',
         })
-    
+
+        
     end
 end
 

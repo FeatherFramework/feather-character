@@ -18,7 +18,7 @@ function UpdatePedVariation(ped)
     Citizen.InvokeNative(0xCC8CA3E88256E58F, ped, false, true, true, true, false) -- _UPDATE_PED_VARIATION
 end
 
-function StartAnimation(anim)
+function EyesAnim(anim)
     while not HasAnimDictLoaded("FACE_HUMAN@GEN_MALE@BASE") do
         RequestAnimDict("FACE_HUMAN@GEN_MALE@BASE")
         Citizen.Wait(50)
