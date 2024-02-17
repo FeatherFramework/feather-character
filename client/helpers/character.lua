@@ -69,7 +69,6 @@ end
 function SetCharExpression(ped, expressionId, value)
     Citizen.InvokeNative(0x5653AB26C82938CF, ped, expressionId, value)
     UpdatePedVariation(ped)
-
 end
 
 function DefaultPedSetup(ped, male)
@@ -159,6 +158,8 @@ end
 
 
 function SetSex(sex)
+    ChangeOverlay('eyebrows', 1, 1, 0, 0, 0, 1.0, 0, 1, 254, 254, 254, 0, 1.0, Albedo)
+
     if sex == 'male' then
         LoadModel('mp_male')
         SetPlayerModel(PlayerId(), joaat('mp_male'), false)

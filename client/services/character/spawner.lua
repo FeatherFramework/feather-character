@@ -1,5 +1,3 @@
-local current, coords, active
-
 SpawnSelectInfo = FeatherMenu:RegisterMenu('feather:spawnselect:menu', {
     top = '5%',
     left = '5%',
@@ -81,7 +79,6 @@ RegisterNetEvent("feather-character:SpawnSelect", function(CharInfo)
     }, function()
         DoScreenFadeOut(250)
         TriggerServerEvent('feather-character:InitiateCharacter', CharInfo)
-        TriggerServerEvent('feather-character:GetCharactersData', CharInfo)
         SetEntityCoords(PlayerPedId(), CharSpawnCoords.x+5.0, CharSpawnCoords.y, CharSpawnCoords.z, true, false, false,
             false)
         CleanupScript()

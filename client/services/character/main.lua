@@ -1,7 +1,5 @@
 -- This is the main file for core character actions.
 
-
-
 function CleanupScript()
     DisplayRadar(true)
     EndCam()
@@ -24,14 +22,10 @@ function LoadPlayer(model)
     end
 end
 
-
-
 ---------------- Registered Net Events ------------------
 AddEventHandler('playerSpawned', function()
     TriggerServerEvent('feather-character:CheckForUsers')
 end)
-
-
 
 AddEventHandler("onResourceStop", function(resourceName)
     if resourceName == GetCurrentResourceName() then
@@ -77,14 +71,6 @@ if Config.DevMode == true then
 
     RegisterCommand('check', function()
         TriggerServerEvent('feather-character:CheckForUsers')
-    end)
-
-    RegisterCommand('cutscene', function()
-        DoScreenFadeIn(10000)
-        Wait(2000)
-        DoScreenFadeOut(10000)
-        AnimpostfxPlay("cutscene_mar6_train")
-        SpawnProps()
     end)
 
     RegisterCommand('spawn', function()
