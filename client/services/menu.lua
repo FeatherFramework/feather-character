@@ -113,7 +113,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
             dob = DOB,
             model = Model,
             desc = CharDesc,
-            img =  ImgLink,
+            img = ImgLink,
             Clothing = SelectedClothingElements,
             Attributes = SelectedAttributeElements
         }
@@ -146,7 +146,6 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
         style = {
         }
     }, function()
-        SelectedBody = true
         MakeBodySliders()
         MainBodyMenu:RouteTo()
     end)
@@ -157,15 +156,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
     }, function()
         ClothingCategoriesPage:RouteTo()
     end)
-    CategoriesPage:RegisterElement('button', {
-        label = 'Heritage',
-        style = {
-        }
-    }, function()
-        SelectedHeritage = true
-        MakeHeritageSliders()
-        MainHeritageMenu:RouteTo()
-    end)
+
     --second page
     CategoriesPage:RegisterElement('header', {
         value = 'Clothing Selection',
@@ -177,6 +168,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
         style = {
         },
     }, function()
+        
         MainCharacterPage:RouteTo()
     end)
 
@@ -203,6 +195,8 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
             elseif k == "Accessories" then
                 ActivePage = AccClothingPage
                 ActivePage:RouteTo()
+                SwitchCam(Config.CameraCoords.creation.x, Config.CameraCoords.creation.y, Config.CameraCoords.creation.z,
+                    Config.CameraCoords.creation.h, Config.CameraCoords.creation.zoom)
             end
             for index, key in pairs(CharacterConfig.Clothing.Clothes[Gender][k]) do
                 table.insert(SelectedClothing, index)
@@ -307,6 +301,8 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
         label = "Go Back",
         style = {},
     }, function()
+        SwitchCam(Config.CameraCoords.creation.x, Config.CameraCoords.creation.y, Config.CameraCoords.creation.z,
+        Config.CameraCoords.creation.h, Config.CameraCoords.creation.zoom)
         ClothingCategoriesPage:RouteTo()
     end)
     UpperClothingPage:RegisterElement('pagearrows', {
@@ -368,6 +364,8 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
         label = "Go Back",
         style = {},
     }, function()
+        SwitchCam(Config.CameraCoords.creation.x, Config.CameraCoords.creation.y, Config.CameraCoords.creation.z,
+        Config.CameraCoords.creation.h, Config.CameraCoords.creation.zoom)
         ClothingCategoriesPage:RouteTo()
     end)
     LowerClothingPage:RegisterElement('pagearrows', {
@@ -428,6 +426,8 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
         label = "Go Back",
         style = {},
     }, function()
+        SwitchCam(Config.CameraCoords.creation.x, Config.CameraCoords.creation.y, Config.CameraCoords.creation.z,
+        Config.CameraCoords.creation.h, Config.CameraCoords.creation.zoom)
         ClothingCategoriesPage:RouteTo()
     end)
     AccClothingPage:RegisterElement('pagearrows', {
@@ -633,7 +633,6 @@ RegisterNetEvent('feather-character:CharacterSelectMenu', function(Info, CameraS
             CleanupScript()
             LoadPlayer(CharModel)
             TriggerServerEvent('feather-character:InitiateCharacter', ID[CameraSpot])
-            TriggerServerEvent('feather-character:GetCharactersData', ID[CameraSpot])
             for category, hash in pairs(Clothing[CameraSpot]) do
                 AddComponent(PlayerPedId(), hash, category)
             end
@@ -737,11 +736,6 @@ function ColorClothing(ActiveCatagory, index)
     SelectedColoring = true
 end
 
-RegisterNetEvent('FeatherMenu:closed', function(data)
-    MenuOpened = false
-    Header1:unRegister()
-    SubHeader1:unRegister()
-end)
 
 
 --[[MenuData = {}

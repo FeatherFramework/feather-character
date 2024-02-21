@@ -1,5 +1,7 @@
 -- TODO: REMOVE ALL THIS STUFF AS MENUAPI/REDEMTP_MENU_BASE WILL NOT BE NEEDED.
 FeatherMenu = exports['feather-menu'].initiate()
+CamZ = Config.CameraCoords.creation.z + 0.5
+local Gender = GetGender()
 
 MyMenu = FeatherMenu:RegisterMenu('feather:character:menu', {
     top = '1%',
@@ -22,14 +24,12 @@ MyMenu = FeatherMenu:RegisterMenu('feather:character:menu', {
 })
 
 MainAppearanceMenu = MyMenu:RegisterPage('appearance:page')
+FaceActive = nil
+SelectedAttributes = {} -- This can keep track of what was selected data wise
 
-Gender = GetGender()
-
-SelectedAttributes = {}        -- This can keep track of what was selected data wise
-SelectedAttributeElements = {} --This table keeps track of your clothing elements
 
 MainAppearanceMenu:RegisterElement('header', {
-    value = 'My First Menu',
+    value = 'Appearance Menu',
     slot = "header",
     style = {}
 })
@@ -38,71 +38,134 @@ MainAppearanceMenu:RegisterElement('subheader', {
     slot = "header",
     style = {}
 })
+MainAppearanceMenu:RegisterElement('bottomline', {
+    slot = "content",
+})
+
+HeritageSlider = MainAppearanceMenu:RegisterElement('slider', {
+    label = "Heritage",
+    start = 1,
+    min = 1,
+    max = #CharacterConfig.General.DefaultChar[Gender],
+    steps = 1,
+}, function(data)
+    Race = data.value
+    local Head = tonumber("0x" .. CharacterConfig.General.DefaultChar[Gender][Race].Heads[1])
+    local Body = tonumber("0x" .. CharacterConfig.General.DefaultChar[Gender][Race].Body[1])
+    local Legs = tonumber("0x" .. CharacterConfig.General.DefaultChar[Gender][Race].Legs[1])
+    local Albedo = tonumber(CharacterConfig.General.DefaultChar[Gender][Race].HeadTexture[1])
+    SelectedAttributeElements['Albedo'] = { hash = Albedo }
+
+    -- This gets triggered whenever the sliders selected value changes
+    AddComponent(PlayerPedId(), Head, nil)
+    AddComponent(PlayerPedId(), Body, nil)
+    AddComponent(PlayerPedId(), Legs, nil)
+    HeritageDisplay:update({
+        value = CharacterConfig.General.DefaultChar[Gender][Race].label,
+    })
+    HeadVariantSlider = HeadVariantSlider:update({
+        value = 1,
+    })
+    BodyVariantSlider = BodyVariantSlider:update({
+        value = 1,
+    })
+    LegVariantSlider = LegVariantSlider:update({
+        value = 1,
+    })
+end)
+HeritageDisplay = MainAppearanceMenu:RegisterElement('textdisplay', {
+    value = "European",
+    style = {}
+})
+
+HeadVariantSlider = MainAppearanceMenu:RegisterElement('slider', {
+    label = "Head Variations",
+    start = 1,
+    min = 1,
+    max = #CharacterConfig.General.DefaultChar[Gender][1].Heads,
+    steps = 1,
+}, function(data)
+    local value = data.value
+    local Head
+    if Race == nil then
+        Head = tonumber("0x" .. CharacterConfig.General.DefaultChar[Gender][1].Heads[value])
+    else
+        Head = tonumber("0x" .. CharacterConfig.General.DefaultChar[Gender][Race].Heads[value])
+    end
+    AddComponent(PlayerPedId(), Head, nil)
+    SelectedAttributeElements['Head'] = { hash = Head }
+
+    -- This gets triggered whenever the sliders selected value changes
+end)
+BodyVariantSlider = MainAppearanceMenu:RegisterElement('slider', {
+    label = "Body Variations",
+    start = 1,
+    min = 1,
+    max = #CharacterConfig.General.DefaultChar[Gender][1].Body,
+    steps = 1,
+}, function(data)
+    local value = data.value
+    local Body
+    if Race == nil then
+        Body = tonumber("0x" .. CharacterConfig.General.DefaultChar[Gender][1].Body[value])
+    else
+        Body = tonumber("0x" .. CharacterConfig.General.DefaultChar[Gender][Race].Body[value])
+    end
+    AddComponent(PlayerPedId(), Body, nil)
+    SelectedAttributeElements['Body'] = { hash = Body }
+
+    -- This gets triggered whenever the sliders selected value changes
+end)
+LegVariantSlider = MainAppearanceMenu:RegisterElement('slider', {
+    label = "Leg Variations",
+    start = 1,
+    min = 1,
+    max = #CharacterConfig.General.DefaultChar[Gender][1].Legs,
+    steps = 1,
+}, function(data)
+    local value = data.value
+    local Legs
+    if Race == nil then
+        Legs = tonumber("0x" .. CharacterConfig.General.DefaultChar[Gender][1].Legs[value])
+    else
+        Legs = tonumber("0x" .. CharacterConfig.General.DefaultChar[Gender][Race].Legs[value])
+    end
+    AddComponent(PlayerPedId(), Legs, nil)
+    SelectedAttributeElements['Legs'] = { hash = Legs }
+
+    -- This gets triggered whenever the sliders selected value changes
+end)
 
 MainAppearanceMenu:RegisterElement('button', {
     label = 'Hair',
     style = {
     }
 }, function()
-    HairCategoryPage = MyMenu:RegisterPage('eyes:page')
+    HairCategoryPage = MyMenu:RegisterPage('hair:page')
+    SwitchCam(Config.CameraCoords.creation.x - 0.25, Config.CameraCoords.creation.y,
+        Config.CameraCoords.creation.z + 0.7, Config.CameraCoords.creation.h, 0.0)
     CreateHairPage()
     HairCategoryPage:RouteTo()
 end)
 
-for key, v in pairs(FeatureNames) do
-    MainAppearanceMenu:RegisterElement('button', {
-        label = key,
-        style = {
-        }
-    }, function()
-        if key == 'Eyes' then
-            EyesPage = MyMenu:RegisterPage('eyes:page')
-            CreateEyesPage()
-            EyesPage:RouteTo()
-        end
-        if key == 'Cheeks' then
-            CheekPage = MyMenu:RegisterPage('cheeks:page')
-            CreateCheekPage()
-            CheekPage:RouteTo()
-        end
-        if key == 'Chin' then
-            ChinPage = MyMenu:RegisterPage('chin:page')
-            CreateChinPage()
-            ChinPage:RouteTo()
-        end
-        if key == 'Eyebrows' then
-            EyebrowPage = MyMenu:RegisterPage('eyebrows:page')
-            CreateEyebrowPage()
-            EyebrowPage:RouteTo()
-        end
-        if key == 'Ears' then
-            EarPage = MyMenu:RegisterPage('ears:page')
-            CreateEarsPage()
-            EarPage:RouteTo()
-        end
-        if key == 'Face' then
-            FacePage = MyMenu:RegisterPage('face:page')
-            CreateFacePage()
-            FacePage:RouteTo()
-        end
-        if key == 'Jaw' then
-            JawPage = MyMenu:RegisterPage('jaw:page')
-            CreateJawPage()
-            JawPage:RouteTo()
-        end
-        if key == 'Mouth' then
-            MouthPage = MyMenu:RegisterPage('mouth:page')
-            CreateMouthPage()
-            MouthPage:RouteTo()
-        end
-    end)
-end
+MainAppearanceMenu:RegisterElement('button', {
+    label = 'Facial Features',
+    style = {
+    }
+}, function()
+    FacialMenu = MyMenu:RegisterPage('face:page')
+    SwitchCam(Config.CameraCoords.creation.x - 0.25, Config.CameraCoords.creation.y,
+        Config.CameraCoords.creation.z + 0.7, Config.CameraCoords.creation.h, 0.0)
+    FacialFeaturesPage()
+    FacialMenu:RouteTo()
+end)
+
+
 MainAppearanceMenu:RegisterElement('button', {
     label = "Save Appearance",
     style = {
     }
 }, function()
-    print(json.encode(SelectedAttributeElements))
     TriggerServerEvent('feather-character:UpdateAttributeDB', SelectedAttributeElements)
 end)
 
@@ -111,8 +174,78 @@ MainAppearanceMenu:RegisterElement('button', {
     style = {
     },
 }, function()
+    SwitchCam(Config.CameraCoords.creation.x, Config.CameraCoords.creation.y, Config.CameraCoords.creation.z,
+        Config.CameraCoords.creation.h, Config.CameraCoords.creation.zoom)
     MainCharacterPage:RouteTo()
 end)
+
+function FacialFeaturesPage()
+    if FaceActive == nil then
+        FacialMenu:RegisterElement('header', {
+            value = 'Facial Features',
+            slot = "header",
+            style = {}
+        })
+        FacialMenu:RegisterElement('subheader', {
+            value = "First Page",
+            slot = "header",
+            style = {}
+        })
+        for key, v in pairs(FeatureNames) do
+            FaceButton = FacialMenu:RegisterElement('button', {
+                label = key,
+                style = {
+                }
+            }, function()
+                if key == 'Eyes and Brows' then
+                    EyesPage = MyMenu:RegisterPage('eyes:page')
+                    EyesAnim("mood_normal_eyes_wide")
+                    CreateEyesPage()
+                    EyesPage:RouteTo()
+                end
+                if key == 'Cheeks' then
+                    CheekPage = MyMenu:RegisterPage('cheeks:page')
+                    CreateCheekPage()
+                    CheekPage:RouteTo()
+                end
+                if key == 'Chin' then
+                    ChinPage = MyMenu:RegisterPage('chin:page')
+                    CreateChinPage()
+                    ChinPage:RouteTo()
+                end
+                if key == 'Ears' then
+                    EarPage = MyMenu:RegisterPage('ears:page')
+                    CreateEarsPage()
+                    EarPage:RouteTo()
+                end
+                if key == 'Jaw' then
+                    JawPage = MyMenu:RegisterPage('jaw:page')
+                    CreateJawPage()
+                    JawPage:RouteTo()
+                end
+                if key == 'Mouth' then
+                    MouthPage = MyMenu:RegisterPage('mouth:page')
+                    CreateMouthPage()
+                    MouthPage:RouteTo()
+                end
+                if key == 'Nose' then
+                    NosePage = MyMenu:RegisterPage('nose:page')
+                    CreateNosePage()
+                    NosePage:RouteTo()
+                end
+            end)
+        end
+        FacialMenu:RegisterElement('button', {
+            label = "Go Back",
+            style = {
+            },
+        }, function()
+            SwitchCam(Config.CameraCoords.creation.x, Config.CameraCoords.creation.y,
+                Config.CameraCoords.creation.z, Config.CameraCoords.creation.h, Config.CameraCoords.creation.zoom)
+            MainAppearanceMenu:RouteTo()
+        end)
+    end
+end
 
 --second page
 function CreateEyesPage()
@@ -131,14 +264,37 @@ function CreateEyesPage()
         style = {
         },
     }, function()
+        StopAnimTask(PlayerPedId(), 'FACE_HUMAN@GEN_MALE@BASE', 'mood_normal_eyes_wide', true)
         MainAppearanceMenu:RouteTo()
     end)
-
-    local imgPath =
-    [[
-    <img width="250px" height="250px" style="margin: 0 auto;" src="nui://feather-character/ui/img/%s.png"/>
-    ]]
-
+    EyesPage:RegisterElement('pagearrows', {
+        slot = 'content',
+        total = ' Move Cam Up',
+        current = 'Move Cam Down ',
+        style = {},
+    }, function(data)
+        if data.value == 'forward' then
+            CamZ = CamZ + 0.1
+            SetCamCoord(CharacterCamera, Config.CameraCoords.creation.x - 0.2, Config.CameraCoords.creation.y, CamZ)
+        else
+            CamZ = CamZ - 0.1
+            SetCamCoord(CharacterCamera, Config.CameraCoords.creation.x - 0.2, Config.CameraCoords.creation.y, CamZ)
+        end
+    end)
+    EyesPage:RegisterElement('pagearrows', {
+        slot = 'content',
+        total = ' Rotate Right ',
+        current = 'Rotate Left ',
+        style = {},
+    }, function(data)
+        if data.value == 'forward' then
+            local heading = GetEntityHeading(PlayerPedId())
+            SetEntityHeading(PlayerPedId(), heading + 10.0)
+        else
+            local heading = GetEntityHeading(PlayerPedId())
+            SetEntityHeading(PlayerPedId(), heading - 10.0)
+        end
+    end)
     EyesPage:RegisterElement('button', {
         label = "Eye Height and Depth",
         style = {
@@ -150,7 +306,23 @@ function CreateEyesPage()
         if EyeGrid2 then
             EyeGrid2:unRegister()
         end
-        CreateEyePlacement()
+        EyeGrid = EyesPage:RegisterElement('gridslider', {
+            leftlabel = 'Eye Depth -',
+            rightlabel = 'Eye Depth +',
+            toplabel = 'Eye Height +',
+            bottomlabel = 'Eye Height -',
+            maxx = 1,
+            maxy = 1,
+            arrowsteps = 10,
+            precision = 1
+        }, function(data)
+            SetCharExpression(PlayerPedId(), 60996, tonumber(data.value.x))
+            SetCharExpression(PlayerPedId(), 56827, tonumber(data.value.y))
+            SelectedAttributeElements['EyeDepth'] = { value = tonumber(data.value.x), hash = 60996 }
+            SelectedAttributeElements['EyeHeight'] = { value = tonumber(data.value.y), hash = 56827 }
+
+            UpdatePedVariation(PlayerPedId())
+        end)
         EyesPage:RouteTo()
     end)
     EyesPage:RegisterElement('button', {
@@ -164,91 +336,74 @@ function CreateEyesPage()
         if EyeGrid2 then
             EyeGrid2:unRegister()
         end
-        CreateEyeDistance()
+        EyeGrid2 = EyesPage:RegisterElement('gridslider', {
+            leftlabel = 'Eye Distance -',
+            rightlabel = 'Eye Distance +',
+            toplabel = 'Eye Angle +',
+            bottomlabel = 'Eye Angle -',
+            maxx = 1,
+            maxy = 1,
+            arrowsteps = 10,
+            precision = 1
+        }, function(data)
+            SetCharExpression(PlayerPedId(), 42318, tonumber(data.value.x))
+            SetCharExpression(PlayerPedId(), 53862, tonumber(data.value.y))
+            SelectedAttributeElements['EyeDistance'] = { value = tonumber(data.value.x), hash = 42318 }
+            SelectedAttributeElements['EyeAngle'] = { value = tonumber(data.value.y), hash = 53862 }
+            UpdatePedVariation(PlayerPedId())
+        end)
         EyesPage:RouteTo()
     end)
-
+    EyesPage:RegisterElement('button', {
+        label = "Eyelid Width and Height",
+        style = {
+        },
+    }, function()
+        if EyeGrid then
+            EyeGrid:unRegister()
+        end
+        if EyeGrid2 then
+            EyeGrid2:unRegister()
+        end
+        if EyeGrid3 then
+            EyeGrid3:unRegister()
+        end
+        EyeGrid3 = EyesPage:RegisterElement('gridslider', {
+            leftlabel = 'Eyelid Width -',
+            rightlabel = 'Eyelid Width +',
+            toplabel = 'Eyelid Height +',
+            bottomlabel = 'Eyelid Height -',
+            maxx = 1,
+            maxy = 1,
+            arrowsteps = 10,
+            precision = 1
+        }, function(data)
+            SetCharExpression(PlayerPedId(), 7019, tonumber(data.value.x))
+            SetCharExpression(PlayerPedId(), 35627, tonumber(data.value.y))
+            SelectedAttributeElements['EyelidWidth'] = { value = tonumber(data.value.x), hash = 7019 }
+            SelectedAttributeElements['EyelidHeight'] = { value = tonumber(data.value.y), hash = 35627 }
+            UpdatePedVariation(PlayerPedId())
+        end)
+        EyesPage:RouteTo()
+    end)
+    EyesPage:RegisterElement('button', {
+        label = "Eyebrows",
+        style = {
+        },
+    }, function()
+        EyebrowPage = MyMenu:RegisterPage('eyebrows:page')
+        CreateEyebrowPage()
+        EyebrowPage:RouteTo()
+    end)
     EyesPage:RegisterElement('slider', {
         label = "Eye Color",
         start = 0,
-        min = 0,
-        max = #Features.Eyes[Gender],
+        min = 1,
+        max = #FeaturesEyes[Gender],
         steps = 1,
     }, function(data)
-        local coords = GetEntityCoords(PlayerPedId())
-        print(Features.Eyes[Gender][data.value].color)
-        StartAnimation("mood_normal_eyes_wide")
-        AddComponent(PlayerPedId(), Features.Eyes[Gender][data.value].hash, nil)
-        StartCam(coords.x, coords.y - 1, coords.z + 0.7, 2.0, 30.0)
-
-        if EyePic and data.value > 0 then
-            EyePic:unRegister()
-            EyePic = EyesPage:RegisterElement("html", {
-
-            })
-            EyePic:update({
-                value = {
-                    imgPath:format(data.value)
-                }
-            })
-            EyesPage:RouteTo()
-        end
-    end)
-
-    EyePic = EyesPage:RegisterElement("html", {
-
-    })
-end
-
-function CreateEyePlacement()
-    EyeGrid = EyesPage:RegisterElement('gridslider', {
-        leftlabel = 'Eye Depth -',
-        rightlabel = 'Eye Depth +',
-        toplabel = 'Eye Height +',
-        bottomlabel = 'Eye Height -',
-        maxx = 1,
-        maxy = 1,
-        arrowsteps = 10,
-        precision = 1
-    }, function(data)
-        print(data.value.x)
-        print(data.value.y)
-
-        SetCharExpression(PlayerPedId(), 60996, tonumber(data.value.x))
-        SetCharExpression(PlayerPedId(), 56827, tonumber(data.value.y))
-        UpdatePedVariation(PlayerPedId())
-    end)
-
-    EyeGrid2 = EyesPage:RegisterElement('gridslider', {
-        leftlabel = 'Eye Distance -',
-        rightlabel = 'Eye Distance +',
-        toplabel = 'Eye Angle +',
-        bottomlabel = 'Eye Angle -',
-        maxx = 1,
-        arrowsteps = 10,
-        precision = 1
-    }, function(data)
-        SetCharExpression(PlayerPedId(), 42318, tonumber(data.value.x))
-        SetCharExpression(PlayerPedId(), 53862, tonumber(data.value.y))
-
-        UpdatePedVariation(PlayerPedId())
-    end)
-end
-
-function CreateEyeDistance()
-    EyeGrid2 = EyesPage:RegisterElement('gridslider', {
-        leftlabel = 'Eye Distance -',
-        rightlabel = 'Eye Distance +',
-        toplabel = 'Eye Angle +',
-        bottomlabel = 'Eye Angle -',
-        maxx = 1,
-        arrowsteps = 10,
-        precision = 1
-    }, function(data)
-        SetCharExpression(PlayerPedId(), 42318, tonumber(data.value.x))
-        SetCharExpression(PlayerPedId(), 53862, tonumber(data.value.y))
-
-        UpdatePedVariation(PlayerPedId())
+        AddComponent(PlayerPedId(), FeaturesEyes[Gender][data.value], nil)
+        SelectedAttributeElements['EyeColor'] = { hash = FeaturesEyes[Gender][data.value] }
     end)
 end
 
@@ -268,17 +423,65 @@ function CreateCheekPage()
         style = {
         },
     }, function()
+        SwitchCam(Config.CameraCoords.creation.x, Config.CameraCoords.creation.y,
+            Config.CameraCoords.creation.z, Config.CameraCoords.creation.h, Config.CameraCoords.creation.zoom)
         MainAppearanceMenu:RouteTo()
     end)
-    for key, v in pairs(FeatureNames.Cheeks) do
-        CheekPage:RegisterElement('button', {
-            label = v,
-            style = {
-            }
-        }, function()
-
-        end)
-    end
+    CheekPage:RegisterElement('pagearrows', {
+        slot = 'content',
+        total = ' Move Cam Up',
+        current = 'Move Cam Down ',
+        style = {},
+    }, function(data)
+        if data.value == 'forward' then
+            CamZ = CamZ + 0.1
+            SetCamCoord(CharacterCamera, Config.CameraCoords.creation.x - 0.2, Config.CameraCoords.creation.y, CamZ)
+        else
+            CamZ = CamZ - 0.1
+            SetCamCoord(CharacterCamera, Config.CameraCoords.creation.x - 0.2, Config.CameraCoords.creation.y, CamZ)
+        end
+    end)
+    CheekPage:RegisterElement('pagearrows', {
+        slot = 'content',
+        total = ' Rotate Right ',
+        current = 'Rotate Left ',
+        style = {},
+    }, function(data)
+        if data.value == 'forward' then
+            local heading = GetEntityHeading(PlayerPedId())
+            SetEntityHeading(PlayerPedId(), heading + 10.0)
+        else
+            local heading = GetEntityHeading(PlayerPedId())
+            SetEntityHeading(PlayerPedId(), heading - 10.0)
+        end
+    end)
+    CheekGrid1 = CheekPage:RegisterElement('gridslider', {
+        leftlabel = 'Cheekbone Width -',
+        rightlabel = 'Cheekbone Width +',
+        toplabel = 'Cheekbone Height +',
+        bottomlabel = 'Cheekbone Height -',
+        maxx = 1,
+        maxy = 1,
+        arrowsteps = 10,
+        precision = 1
+    }, function(data)
+        SetCharExpression(PlayerPedId(), 0xABCF, tonumber(data.value.x))
+        SetCharExpression(PlayerPedId(), 0x6A0B, tonumber(data.value.y))
+        SelectedAttributeElements['CheekboneWidth'] = { value = tonumber(data.value.x), hash = 0xABCF }
+        SelectedAttributeElements['CheekboneHeight'] = { value = tonumber(data.value.y), hash = 0x6A0B }
+        UpdatePedVariation(PlayerPedId())
+    end)
+    CheekGrid2 = CheekPage:RegisterElement('gridslider', {
+        leftlabel = 'Cheekbone Depth -',
+        rightlabel = 'Cheekbone Depth +',
+        maxx = 1,
+        arrowsteps = 10,
+        precision = 1
+    }, function(data)
+        SetCharExpression(PlayerPedId(), 0x358D, tonumber(data.value.x))
+        SelectedAttributeElements['CheekboneDepth'] = { value = tonumber(data.value.x), hash = 0x358D }
+        UpdatePedVariation(PlayerPedId())
+    end)
 end
 
 function CreateChinPage()
@@ -297,20 +500,69 @@ function CreateChinPage()
         style = {
         },
     }, function()
+        SwitchCam(Config.CameraCoords.creation.x, Config.CameraCoords.creation.y,
+            Config.CameraCoords.creation.z, Config.CameraCoords.creation.h, Config.CameraCoords.creation.zoom)
         MainAppearanceMenu:RouteTo()
     end)
-    for key, v in pairs(FeatureNames.Chin) do
-        ChinPage:RegisterElement('button', {
-            label = v,
-            style = {
-            }
-        }, function()
-
-        end)
-    end
+    ChinPage:RegisterElement('pagearrows', {
+        slot = 'content',
+        total = ' Move Cam Up',
+        current = 'Move Cam Down ',
+        style = {},
+    }, function(data)
+        if data.value == 'forward' then
+            CamZ = CamZ + 0.1
+            SetCamCoord(CharacterCamera, Config.CameraCoords.creation.x - 0.2, Config.CameraCoords.creation.y, CamZ)
+        else
+            CamZ = CamZ - 0.1
+            SetCamCoord(CharacterCamera, Config.CameraCoords.creation.x - 0.2, Config.CameraCoords.creation.y, CamZ)
+        end
+    end)
+    ChinPage:RegisterElement('pagearrows', {
+        slot = 'content',
+        total = ' Rotate Right ',
+        current = 'Rotate Left ',
+        style = {},
+    }, function(data)
+        if data.value == 'forward' then
+            local heading = GetEntityHeading(PlayerPedId())
+            SetEntityHeading(PlayerPedId(), heading + 10.0)
+        else
+            local heading = GetEntityHeading(PlayerPedId())
+            SetEntityHeading(PlayerPedId(), heading - 10.0)
+        end
+    end)
+    ChinGrid1 = ChinPage:RegisterElement('gridslider', {
+        leftlabel = 'Chin Width -',
+        rightlabel = 'Chin Width +',
+        toplabel = 'Chin Height +',
+        bottomlabel = 'Chin Height -',
+        maxx = 1,
+        maxy = 1,
+        arrowsteps = 10,
+        precision = 1
+    }, function(data)
+        SetCharExpression(PlayerPedId(), 0xC3B2, tonumber(data.value.x))
+        SetCharExpression(PlayerPedId(), 0x3C0F, tonumber(data.value.y))
+        SelectedAttributeElements['ChinWidth'] = { value = tonumber(data.value.x), hash = 0xC3B2 }
+        SelectedAttributeElements['ChinHeight'] = { value = tonumber(data.value.y), hash = 0x3C0F }
+        UpdatePedVariation(PlayerPedId())
+    end)
+    ChinGrid2 = ChinPage:RegisterElement('gridslider', {
+        leftlabel = 'Chin Depth -',
+        rightlabel = 'Chin Depth +',
+        maxx = 1,
+        arrowsteps = 10,
+        precision = 1
+    }, function(data)
+        SetCharExpression(PlayerPedId(), 0xE323, tonumber(data.value.x))
+        SelectedAttributeElements['ChinDepth'] = { value = tonumber(data.value.x), hash = 0xE323 }
+        UpdatePedVariation(PlayerPedId())
+    end)
 end
 
 function CreateEyebrowPage()
+    EyebrowOpacity = 1.0
     EyebrowPage:RegisterElement('header', {
         value = 'My First Menu',
         slot = "header",
@@ -326,17 +578,82 @@ function CreateEyebrowPage()
         style = {
         },
     }, function()
-        MainAppearanceMenu:RouteTo()
+        StopAnimTask(PlayerPedId(), 'FACE_HUMAN@GEN_MALE@BASE', 'mood_normal_eyes_wide', true)
+        EyesPage:RouteTo()
     end)
-    for key, v in pairs(FeatureNames.Eyebrows) do
-        EyebrowPage:RegisterElement('button', {
-            label = v,
-            style = {
-            }
-        }, function()
+    EyebrowPage:RegisterElement('pagearrows', {
+        slot = 'content',
+        total = ' Move Cam Up',
+        current = 'Move Cam Down ',
+        style = {},
+    }, function(data)
+        if data.value == 'forward' then
+            CamZ = CamZ + 0.1
+            SetCamCoord(CharacterCamera, Config.CameraCoords.creation.x - 0.2, Config.CameraCoords.creation.y, CamZ)
+        else
+            CamZ = CamZ - 0.1
+            SetCamCoord(CharacterCamera, Config.CameraCoords.creation.x - 0.2, Config.CameraCoords.creation.y, CamZ)
+        end
+    end)
+    EyebrowPage:RegisterElement('pagearrows', {
+        slot = 'content',
+        total = ' Rotate Right ',
+        current = 'Rotate Left ',
+        style = {},
+    }, function(data)
+        if data.value == 'forward' then
+            local heading = GetEntityHeading(PlayerPedId())
+            SetEntityHeading(PlayerPedId(), heading + 10.0)
+        else
+            local heading = GetEntityHeading(PlayerPedId())
+            SetEntityHeading(PlayerPedId(), heading - 10.0)
+        end
+    end)
+    EyebrowPage:RegisterElement('arrows', {
+        label = "Opacity",
+        start = 11,
+        options = {
+            0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0
+        },
 
-        end)
-    end
+    }, function(data)
+        -- This gets triggered whenever the arrow selected value changes
+        EyebrowOpacity = data.value
+        if EyebrowOpacity == 1 then
+            EyebrowOpacity = 1.0
+        end
+        ChangeOverlay('eyebrows', 1, 1, 0, 0, 0, 1.0, 0, 1, 254, 254, 254, 0, EyebrowOpacity, Albedo)
+        SelectedAttributeElements['BrowOpacity'] = { value = data.value }
+    end)
+
+    EyebrowPage:RegisterElement('slider', {
+        label = "Variant",
+        start = 1,
+        min = 0,
+        max = #overlays_info['eyebrows'],
+        steps = 1,
+
+    }, function(data)
+        ChangeOverlay('eyebrows', 1, data.value, 0, 0, 0, 1.0, 0, 1, 254, 254, 254, 0, EyebrowOpacity, Albedo)
+        SelectedAttributeElements['EyebrowVariant'] = { value = data.value }
+    end)
+
+    EyebrowGrid = EyebrowPage:RegisterElement('gridslider', {
+        leftlabel = 'Eyebrow Width -',
+        rightlabel = 'Eyebrow Width +',
+        toplabel = 'Eyebrow Height +',
+        bottomlabel = 'Eyebrow Height -',
+        maxx = 1,
+        maxy = 1,
+        arrowsteps = 10,
+        precision = 1
+    }, function(data)
+        SetCharExpression(PlayerPedId(), 0x2FF9, tonumber(data.value.x))
+        SetCharExpression(PlayerPedId(), 0x3303, tonumber(data.value.y))
+        SelectedAttributeElements['EyebrowWidth'] = { value = tonumber(data.value.x), hash = 0x2FF9 }
+        SelectedAttributeElements['EyebrowHeight'] = { value = tonumber(data.value.y), hash = 0x3303 }
+        UpdatePedVariation(PlayerPedId())
+    end)
 end
 
 function CreateEarsPage()
@@ -355,46 +672,71 @@ function CreateEarsPage()
         style = {
         },
     }, function()
+        SwitchCam(Config.CameraCoords.creation.x, Config.CameraCoords.creation.y,
+            Config.CameraCoords.creation.z, Config.CameraCoords.creation.h, Config.CameraCoords.creation.zoom)
         MainAppearanceMenu:RouteTo()
     end)
-    for key, v in pairs(FeatureNames.Ears) do
-        EarPage:RegisterElement('button', {
-            label = v,
-            style = {
-            }
-        }, function()
-
-        end)
-    end
-end
-
-function CreateFacePage()
-    FacePage:RegisterElement('header', {
-        value = 'My First Menu',
-        slot = "header",
-        style = {}
-    })
-    FacePage:RegisterElement('subheader', {
-        value = "First Page",
-        slot = "header",
-        style = {}
-    })
-    FacePage:RegisterElement('button', {
-        label = "Go Back",
-        style = {
-        },
-    }, function()
-        MainAppearanceMenu:RouteTo()
+    EarPage:RegisterElement('pagearrows', {
+        slot = 'content',
+        total = ' Move Cam Up',
+        current = 'Move Cam Down ',
+        style = {},
+    }, function(data)
+        if data.value == 'forward' then
+            CamZ = CamZ + 0.1
+            SetCamCoord(CharacterCamera, Config.CameraCoords.creation.x - 0.2, Config.CameraCoords.creation.y, CamZ)
+        else
+            CamZ = CamZ - 0.1
+            SetCamCoord(CharacterCamera, Config.CameraCoords.creation.x - 0.2, Config.CameraCoords.creation.y, CamZ)
+        end
     end)
-    for key, v in pairs(FeatureNames.Face) do
-        FacePage:RegisterElement('button', {
-            label = v,
-            style = {
-            }
-        }, function()
+    EarPage:RegisterElement('pagearrows', {
+        slot = 'content',
+        total = ' Rotate Right ',
+        current = 'Rotate Left ',
+        style = {},
+    }, function(data)
+        if data.value == 'forward' then
+            local heading = GetEntityHeading(PlayerPedId())
+            SetEntityHeading(PlayerPedId(), heading + 10.0)
+        else
+            local heading = GetEntityHeading(PlayerPedId())
+            SetEntityHeading(PlayerPedId(), heading - 10.0)
+        end
+    end)
 
-        end)
-    end
+    EarGrid1 = EarPage:RegisterElement('gridslider', {
+        leftlabel = 'Ear Width -',
+        rightlabel = 'Ear Width +',
+        toplabel = 'Ear Height +',
+        bottomlabel = 'Ear Height -',
+        maxx = 1,
+        maxy = 1,
+        arrowsteps = 10,
+        precision = 1
+    }, function(data)
+        SetCharExpression(PlayerPedId(), 0xC04F, tonumber(data.value.x))
+        SetCharExpression(PlayerPedId(), 0x2844, tonumber(data.value.y))
+        SelectedAttributeElements['EarWidth'] = { value = tonumber(data.value.x), hash = 0xC04F }
+        SelectedAttributeElements['EarHeight'] = { value = tonumber(data.value.y), hash = 0x2844 }
+        UpdatePedVariation(PlayerPedId())
+    end)
+    EarGrid2 = EarPage:RegisterElement('gridslider', {
+        leftlabel = 'Earlobe Size -',
+        rightlabel = 'Earlobe Size +',
+        toplabel = 'Ear Angle +',
+        bottomlabel = 'Ear Angle -',
+        maxx = 1,
+        maxy = 1,
+        arrowsteps = 10,
+        precision = 1
+    }, function(data)
+        SetCharExpression(PlayerPedId(), 0xED30, tonumber(data.value.x))
+        SetCharExpression(PlayerPedId(), 0xB6CE, tonumber(data.value.y))
+        SelectedAttributeElements['EarSize'] = { value = tonumber(data.value.x), hash = 0xED30 }
+        SelectedAttributeElements['EarAngle'] = { value = tonumber(data.value.y), hash = 0xB6CE }
+        UpdatePedVariation(PlayerPedId())
+    end)
 end
 
 function CreateJawPage()
@@ -413,17 +755,65 @@ function CreateJawPage()
         style = {
         },
     }, function()
+        SwitchCam(Config.CameraCoords.creation.x, Config.CameraCoords.creation.y,
+            Config.CameraCoords.creation.z, Config.CameraCoords.creation.h, Config.CameraCoords.creation.zoom)
         MainAppearanceMenu:RouteTo()
     end)
-    for key, v in pairs(FeatureNames.Jaw) do
-        JawPage:RegisterElement('button', {
-            label = v,
-            style = {
-            }
-        }, function()
-
-        end)
-    end
+    JawPage:RegisterElement('pagearrows', {
+        slot = 'content',
+        total = ' Move Cam Up',
+        current = 'Move Cam Down ',
+        style = {},
+    }, function(data)
+        if data.value == 'forward' then
+            CamZ = CamZ + 0.1
+            SetCamCoord(CharacterCamera, Config.CameraCoords.creation.x - 0.2, Config.CameraCoords.creation.y, CamZ)
+        else
+            CamZ = CamZ - 0.1
+            SetCamCoord(CharacterCamera, Config.CameraCoords.creation.x - 0.2, Config.CameraCoords.creation.y, CamZ)
+        end
+    end)
+    JawPage:RegisterElement('pagearrows', {
+        slot = 'content',
+        total = ' Rotate Right ',
+        current = 'Rotate Left ',
+        style = {},
+    }, function(data)
+        if data.value == 'forward' then
+            local heading = GetEntityHeading(PlayerPedId())
+            SetEntityHeading(PlayerPedId(), heading + 10.0)
+        else
+            local heading = GetEntityHeading(PlayerPedId())
+            SetEntityHeading(PlayerPedId(), heading - 10.0)
+        end
+    end)
+    JawGrid1 = JawPage:RegisterElement('gridslider', {
+        leftlabel = 'Jaw Width -',
+        rightlabel = 'Jaw Width +',
+        toplabel = 'Jaw Height +',
+        bottomlabel = 'Jaw Height -',
+        maxx = 1,
+        maxy = 1,
+        arrowsteps = 10,
+        precision = 1
+    }, function(data)
+        SetCharExpression(PlayerPedId(), 0xEBAE, tonumber(data.value.x))
+        SetCharExpression(PlayerPedId(), 0x8D0A, tonumber(data.value.y))
+        SelectedAttributeElements['JawWidth'] = { value = tonumber(data.value.x), hash = 0xEBAE }
+        SelectedAttributeElements['JawHeight'] = { value = tonumber(data.value.y), hash = 0x8D0A }
+        UpdatePedVariation(PlayerPedId())
+    end)
+    JawGrid2 = JawPage:RegisterElement('gridslider', {
+        leftlabel = 'Jaw Depth -',
+        rightlabel = 'Jaw Depth +',
+        maxx = 1,
+        arrowsteps = 10,
+        precision = 1
+    }, function(data)
+        SetCharExpression(PlayerPedId(), 0x1DF6, tonumber(data.value.x))
+        SelectedAttributeElements['JawDepth'] = { value = tonumber(data.value.x), hash = 0x1DF6 }
+        UpdatePedVariation(PlayerPedId())
+    end)
 end
 
 function CreateMouthPage()
@@ -442,9 +832,37 @@ function CreateMouthPage()
         style = {
         },
     }, function()
-        MouthPlacement = nil
-        MouthTuning = nil
+        SwitchCam(Config.CameraCoords.creation.x, Config.CameraCoords.creation.y,
+            Config.CameraCoords.creation.z, Config.CameraCoords.creation.h, Config.CameraCoords.creation.zoom)
         MainAppearanceMenu:RouteTo()
+    end)
+    MouthPage:RegisterElement('pagearrows', {
+        slot = 'content',
+        total = ' Move Cam Up',
+        current = 'Move Cam Down ',
+        style = {},
+    }, function(data)
+        if data.value == 'forward' then
+            CamZ = CamZ + 0.1
+            SetCamCoord(CharacterCamera, Config.CameraCoords.creation.x - 0.2, Config.CameraCoords.creation.y, CamZ)
+        else
+            CamZ = CamZ - 0.1
+            SetCamCoord(CharacterCamera, Config.CameraCoords.creation.x - 0.2, Config.CameraCoords.creation.y, CamZ)
+        end
+    end)
+    MouthPage:RegisterElement('pagearrows', {
+        slot = 'content',
+        total = ' Rotate Right ',
+        current = 'Rotate Left ',
+        style = {},
+    }, function(data)
+        if data.value == 'forward' then
+            local heading = GetEntityHeading(PlayerPedId())
+            SetEntityHeading(PlayerPedId(), heading + 10.0)
+        else
+            local heading = GetEntityHeading(PlayerPedId())
+            SetEntityHeading(PlayerPedId(), heading - 10.0)
+        end
     end)
     MouthPage:RegisterElement('button', {
         label = "Mouth Placement",
@@ -556,6 +974,147 @@ function CreateMouthPage()
     end)
 end
 
+function CreateNosePage()
+    NosePage:RegisterElement('header', {
+        value = 'My First Menu',
+        slot = "header",
+        style = {}
+    })
+    NosePage:RegisterElement('subheader', {
+        value = "First Page",
+        slot = "header",
+        style = {}
+    })
+    NosePage:RegisterElement('button', {
+        label = "Go Back",
+        style = {
+        },
+    }, function()
+        SwitchCam(Config.CameraCoords.creation.x, Config.CameraCoords.creation.y,
+            Config.CameraCoords.creation.z, Config.CameraCoords.creation.h, Config.CameraCoords.creation.zoom)
+        MainAppearanceMenu:RouteTo()
+    end)
+
+    NosePage:RegisterElement('pagearrows', {
+        slot = 'content',
+        total = ' Move Cam Up',
+        current = 'Move Cam Down ',
+        style = {},
+    }, function(data)
+        if data.value == 'forward' then
+            CamZ = CamZ + 0.1
+            SetCamCoord(CharacterCamera, Config.CameraCoords.creation.x - 0.2, Config.CameraCoords.creation.y, CamZ)
+        else
+            CamZ = CamZ - 0.1
+            SetCamCoord(CharacterCamera, Config.CameraCoords.creation.x - 0.2, Config.CameraCoords.creation.y, CamZ)
+        end
+    end)
+    NosePage:RegisterElement('pagearrows', {
+        slot = 'content',
+        total = ' Rotate Right ',
+        current = 'Rotate Left ',
+        style = {},
+    }, function(data)
+        if data.value == 'forward' then
+            local heading = GetEntityHeading(PlayerPedId())
+            SetEntityHeading(PlayerPedId(), heading + 10.0)
+        else
+            local heading = GetEntityHeading(PlayerPedId())
+            SetEntityHeading(PlayerPedId(), heading - 10.0)
+        end
+    end)
+
+    NosePage:RegisterElement('button', {
+        label = "Nose Width/Height and Curve/Angle",
+        style = {
+        },
+    }, function()
+        if NoseGrid1 then
+            NoseGrid1:unRegister()
+        end
+        if NoseGrid2 then
+            NoseGrid2:unRegister()
+        end
+        if NoseGrid3 then
+            NoseGrid3:unRegister()
+        end
+        CreateNoseWidthHeight()
+        NosePage:RouteTo()
+    end)
+    NosePage:RegisterElement('button', {
+        label = "Nose Size and Nostrils",
+        style = {
+        },
+    }, function()
+        if NoseGrid1 then
+            NoseGrid1:unRegister()
+        end
+        if NoseGrid2 then
+            NoseGrid2:unRegister()
+        end
+        if NoseGrid3 then
+            NoseGrid3:unRegister()
+        end
+        CreateNoseSize()
+        NosePage:RouteTo()
+        --end
+    end)
+end
+
+function CreateNoseWidthHeight()
+    NoseGrid1 = NosePage:RegisterElement('gridslider', {
+        leftlabel = 'Nose Width -',
+        rightlabel = 'Nose Width +',
+        toplabel = 'Nose Height +',
+        bottomlabel = 'Nose Height -',
+        maxx = 1,
+        maxy = 1,
+        arrowsteps = 10,
+        precision = 1
+    }, function(data)
+        SetCharExpression(PlayerPedId(), 0x6E7F, tonumber(data.value.x))
+        SetCharExpression(PlayerPedId(), 0x03F5, tonumber(data.value.y))
+        SelectedAttributeElements['NoseWidth'] = { value = tonumber(data.value.x), hash = 0x6E7F }
+        SelectedAttributeElements['NoseHeight'] = { value = tonumber(data.value.y), hash = 0x03F5 }
+        UpdatePedVariation(PlayerPedId())
+    end)
+    NoseGrid2 = NosePage:RegisterElement('gridslider', {
+        leftlabel = 'Nose Curve -',
+        rightlabel = 'Nose Curve +',
+        toplabel = 'Nose Angle +',
+        bottomlabel = 'Nose Angle -',
+        maxx = 1,
+        maxy = 1,
+        arrowsteps = 10,
+        precision = 1
+    }, function(data)
+        SetCharExpression(PlayerPedId(), 0xF156, tonumber(data.value.x))
+        SetCharExpression(PlayerPedId(), 0x34B1, tonumber(data.value.y))
+        SelectedAttributeElements['NoseCurve'] = { value = tonumber(data.value.x), hash = 0xF156 }
+        SelectedAttributeElements['NoseAngle'] = { value = tonumber(data.value.y), hash = 0x34B1 }
+        UpdatePedVariation(PlayerPedId())
+    end)
+end
+
+function CreateNoseSize()
+    NoseGrid3 = NosePage:RegisterElement('gridslider', {
+        leftlabel = 'Nose Size -',
+        rightlabel = 'Nose Size +',
+        toplabel = 'Nostril Distance +',
+        bottomlabel = 'Nostril Distance -',
+        maxx = 1,
+        maxy = 1,
+        arrowsteps = 10,
+        precision = 1
+    }, function(data)
+        SetCharExpression(PlayerPedId(), 0x3471, tonumber(data.value.x))
+        SetCharExpression(PlayerPedId(), 0x561E, tonumber(data.value.y))
+
+        UpdatePedVariation(PlayerPedId())
+    end)
+end
+
+--Mouth Tuning
 function CreateUpperLipTuning()
     UpperLipGrid = MouthPage:RegisterElement('gridslider', {
         leftlabel = 'Upper Lip Width -',
@@ -569,6 +1128,8 @@ function CreateUpperLipTuning()
     }, function(data)
         SetCharExpression(PlayerPedId(), 0x91C1, tonumber(data.value.x))
         SetCharExpression(PlayerPedId(), 0x1A00, tonumber(data.value.y))
+        SelectedAttributeElements['UpLipWidth'] = { value = tonumber(data.value.x), hash = 0x91C1 }
+        SelectedAttributeElements['UpLipHeight'] = { value = tonumber(data.value.y), hash = 0x1A00 }
         UpdatePedVariation(PlayerPedId())
     end)
 
@@ -580,6 +1141,7 @@ function CreateUpperLipTuning()
         precision = 1
     }, function(data)
         SetCharExpression(PlayerPedId(), 0xC375, tonumber(data.value.x))
+        SelectedAttributeElements['UpLipDepth'] = { value = tonumber(data.value.x), hash = 0xC375 }
         UpdatePedVariation(PlayerPedId())
     end)
 end
@@ -597,6 +1159,8 @@ function CreateLowerLipTuning()
     }, function(data)
         SetCharExpression(PlayerPedId(), 0xB0B0, tonumber(data.value.x))
         SetCharExpression(PlayerPedId(), 0xBB4D, tonumber(data.value.y))
+        SelectedAttributeElements['LowLipWidth'] = { value = tonumber(data.value.x), hash = 0xB0B0 }
+        SelectedAttributeElements['LowLipHeight'] = { value = tonumber(data.value.y), hash = 0xBB4D }
         UpdatePedVariation(PlayerPedId())
     end)
     LowerLipGrid2 = MouthPage:RegisterElement('gridslider', {
@@ -607,6 +1171,7 @@ function CreateLowerLipTuning()
         precision = 1
     }, function(data)
         SetCharExpression(PlayerPedId(), 0x5D16, tonumber(data.value.x))
+        SelectedAttributeElements['LowLipDepth'] = { value = tonumber(data.value.x), hash = 0x5D16 }
         UpdatePedVariation(PlayerPedId())
     end)
 end
@@ -624,6 +1189,8 @@ function CreateMouthTuning()
     }, function(data)
         SetCharExpression(PlayerPedId(), 61541, tonumber(data.value.x))
         SetCharExpression(PlayerPedId(), 43625, tonumber(data.value.y))
+        SelectedAttributeElements['MouthWidth'] = { value = tonumber(data.value.x), hash = 61541 }
+        SelectedAttributeElements['MouthDepth'] = { value = tonumber(data.value.y), hash = 43625 }
         UpdatePedVariation(PlayerPedId())
     end)
 end
@@ -639,14 +1206,19 @@ function CreateMouthPlacement()
         arrowsteps = 10,
         precision = 1
     }, function(data)
-        print(data.value.x)
-        print(data.value.y)
         SetCharExpression(PlayerPedId(), 31427, tonumber(data.value.x))
         SetCharExpression(PlayerPedId(), 16653, tonumber(data.value.y))
+        SelectedAttributeElements['MouthXPos'] = { value = tonumber(data.value.x), hash = 31427 }
+        SelectedAttributeElements['MouthYPos'] = { value = tonumber(data.value.y), hash = 16653 }
     end)
 end
 
+--Hair Page
 function CreateHairPage()
+    local Gender = GetGender()
+
+    HairandBeardPage = MyMenu:RegisterPage('hairandbeard:page')
+
     HairCategoryPage:RegisterElement('header', {
         value = 'My First Menu',
         slot = "header",
@@ -662,86 +1234,99 @@ function CreateHairPage()
         style = {
         },
     }, function()
+        SwitchCam(Config.CameraCoords.creation.x, Config.CameraCoords.creation.y,
+            Config.CameraCoords.creation.z, Config.CameraCoords.creation.h, Config.CameraCoords.creation.zoom)
         MainAppearanceMenu:RouteTo()
     end)
+
+
     for key, v in pairs(HairandBeards[Gender]) do
         HairCategoryPage:RegisterElement('button', {
             label = key,
             style = {
             }
         }, function()
-            HairandBeardPage = MyMenu:RegisterPage('hair:page')
-            CreateHairandBeardPage()
+            CreateHairandBeardPage(key)
+            MainComponent = 0
             HairandBeardPage:RouteTo()
-
-
             table.insert(SelectedAttributes, key)
-            if SelectedAttributes[key .. 'Category'] == nil then
-                CategoryElement = HairandBeardPage:RegisterElement('slider', {
-                    label = value,
-                    start = 1,
-                    min = 1,
-                    max = #HairandBeards[Gender][key],
-                    steps = 1
-                }, function(data)
-                    MainComponent = data.value
-                    if VariantComponent == nil then
-                        VariantComponent = 1
-                    end
-                    if MainComponent > 0 then
-                        SelectedAttributes[key .. 'Variant'] = SelectedAttributes[key .. 'Variant']:update({
-                            label = key .. ' variant',
-                            max = #HairandBeards[Gender][key][MainComponent], --#v.CategoryData[inputvalue],
-                        })
-                        AddComponent(PlayerPedId(), HairandBeards[Gender][key][MainComponent][VariantComponent].hash, key)
-                        SelectedAttributeElements[key] = HairandBeards[Gender][key][MainComponent][1].hash
+            --if SelectedAttributes[key .. 'Category'] == nil then
+            CategoryElement = HairandBeardPage:RegisterElement('slider', {
+                label = value,
+                start = 0,
+                min = 0,
+                max = #HairandBeards[Gender][key],
+                steps = 1
+            }, function(data)
+                MainComponent = data.value
+                if VariantComponent == nil then
+                    VariantComponent = 1
+                end
+                if MainComponent > 0 then
+                    SelectedAttributes[key .. 'Variant'] = SelectedAttributes[key .. 'Variant']:update({
+                        label = key .. ' variant',
+                        max = #HairandBeards[Gender][key][MainComponent], --#v.CategoryData[inputvalue],
+                    })
+                    AddComponent(PlayerPedId(), HairandBeards[Gender][key][MainComponent][VariantComponent].hash, key)
+                    local type = Citizen.InvokeNative(0xEC9A1261BF0CE510, PlayerPedId())
+                    ActiveCatagory = Citizen.InvokeNative(0x5FF9A878C3D115B8,
+                        HairandBeards[Gender][key][MainComponent][1].hash, type, true)
+                    SelectedAttributeElements[key .. 'Category'] = { hash = HairandBeards[Gender][key][MainComponent][1]
+                    .hash }
+                    SelectedAttributeElements[key .. 'Variant'] = { hash = HairandBeards[Gender][key][MainComponent][1]
+                    .hash }
 
-                        TextElement = TextElement:update({
-                            value = HairandBeards[Gender][key][MainComponent][VariantComponent].color
-                        })
-                    else
-                        Citizen.InvokeNative(0xDF631E4BCE1B1FC4, PlayerPedId(), ActiveCatagory, 0, 0)
-                        Citizen.InvokeNative(0xCC8CA3E88256E58F, PlayerPedId(), 0, 1, 1, 1, 0) -- Refresh PedVariation
-                    end
-                end)
+                    TextElement = TextElement:update({
+                        value = HairandBeards[Gender][key][MainComponent][VariantComponent].color
+                    })
+                else
+                    Citizen.InvokeNative(0xDF631E4BCE1B1FC4, PlayerPedId(), ActiveCatagory, 0, 0)
+                    Citizen.InvokeNative(0xCC8CA3E88256E58F, PlayerPedId(), 0, 1, 1, 1, 0) -- Refresh PedVariation
+                end
+            end)
 
-                VariantElement = HairandBeardPage:RegisterElement('slider', {
-                    label = key .. ' variant',
-                    start = 1,
-                    min = 1,
-                    max = 5, --#v.CategoryData[inputvalue],
-                    steps = 1
-                }, function(data)
-                    VariantComponent = data.value
-                    if VariantComponent > 0 then
-                        SelectedAttributes[key .. 'Variant'] = SelectedAttributes[key .. 'Variant']:update({
-                            label = key .. ' variant',
-                            max = #HairandBeards[Gender][key][MainComponent], --#v.CategoryData[inputvalue],
-                        })
+            VariantElement = HairandBeardPage:RegisterElement('slider', {
+                label = key .. ' variant',
+                start = 1,
+                min = 1,
+                max = 5, --#v.CategoryData[inputvalue],
+                steps = 1
+            }, function(data)
+                VariantComponent = data.value
+                if VariantComponent > 0 and MainComponent > 0 then
+                    SelectedAttributes[key .. 'Variant'] = SelectedAttributes[key .. 'Variant']:update({
+                        label = key .. ' variant',
+                        max = #HairandBeards[Gender][key][MainComponent], --#v.CategoryData[inputvalue],
+                    })
 
-                        AddComponent(PlayerPedId(), HairandBeards[Gender][key][MainComponent][VariantComponent].hash, key)
-                        TextElement = TextElement:update({
-                            value = HairandBeards[Gender][key][MainComponent][VariantComponent].color
-                        })
-                    else
-                        Citizen.InvokeNative(0xDF631E4BCE1B1FC4, PlayerPedId(), ActiveCatagory, 0, 0)
-                        Citizen.InvokeNative(0xCC8CA3E88256E58F, PlayerPedId(), 0, 1, 1, 1, 0) -- Refresh PedVariation
-                    end
-                end)
+                    AddComponent(PlayerPedId(), HairandBeards[Gender][key][MainComponent][VariantComponent].hash, key)
+                    local type = Citizen.InvokeNative(0xEC9A1261BF0CE510, PlayerPedId())
+                    ActiveCatagory = Citizen.InvokeNative(0x5FF9A878C3D115B8,
+                        HairandBeards[Gender][key][MainComponent][VariantComponent].hash, type, true)
+                    SelectedAttributeElements[key .. 'Variant'] = { hash = HairandBeards[Gender][key][MainComponent]
+                    [VariantComponent].hash }
 
-                -- Store your elements with unique keys so that we can easily retrieve these later when data needs to be updated. We are appenting strings so that it stays unique.
-                SelectedAttributes[key .. 'Category'] = CategoryElement
-                SelectedAttributes[key .. 'Variant'] = VariantElement
-                CategoryElement = CategoryElement:update({
-                    label = key,
-                    max = #HairandBeards[Gender][key], --#v.CategoryData[inputvalue],
-                })
+                    TextElement = TextElement:update({
+                        value = HairandBeards[Gender][key][MainComponent][VariantComponent].color
+                    })
+                end
+            end)
 
-                VariantElement = VariantElement:update({
-                    label = key .. ' variant',
-                    max = #HairandBeards[Gender][key], --#v.CategoryData[inputvalue],
-                })
-            end
+            -- Store your elements with unique keys so that we can easily retrieve these later when data needs to be updated. We are appenting strings so that it stays unique.
+
+
+            SelectedAttributes[key .. 'Category'] = CategoryElement
+            SelectedAttributes[key .. 'Variant'] = VariantElement
+            CategoryElement = CategoryElement:update({
+                label = key,
+                max = #HairandBeards[Gender][key], --#v.CategoryData[inputvalue],
+            })
+
+            VariantElement = VariantElement:update({
+                label = key .. ' variant',
+                max = #HairandBeards[Gender][key], --#v.CategoryData[inputvalue],
+            })
+            --end
             TextElement = HairandBeardPage:RegisterElement('textdisplay', {
                 value = 'test',
                 style = {}
@@ -750,7 +1335,7 @@ function CreateHairPage()
     end
 end
 
-function CreateHairandBeardPage()
+function CreateHairandBeardPage(choice)
     HairandBeardPage:RegisterElement('header', {
         value = 'My First Menu',
         slot = "header",
@@ -766,32 +1351,138 @@ function CreateHairandBeardPage()
         style = {
         },
     }, function()
+        SwitchCam(Config.CameraCoords.creation.x, Config.CameraCoords.creation.y,
+            Config.CameraCoords.creation.z, Config.CameraCoords.creation.h, Config.CameraCoords.creation.zoom)
         MainAppearanceMenu:RouteTo()
     end)
+    HairandBeardPage:RegisterElement('pagearrows', {
+        slot = 'content',
+        total = ' Move Cam Up',
+        current = 'Move Cam Down ',
+        style = {},
+    }, function(data)
+        if data.value == 'forward' then
+            CamZ = CamZ + 0.1
+            SetCamCoord(CharacterCamera, Config.CameraCoords.creation.x - 0.2, Config.CameraCoords.creation.y, CamZ)
+        else
+            CamZ = CamZ - 0.1
+            SetCamCoord(CharacterCamera, Config.CameraCoords.creation.x - 0.2, Config.CameraCoords.creation.y, CamZ)
+        end
+    end)
+    HairandBeardPage:RegisterElement('pagearrows', {
+        slot = 'content',
+        total = ' Rotate Right ',
+        current = 'Rotate Left ',
+        style = {},
+    }, function(data)
+        if data.value == 'forward' then
+            local heading = GetEntityHeading(PlayerPedId())
+            SetEntityHeading(PlayerPedId(), heading + 10.0)
+        else
+            local heading = GetEntityHeading(PlayerPedId())
+            SetEntityHeading(PlayerPedId(), heading - 10.0)
+        end
+    end)
+    if choice == 'beard' then
+        if Gender == "Male" then
+            HairandBeardPage:RegisterElement("toggle", {
+                label = "Beard Stuble",
+                start = false,
+
+            }, function(data)
+                if data.value == true then
+                    ChangeOverlay('beardstabble', 1, 1, 0, 0, 0, 1.0, 0, 1, 254, 254, 254, 0, 1.0, Albedo)
+                else
+                    ChangeOverlay('beardstabble', 1, 1, 0, 0, 0, 1.0, 0, 1, 254, 254, 254, 0, 0.0, Albedo)
+                end
+                -- This gets triggered whenever the toggle value changes
+            end)
+            HairandBeardPage:RegisterElement('arrows', {
+                label = "Opacity",
+                start = 11,
+                options = {
+                    0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0
+                },
+            }, function(data)
+                -- This gets triggered whenever the arrow selected value changes
+                BeardOpacity = data.value
+                if BeardOpacity == 1 then
+                    BeardOpacity = 1.0
+                end
+                ChangeOverlay('beardstabble', 1, 1, 0, 0, 0, 1.0, 0, 1, 254, 254, 254, 0, BeardOpacity, Albedo)
+            end)
+        end
+    end
+    if choice == 'hair' then
+        hairacc = 'Hair Accessories'
+        if Gender == "Female" then
+            CategoryElement = HairandBeardPage:RegisterElement('slider', {
+                label = "Hair Accessories",
+                start = 0,
+                min = 0,
+                max = #CharacterConfig.Clothing.Clothes[Gender].Accessories.HairAccesories.CategoryData,
+                steps = 1,
+
+            }, function(data)
+                HairPiece = CharacterConfig.Clothing.Clothes[Gender].Accessories.HairAccesories.CategoryData
+                MainHairComponent = data.value
+                if VariantComponent == nil then
+                    VariantComponent = 1
+                end
+                if MainHairComponent > 0 then
+                    SelectedAttributes[hairacc .. 'Variant'] = SelectedAttributes[hairacc .. 'Variant']:update({
+                        label = hairacc .. ' variant',
+                        max = #CharacterConfig.Clothing.Clothes[Gender].Accessories.HairAccesories.CategoryData
+                            [MainHairComponent], --#v.CategoryData[inputvalue],
+                    })
+                    AddComponent(PlayerPedId(), HairPiece[MainHairComponent][VariantComponent].hash, hairacc)
+                    SelectedAttributeElements[hairacc] = CharacterConfig.Clothing.Clothes[Gender].Accessories
+                        .HairAccesories.CategoryData[MainHairComponent][1].hash
+                    local type = Citizen.InvokeNative(0xEC9A1261BF0CE510, PlayerPedId())
+                    ActiveCatagory = Citizen.InvokeNative(0x5FF9A878C3D115B8, HairPiece[MainHairComponent][1].hash, type,
+                        true)
+                    VariantElement = VariantElement:update({
+                        label = hairacc .. ' variant',
+                        max = #HairPiece[MainHairComponent], --#v.CategoryData[inputvalue],
+                    })
+                else
+                    Citizen.InvokeNative(0xDF631E4BCE1B1FC4, PlayerPedId(), ActiveCatagory, 0, 0)
+                    Citizen.InvokeNative(0xCC8CA3E88256E58F, PlayerPedId(), 0, 1, 1, 1, 0) -- Refresh PedVariation
+                end
+            end)
+            VariantElement = HairandBeardPage:RegisterElement('slider', {
+                label = "Hair Accessories Variants",
+                start = 1,
+                min = 1,
+                max = 10,
+                steps = 1,
+
+            }, function(data)
+                print(MainComponent)
+                HairPiece = CharacterConfig.Clothing.Clothes[Gender].Accessories.HairAccesories.CategoryData
+                    [MainHairComponent]
+                print(HairPiece)
+                AddComponent(PlayerPedId(), HairPiece[data.value].hash, nil)
+            end)
+            SelectedAttributes[hairacc .. 'Category'] = CategoryElement
+            SelectedAttributes[hairacc .. 'Variant'] = VariantElement
+        end
+    end
+
+
     HairandBeardPage:RegisterElement('bottomline', {
         slot = "header",
         style = {
 
         }
     })
-    HairandBeardPage:RegisterElement('button', {
-        label = "Go Back",
-        style = {
-        },
-    }, function()
-        HairCategoryPage:RouteTo()
-        CategoryElement:unRegister()
-        VariantElement:unRegister()
-        TextElement:unRegister()
-        for k, v in pairs(HairandBeards[Gender]) do
-            SelectedAttributes[k .. 'Category'] = nil
-        end
-    end)
 end
 
 RegisterNetEvent('FeatherMenu:closed', function(data)
     MenuOpened = false
-    Header1:unRegister()
+    if Header1 then
+        Header1:unRegister()
+    end
 end)
 
 

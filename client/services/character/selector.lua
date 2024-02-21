@@ -1,20 +1,31 @@
-local Obj1, Obj2, Obj3, Obj4, ped
-local firstprompt, secondprompt, thirdprompt
+local Obj1, Obj2, Obj3, Obj4
 CharModel = nil
 
-
-local spawnedPeds= {}
+local spawnedPeds = {}
 RegisterNetEvent('feather-character:SendCharactersData', function(clothing, attributes)
     SentClothing = json.decode(clothing)
     SentAttributes = json.decode(attributes)
-    CleanupScript()
+    local AlbedoHash
     LoadPlayer(CharModel)
+
     for category, hash in pairs(SentClothing) do
         AddComponent(PlayerPedId(), hash, category)
     end
-    for category, hash in pairs(SentAttributes) do
-        AddComponent(PlayerPedId(), hash, category)
+    for category, attribute in pairs(SentAttributes) do
+        if category == 'Albedo' then
+            AlbedoHash = attribute.hash
+        end
+        if attribute.value then
+            SetCharExpression(PlayerPedId(), attribute.hash, attribute.value)
+        else
+            AddComponent(PlayerPedId(), attribute.hash, category)
+        end
+        if category == 'EyebrowVariant' then
+            ChangeOverlay('eyebrows', 1, tonumber(attribute.value), 0, 0, 0, 1.0, 0, 1, 254, 254, 254, 0, 1.0,tonumber(AlbedoHash))
+        end
     end
+
+    CleanupScript()
 end)
 
 function CleanupCharacterSelect()
@@ -32,7 +43,6 @@ function CleanupCharacterSelect()
     spawnedPeds = {}
     MyMenu:Close({})
     CharInfoMenu:Close({})
-
 end
 
 function SpawnProps()
@@ -50,23 +60,18 @@ RegisterCommand('spawnped', function()
     local coords = GetEntityCoords(PlayerPedId())
     local ped = FeatherCore.Ped:Create('mp_male', coords.x, coords.y, coords.z, 0, 'world', false, false)
     local rawped = ped:GetPed()
-    TriggerServerEvent('feather-character:GetCharactersData', rawped) 
-    Citizen.InvokeNative(0x77FF8D35EEC6BBC4, rawped, 4, 1)            -- outfits
+    TriggerServerEvent('feather-character:GetCharactersData', rawped)
+    Citizen.InvokeNative(0x77FF8D35EEC6BBC4, rawped, 4, 1) -- outfits
     DefaultPedSetup(rawped, true)
 end)
 
+RegisterCommand('getdata', function()
+    TriggerServerEvent('feather-character:GetCharactersData', 173)
+end)
 
 function SpawnCharacters(data)
     Spawned = true
-    local PromptGroup = FeatherCore.Prompt:SetupPromptGroup()                           --Setup Prompt Group
-    local Clothing,Attributes,CharacterInfo = {},{},{}
-
-    firstprompt = PromptGroup:RegisterPrompt("Left", 0x20190AB4, 1, 1, true, 'click')   --Register your first prompt
-    secondprompt = PromptGroup:RegisterPrompt("Right", 0xC97792B7, 1, 1, true, 'click') --Register your first prompt
-    thirdprompt = PromptGroup:RegisterPrompt("Enter", 0xC7B5340A, 1, 1, true, 'click')  --Register your first prompt
-
-    local cameraspot = nil
-    local charCamera = {}
+    local Clothing, Attributes = {}, {}
 
     Maxchars = Config.MaxAllowedChars --Can only be an int value
 
@@ -79,9 +84,9 @@ function SpawnCharacters(data)
         if k > Maxchars then -- Have this first its more optimal, only run the code below if not maxchars
             break
         end
-        charCamera[k] = v.id
         Clothing[k] = json.decode(v.clothing)
         Attributes[k] = json.decode(v.attributes)
+        print(json.encode(Attributes[k]))
 
         CharModel = v.model
         CharAmount = k
@@ -107,28 +112,30 @@ function SpawnCharacters(data)
             end
         end
         if Attributes[k] ~= nil then
-            for category, hash in pairs(Attributes[k]) do
-                AddComponent(RawPed, hash, category)
+            for category, attribute in pairs(Attributes[k]) do
+                if category == 'Albedo' then
+                    AlbedoHash = attribute.hash
+                end
+                if attribute.value then
+                    SetCharExpression(PlayerPedId(), attribute.hash, attribute.value)
+                else
+                    AddComponent(PlayerPedId(), attribute.hash, category)
+                end
+                if category == 'EyebrowVariant' then
+                    ChangeOverlay('eyebrows', 1, tonumber(attribute.value), 0, 0, 0, 1.0, 0, 1, 254, 254, 254, 0, 1.0,tonumber(AlbedoHash))
+                end
             end
         end
     end
-    TriggerEvent('feather-character:CharacterSelectMenu', data,1,CharAmount,Clothing,Attributes)
+    TriggerEvent('feather-character:CharacterSelectMenu', data, 1, CharAmount, Clothing, Attributes)
     SwitchCam(Config.CameraCoords.charcamera[1].x, Config.CameraCoords.charcamera[1].y,
-    Config.CameraCoords.charcamera[1].z, Config.CameraCoords.charcamera[1].h,
-    Config.CameraCoords.charcamera[1].zoom)
+        Config.CameraCoords.charcamera[1].z, Config.CameraCoords.charcamera[1].h,
+        Config.CameraCoords.charcamera[1].zoom)
     while Spawned do
+        Wait(0)
         SetEntityVisible(PlayerPedId(), false)
         FreezeEntityPosition(PlayerPedId(), true)
-
-        Wait(5)
-
-        if cameraspot == nil then
-            thirdprompt:TogglePrompt(false)
-        elseif cameraspot > 0 then
-            thirdprompt:TogglePrompt(true)
-        end
     end
-
 end
 
 --------- Net Events ------

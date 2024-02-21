@@ -1,9 +1,10 @@
 RegisterServerEvent('feather-character:InitiateCharacter', function(id)
     local _source = source
     FeatherCore.Character.InitiateCharacter(_source, id)
+    TriggerEvent('feather-character:GetCharactersData',_source,id)
 end)
 
-RegisterServerEvent('feather-character:GetCharactersData', function(id)
+RegisterServerEvent('feather-character:GetCharactersData', function(source,id)
     local _source = source
     local activeuser
     if id == nil then
@@ -11,6 +12,7 @@ RegisterServerEvent('feather-character:GetCharactersData', function(id)
         id = activeuser.id
     end
     local result = MySQL.query.await("SELECT * FROM characters WHERE id = @id", { ['id'] = id })
+    print(result[1].attributes)
     TriggerClientEvent('feather-character:SendCharactersData', _source, result[1].clothing, result[1].attributes)
 end)
 
@@ -39,8 +41,8 @@ FeatherCore.RPC.Register("SaveCharacterData", function(params, res, player)
     end
     FeatherCore.Character.CreateCharacter(activeuser.id, 1, FirstName, LastName, Model, DOB,
         Img, Config.defaults.money,
-        Config.defaults.gold, Config.defaults.tokens, Config.defaults.xp, Config.SpawnCoords.towns[1].coords.x,
-        Config.SpawnCoords.towns[1].coords.y, Config.SpawnCoords.towns[1].coords.z, "en_us",
+        Config.defaults.gold, Config.defaults.tokens, Config.defaults.xp, Config.SpawnCoords.towns[1].startcoords.x,
+        Config.SpawnCoords.towns[1].startcoords.y, Config.SpawnCoords.towns[1].startcoords.z, "en_us",
         Clothing,
         Attributes, Desc)
     local result = MySQL.query.await("SELECT id FROM characters WHERE user_id = @user_id ORDER BY user_id DESC LIMIT 1",

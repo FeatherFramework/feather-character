@@ -4,3 +4,5 @@ function RunMain()
 end
 RunMain()
 
+Gender = GetGender()
+

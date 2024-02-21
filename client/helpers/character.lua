@@ -18,7 +18,7 @@ function UpdatePedVariation(ped)
     Citizen.InvokeNative(0xCC8CA3E88256E58F, ped, false, true, true, true, false) -- _UPDATE_PED_VARIATION
 end
 
-function StartAnimation(anim)
+function EyesAnim(anim)
     while not HasAnimDictLoaded("FACE_HUMAN@GEN_MALE@BASE") do
         RequestAnimDict("FACE_HUMAN@GEN_MALE@BASE")
         Citizen.Wait(50)
@@ -69,7 +69,6 @@ end
 function SetCharExpression(ped, expressionId, value)
     Citizen.InvokeNative(0x5653AB26C82938CF, ped, expressionId, value)
     UpdatePedVariation(ped)
-
 end
 
 function DefaultPedSetup(ped, male)
@@ -159,6 +158,8 @@ end
 
 
 function SetSex(sex)
+    ChangeOverlay('eyebrows', 1, 1, 0, 0, 0, 1.0, 0, 1, 254, 254, 254, 0, 1.0, Albedo)
+
     if sex == 'male' then
         LoadModel('mp_male')
         SetPlayerModel(PlayerId(), joaat('mp_male'), false)
