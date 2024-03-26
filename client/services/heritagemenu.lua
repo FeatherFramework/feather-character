@@ -12,14 +12,17 @@ MainHeritageMenu:RegisterElement('subheader', {
     slot = "header",
     style = {}
 })
+
 MainHeritageMenu:RegisterElement('bottomline', {
-    slot = "header",
+    slot = "footer",
     style = {
 
     }
 })
 MainHeritageMenu:RegisterElement('button', {
     label = "Go Back",
+    slot = 'footer',
+
     style = {
     },
 }, function()

@@ -9,13 +9,23 @@ SpawnSelectInfo = FeatherMenu:RegisterMenu('feather:spawnselect:menu', {
     },
     contentslot = {
         style = { --This style is what is currently making the content slot scoped and scrollable. If you delete this, it will make the content height dynamic to its inner content.
-            ['height'] = '700px',
+            ['height'] = '750px',
             ['width'] = '300px',
             ['min-height'] = '300px'
         }
     },
     draggable = false,
     canclose = true
+}, {
+    opened = function()
+        print("MENU OPENED!")
+    end,
+    closed = function()
+        print("MENU CLOSED!")
+    end,
+    topage = function(data)
+        print("PAGE CHANGED ", data.pageid)
+    end
 })
 
 local SpawnSelectPage = SpawnSelectInfo:RegisterPage('spawnselect:page')

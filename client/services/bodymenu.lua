@@ -4,13 +4,6 @@ local HeightPage, BodyPage = MyMenu:RegisterPage('height:page'), MyMenu:Register
 
 local BodySlidersMade = nil
 
-CharExpressionValues = {
-    -1.0, -0.9, -0.8, -0.7, -0.6,
-    -0.5, -0.4, -0.3, -0.2, -0.1,
-    0.1, 0.2, 0.3, 0.4, 0.5,
-    0.6, 0.7, 0.8, 0.9, 1.0,
-
-}
 
 MainBodyMenu:RegisterElement('header', {
     value = 'My First Menu',
@@ -18,19 +11,15 @@ MainBodyMenu:RegisterElement('header', {
     style = {}
 })
 MainBodyMenu:RegisterElement('subheader', {
-    value = "First Page",
+    value = "",
     slot = "header",
     style = {}
-})
-MainBodyMenu:RegisterElement('bottomline', {
-    slot = "header",
-    style = {
-
-    }
 })
 
 MainBodyMenu:RegisterElement('button', {
     label = "Go Back",
+    slot = 'footer',
+
     style = {
     },
 }, function()
@@ -43,21 +32,21 @@ function MakeBodySliders()
     if BodySlidersMade == nil then
         BodySlidersMade = true
         MainBodyMenu:RegisterElement('pagearrows', {
-            slot = 'content',
+            slot = 'footer',
             total = ' Zoom Cam In',
             current = 'Zoom Cam Out ',
             style = {},
         }, function(data)
             if data.value == 'forward' then
-                fov = fov - 1.0
-                SetCamFov(CharacterCamera, fov)
+                Fov = Fov - 1.0
+                SetCamFov(CharacterCamera, Fov)
             else
-                fov = fov + 1.0
-                SetCamFov(CharacterCamera, fov)
+                Fov = Fov + 1.0
+                SetCamFov(CharacterCamera, Fov)
             end
         end)
         MainBodyMenu:RegisterElement('pagearrows', {
-            slot = 'content',
+            slot = 'footer',
             total = ' Move Cam Up',
             current = 'Move Cam Down ',
             style = {},
@@ -72,7 +61,7 @@ function MakeBodySliders()
             end
         end)
         MainBodyMenu:RegisterElement('pagearrows', {
-            slot = 'content',
+            slot = 'footer',
             total = ' Rotate Right ',
             current = 'Rotate Left ',
             style = {},
@@ -87,7 +76,7 @@ function MakeBodySliders()
         end)
         HeightSlider = MainBodyMenu:RegisterElement('arrows', {
             label = "Height",
-            start = 1,
+            start = 5,
             options = Config.Heights
         }, function(data)
             if data.value == 1 then
@@ -149,7 +138,6 @@ function MakeBodySliders()
             arrowsteps = 10,
             precision = 1
         }, function(data)
-            print(data.value.x)
 
             SetCharExpression(PlayerPedId(), 8420, tonumber(data.value.x))
             SetCharExpression(PlayerPedId(), 46032, tonumber(data.value.y))
