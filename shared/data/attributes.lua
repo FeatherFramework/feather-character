@@ -68,10 +68,6 @@
                     {id=0x375D4807,albedo=0xB5827817,normal=0x5041B648,ma=0x83F42340,},                              -- {albedo="mp_u_faov_beard_000_ab",normal="mp_u_faov_beard_000_nm",ma="mp_u_faov_beard_000_ma",},
                 },
 
-    ["paintedmasks"] = {
-                    {id=0x5995AA6F,albedo=0x99BCB03F,},                                                              -- {albedo="mp_u_faov_masks_000_ab",},
-                },
-
     ["ageing"]  = {
                     {id=0x96DD8F42,albedo=0x1BA4244B,normal=0xBA46CE92,},                                            -- {albedo="mp_u_faov_acne_000_ab",normal="mp_u_faov_acne_000_nm",},
                     {id=0x6D9DC405,albedo=0xAFE82F0C,normal=0x5CF8808E,},                                            -- {albedo="mp_u_faov_ageing_000_ab",normal="mp_u_faov_ageing_000_nm",},

@@ -1,7 +1,6 @@
 local camera, show
 
 function StartCam(x, y, z, heading, zoom)
-    Citizen.InvokeNative(0x17E0198B3882C2CB, PlayerPedId())
     DestroyAllCams(true)
     camera = CreateCamWithParams("DEFAULT_SCRIPTED_CAMERA", x, y, z, -10.0, 00.00, heading, zoom, true, 0)
     SetCamActive(camera, true)

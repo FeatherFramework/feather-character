@@ -1,7 +1,7 @@
 -- TODO: REMOVE ALL THIS STUFF AS MENUAPI/REDEMTP_MENU_BASE WILL NOT BE NEEDED.
 local FirstName = ''
 local LastName = ''
-
+Fov = 20.0
 MainCharacterPage, ClothingCategoriesPage, UpperClothingPage, LowerClothingPage, AccClothingPage, CategoriesPage, ColorPage =
     MyMenu:RegisterPage('first:page'), MyMenu:RegisterPage('second:page'), MyMenu:RegisterPage('third:page'),
     MyMenu:RegisterPage('fourth:page'), MyMenu:RegisterPage('fifth:page'), MyMenu:RegisterPage('sixth:page'),
@@ -16,7 +16,6 @@ local SelectedColoring
 
 RegisterNetEvent('feather-character:CreateCharacterMenu', function()
     PageOpened = true
-    local fov = 20.0
     if Header1 then
         Header1:unRegister()
     end
@@ -107,6 +106,9 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
         style = {
         }
     }, function()
+        Clothing = json.encode(SelectedClothingElements)
+        Attributes = json.encode(SelectedAttributeElements)
+        Overlays = json.encode(SelectedOverlayElements)
         local data = {
             firstname = FirstName,
             lastname = LastName,
@@ -114,11 +116,11 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
             model = Model,
             desc = CharDesc,
             img = ImgLink,
-            Clothing = SelectedClothingElements,
-            Attributes = SelectedAttributeElements
         }
+
         FeatherCore.RPC.Call("SaveCharacterData", { data }, function(result)
             TriggerEvent('feather-character:SpawnSelect', result)
+            TriggerServerEvent('feather-character:UpdateAttributeDB', result, Attributes, Clothing, Overlays)
         end)
     end)
 
@@ -127,8 +129,16 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
         slot = "header",
         style = {}
     })
+    ClothingCategoriesPage:RegisterElement('bottomline', {
+        slot = "footer",
+        style = {
+
+        }
+    })
     ClothingCategoriesPage:RegisterElement('button', {
         label = "Go Back",
+        slot = 'footer',
+
         style = {
         },
     }, function()
@@ -156,6 +166,15 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
     }, function()
         ClothingCategoriesPage:RouteTo()
     end)
+    CategoriesPage:RegisterElement('button', {
+        label = 'Makeup',
+        style = {
+        }
+    }, function()
+        SwitchCam(Config.CameraCoords.creation.x - 0.25, Config.CameraCoords.creation.y,
+            Config.CameraCoords.creation.z + 0.7, Config.CameraCoords.creation.h, 0.0)
+        MainMakeupMenu:RouteTo()
+    end)
 
     --second page
     CategoriesPage:RegisterElement('header', {
@@ -163,12 +182,19 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
         slot = "header",
         style = {}
     })
+    CategoriesPage:RegisterElement('bottomline', {
+        slot = "footer",
+        style = {
+
+        }
+    })
     CategoriesPage:RegisterElement('button', {
         label = "Go Back",
+        slot = 'footer',
+
         style = {
         },
     }, function()
-        
         MainCharacterPage:RouteTo()
     end)
 
@@ -297,30 +323,32 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
         slot = "header",
         style = {}
     })
+
     UpperClothingPage:RegisterElement('button', {
         label = "Go Back",
+        slot = 'footer',
         style = {},
     }, function()
         SwitchCam(Config.CameraCoords.creation.x, Config.CameraCoords.creation.y, Config.CameraCoords.creation.z,
-        Config.CameraCoords.creation.h, Config.CameraCoords.creation.zoom)
+            Config.CameraCoords.creation.h, Config.CameraCoords.creation.zoom)
         ClothingCategoriesPage:RouteTo()
     end)
     UpperClothingPage:RegisterElement('pagearrows', {
-        slot = 'content',
+        slot = 'footer',
         total = ' Zoom Cam In',
         current = 'Zoom Cam Out ',
         style = {},
     }, function(data)
         if data.value == 'forward' then
-            fov = fov - 1.0
-            SetCamFov(CharacterCamera, fov)
+            Fov = Fov - 1.0
+            SetCamFov(CharacterCamera, Fov)
         else
-            fov = fov + 1.0
-            SetCamFov(CharacterCamera, fov)
+            Fov = Fov + 1.0
+            SetCamFov(CharacterCamera, Fov)
         end
     end)
     UpperClothingPage:RegisterElement('pagearrows', {
-        slot = 'content',
+        slot = 'footer',
         total = ' Move Cam Up',
         current = 'Move Cam Down ',
         style = {},
@@ -335,7 +363,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
         end
     end)
     UpperClothingPage:RegisterElement('pagearrows', {
-        slot = 'content',
+        slot = 'footer',
         total = ' Rotate Right ',
         current = 'Rotate Left ',
         style = {},
@@ -360,30 +388,33 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
         slot = "header",
         style = {}
     })
+
     LowerClothingPage:RegisterElement('button', {
         label = "Go Back",
+        slot = 'footer',
+
         style = {},
     }, function()
         SwitchCam(Config.CameraCoords.creation.x, Config.CameraCoords.creation.y, Config.CameraCoords.creation.z,
-        Config.CameraCoords.creation.h, Config.CameraCoords.creation.zoom)
+            Config.CameraCoords.creation.h, Config.CameraCoords.creation.zoom)
         ClothingCategoriesPage:RouteTo()
     end)
     LowerClothingPage:RegisterElement('pagearrows', {
-        slot = 'content',
+        slot = 'footer',
         total = ' Zoom Cam In',
         current = 'Zoom Cam Out ',
         style = {},
     }, function(data)
         if data.value == 'forward' then
-            fov = fov - 1.0
-            SetCamFov(CharacterCamera, fov)
+            Fov = Fov - 1.0
+            SetCamFov(CharacterCamera, Fov)
         else
-            fov = fov + 1.0
-            SetCamFov(CharacterCamera, fov)
+            Fov = Fov + 1.0
+            SetCamFov(CharacterCamera, Fov)
         end
     end)
     LowerClothingPage:RegisterElement('pagearrows', {
-        slot = 'content',
+        slot = 'footer',
         total = ' Move Cam Up',
         current = 'Move Cam Down ',
         style = {},
@@ -398,7 +429,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
         end
     end)
     LowerClothingPage:RegisterElement('pagearrows', {
-        slot = 'content',
+        slot = 'footer',
         total = ' Rotate Right ',
         current = 'Rotate Left ',
         style = {},
@@ -422,30 +453,33 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
         slot = "header",
         style = {}
     })
+
     AccClothingPage:RegisterElement('button', {
         label = "Go Back",
+        slot = 'footer',
+
         style = {},
     }, function()
         SwitchCam(Config.CameraCoords.creation.x, Config.CameraCoords.creation.y, Config.CameraCoords.creation.z,
-        Config.CameraCoords.creation.h, Config.CameraCoords.creation.zoom)
+            Config.CameraCoords.creation.h, Config.CameraCoords.creation.zoom)
         ClothingCategoriesPage:RouteTo()
     end)
     AccClothingPage:RegisterElement('pagearrows', {
-        slot = 'content',
+        slot = 'footer',
         total = ' Zoom Cam In',
         current = 'Zoom Cam Out ',
         style = {},
     }, function(data)
         if data.value == 'forward' then
-            fov = fov - 1.0
-            SetCamFov(CharacterCamera, fov)
+            Fov = Fov - 1.0
+            SetCamFov(CharacterCamera, Fov)
         else
-            fov = fov + 1.0
-            SetCamFov(CharacterCamera, fov)
+            Fov = Fov + 1.0
+            SetCamFov(CharacterCamera, Fov)
         end
     end)
     AccClothingPage:RegisterElement('pagearrows', {
-        slot = 'content',
+        slot = 'footer',
         total = ' Move Cam Up',
         current = 'Move Cam Down ',
         style = {},
@@ -460,7 +494,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
         end
     end)
     AccClothingPage:RegisterElement('pagearrows', {
-        slot = 'content',
+        slot = 'footer',
         total = ' Rotate Right ',
         current = 'Rotate Left ',
         style = {},
@@ -484,8 +518,11 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
         slot = "header",
         style = {}
     })
+
     ColorPage:RegisterElement('button', {
         label = "Go Back",
+        slot = 'footer',
+
         style = {},
     }, function()
         ColorElement1:unRegister()
@@ -521,150 +558,182 @@ CharInfoMenu = FeatherMenu:RegisterMenu('feather:characterinfo:menu', {
     },
     contentslot = {
         style = { --This style is what is currently making the content slot scoped and scrollable. If you delete this, it will make the content height dynamic to its inner content.
-            ['height'] = '700px',
+            ['height'] = '750px',
             ['width'] = '300px',
             ['min-height'] = '300px'
         }
     },
     draggable = false,
     canclose = false
+}, {
+    opened = function()
+        print("MENU OPENED!")
+    end,
+    closed = function()
+        print("MENU CLOSED!")
+    end,
+    topage = function(data)
+        print("PAGE CHANGED ", data.pageid)
+    end
 })
 local Name, Money, Job, Birthday, Description, ID, Img = {}, {}, {}, {}, {}, {}, {}
-RegisterNetEvent('feather-character:CharacterSelectMenu', function(Info, CameraSpot, CharAmount, Clothing, Attributes)
-    for k, v in ipairs(Info) do
-        Name[k] = v.first_name .. " " .. v.last_name
-        Money[k] = v.dollars
-        Job[k] = v.job
-        Birthday[k] = v.dob
-        Description[k] = v.description
-        ID[k] = v.id
-        Img[k] = json.decode(v.img)
-    end
-    local CharacterSelectPage = CharInfoMenu:RegisterPage('first:page')
+RegisterNetEvent('feather-character:CharacterSelectMenu',
+    function(Info, CameraSpot, CharAmount, Clothing, Attributes, Overlays)
+        for k, v in ipairs(Info) do
+            Name[k] = v.first_name .. " " .. v.last_name
+            Money[k] = v.dollars
+            Job[k] = v.job
+            Birthday[k] = v.dob
+            Description[k] = v.description
+            ID[k] = v.id
+            Img[k] = json.decode(v.img)
+        end
+        local CharacterSelectPage = CharInfoMenu:RegisterPage('first:page')
 
-    local header = CharacterSelectPage:RegisterElement('header', {
-        value = 'Character Menu',
-        slot = "header",
-        style = {}
-    })
-    CharacterSelectPage:RegisterElement('line', {
-        slot = "content",
-        style = {}
-    })
-    local nametext = CharacterSelectPage:RegisterElement('textdisplay', {
-        value = "Name: " .. Name[CameraSpot],
-        style = {}
-    })
-    CharacterSelectPage:RegisterElement('line', {
-        slot = "content",
-        style = {}
-    })
-    local moneytext = CharacterSelectPage:RegisterElement('textdisplay', {
-        value = "Money: " .. Money[CameraSpot],
-        style = {}
-    })
-    CharacterSelectPage:RegisterElement('line', {
-        slot = "content",
-        style = {}
-    })
-    local jobtext = CharacterSelectPage:RegisterElement('textdisplay', {
-        value = "Job: " .. Job[CameraSpot],
-        style = {}
-    })
-    CharacterSelectPage:RegisterElement('line', {
-        slot = "content",
-        style = {}
-    })
-    local dobtext = CharacterSelectPage:RegisterElement('textdisplay', {
-        value = "Date of Birth: "
-            .. '\n' .. ' ' .. Birthday[CameraSpot],
-        style = {}
-    })
-    CharacterSelectPage:RegisterElement('line', {
-        slot = "content",
-        style = {}
-    })
-    local descriptext1 = CharacterSelectPage:RegisterElement('textdisplay', {
-        value = "Character Description: ",
-        style = {}
-    })
-    local descriptext2 = CharacterSelectPage:RegisterElement('textdisplay', {
-        value = Description[CameraSpot],
-        style = {}
-    })
-    CharacterSelectPage:RegisterElement('bottomline', {
-        slot = "footer",
-    })
-    CharacterSelectPage:RegisterElement('pagearrows', {
-        slot = "footer",
-        style = {},
-    }, function(data)
-        if data.value == 'forward' then
-            if CameraSpot <= CharAmount then
-                CameraSpot = CameraSpot + 1
-            end
-            if CameraSpot > CharAmount then
-                CameraSpot = 1
-            end
-            SwitchCam(Config.CameraCoords.charcamera[CameraSpot].x, Config.CameraCoords.charcamera[CameraSpot].y,
-                Config.CameraCoords.charcamera[CameraSpot].z, Config.CameraCoords.charcamera[CameraSpot].h,
-                Config.CameraCoords.charcamera[CameraSpot].zoom)
-            TriggerEvent('feather-character:CharacterSelectMenu', Info, CameraSpot, CharAmount, Clothing, Attributes)
-        else
-            if CameraSpot == 1 then
-                CameraSpot = CharAmount
-            end
-            if CameraSpot <= CharAmount then
-                CameraSpot = CameraSpot - 1
-            end
-            SwitchCam(Config.CameraCoords.charcamera[CameraSpot].x, Config.CameraCoords.charcamera[CameraSpot].y,
-                Config.CameraCoords.charcamera[CameraSpot].z, Config.CameraCoords.charcamera[CameraSpot].h,
-                Config.CameraCoords.charcamera[CameraSpot].zoom)
-            TriggerEvent('feather-character:CharacterSelectMenu', Info, CameraSpot, CharAmount, Clothing, Attributes)
-        end
-    end)
-    CharacterSelectPage:RegisterElement('button', {
-        label = "Select",
-        style = {
-        },
-    }, function()
-        if CameraSpot ~= nil then
-            Spawned = false
-            CleanupScript()
-            LoadPlayer(CharModel)
-            TriggerServerEvent('feather-character:InitiateCharacter', ID[CameraSpot])
-            for category, hash in pairs(Clothing[CameraSpot]) do
-                AddComponent(PlayerPedId(), hash, category)
-            end
-            for category, hash in pairs(Attributes[CameraSpot]) do
-                AddComponent(PlayerPedId(), hash, category)
-            end
-        end
-    end)
-    CharacterSelectPage:RegisterElement('button', {
-        label = "Create New Character",
-        style = {
-        }
-    }, function()
-        TriggerEvent('feather-character:CreateNewCharacter')
-    end)
-    if Img[CameraSpot] ~= 'None' then
-        CharacterSelectPage:RegisterElement("html", {
-            value = {
-                [[
-                    <img width="200px" height="100px" style="display: block; margin:10px auto;" src="]] ..
-                Img[CameraSpot] .. [[ " />
-                ]]
-            },
+        local header = CharacterSelectPage:RegisterElement('header', {
+            value = 'Character Menu',
+            slot = "header",
+            style = {}
         })
-    end
+        CharacterSelectPage:RegisterElement('line', {
+            slot = "content",
+            style = {}
+        })
+        local nametext = CharacterSelectPage:RegisterElement('textdisplay', {
+            value = "Name: " .. Name[CameraSpot],
+            style = {}
+        })
+        CharacterSelectPage:RegisterElement('line', {
+            slot = "content",
+            style = {}
+        })
+        local moneytext = CharacterSelectPage:RegisterElement('textdisplay', {
+            value = "Money: " .. Money[CameraSpot],
+            style = {}
+        })
+        CharacterSelectPage:RegisterElement('line', {
+            slot = "content",
+            style = {}
+        })
+        local jobtext = CharacterSelectPage:RegisterElement('textdisplay', {
+            value = "Job: " .. Job[CameraSpot],
+            style = {}
+        })
+        CharacterSelectPage:RegisterElement('line', {
+            slot = "content",
+            style = {}
+        })
+        local dobtext = CharacterSelectPage:RegisterElement('textdisplay', {
+            value = "Date of Birth: "
+                .. '\n' .. ' ' .. Birthday[CameraSpot],
+            style = {}
+        })
+        CharacterSelectPage:RegisterElement('line', {
+            slot = "content",
+            style = {}
+        })
+        local descriptext1 = CharacterSelectPage:RegisterElement('textdisplay', {
+            value = "Character Description: ",
+            style = {}
+        })
+        local descriptext2 = CharacterSelectPage:RegisterElement('textdisplay', {
+            value = Description[CameraSpot],
+            style = {}
+        })
+        CharacterSelectPage:RegisterElement('bottomline', {
+            slot = "footer",
+        })
+        CharacterSelectPage:RegisterElement('pagearrows', {
+            slot = "footer",
+            style = {},
+        }, function(data)
+            if data.value == 'forward' then
+                if CameraSpot <= CharAmount then
+                    CameraSpot = CameraSpot + 1
+                end
+                if CameraSpot > CharAmount then
+                    CameraSpot = 1
+                end
+                SwitchCam(Config.CameraCoords.charcamera[CameraSpot].x, Config.CameraCoords.charcamera[CameraSpot].y,
+                    Config.CameraCoords.charcamera[CameraSpot].z, Config.CameraCoords.charcamera[CameraSpot].h,
+                    Config.CameraCoords.charcamera[CameraSpot].zoom)
+                TriggerEvent('feather-character:CharacterSelectMenu', Info, CameraSpot, CharAmount, Clothing, Attributes,
+                    Overlays)
+            else
+                if CameraSpot < CharAmount then
+                    CameraSpot = CameraSpot - 1
+                end
+                if CameraSpot >= CharAmount then
+                    CameraSpot = 1
+                end
+                if CameraSpot < 1 then
+                    CameraSpot = CharAmount
+                end
+                SwitchCam(Config.CameraCoords.charcamera[CameraSpot].x, Config.CameraCoords.charcamera[CameraSpot].y,
+                    Config.CameraCoords.charcamera[CameraSpot].z, Config.CameraCoords.charcamera[CameraSpot].h,
+                    Config.CameraCoords.charcamera[CameraSpot].zoom)
+                TriggerEvent('feather-character:CharacterSelectMenu', Info, CameraSpot, CharAmount, Clothing, Attributes,
+                    Overlays)
+            end
+        end)
+        CharacterSelectPage:RegisterElement('button', {
+            label = "Select",
+            style = {
+            },
+        }, function()
+            if CameraSpot ~= nil then
+                Spawned = false
+                CleanupScript()
+                LoadPlayer(CharModel)
+                TriggerServerEvent('feather-character:InitiateCharacter', ID[CameraSpot])
+                Characterid = ID[CameraSpot]
+                print(Characterid)
+                for category, hash in pairs(Clothing[CameraSpot]) do
+                    AddComponent(PlayerPedId(), hash, category)
+                end
+                for category, attribute in pairs(Attributes[CameraSpot]) do
+                    if category == 'Albedo' then
+                        AlbedoHash = attribute.hash
+                    end
+                    if attribute.value then
+                        SetCharExpression(PlayerPedId(), attribute.hash, attribute.value)
+                    else
+                        AddComponent(PlayerPedId(), attribute.hash, category)
+                    end
+                end
+                for category, overlays in pairs(Overlays[CameraSpot]) do
+                    ChangeOverlay(PlayerPedId(), category, 1, overlays['textureId'], 0, 0, 0, 1.0, 0, 1,
+                        overlays['color1'],
+                        overlays['color2'], overlays['color3'], overlays['variant'], overlays['opacity'],
+                        SelectedAttributeElements['Albedo'].hash)
+                end
+                
+            end
+        end)
+        CharacterSelectPage:RegisterElement('button', {
+            label = "Create New Character",
+            style = {
+            }
+        }, function()
+            TriggerEvent('feather-character:CreateNewCharacter')
+        end)
+        if Img[CameraSpot] ~= 'None' then
+            CharacterSelectPage:RegisterElement("html", {
+                value = {
+                    [[
+                    <img width="200px" height="100px" style="display: block; margin:10px auto;" src="]] ..
+                    Img[CameraSpot] .. [[ " />
+                ]]
+                },
+            })
+        end
 
-    CharInfoMenu:Open({
-        cursorFocus = true,
-        menuFocus = true,
-        startupPage = CharacterSelectPage,
-    })
-end)
+        CharInfoMenu:Open({
+            cursorFocus = true,
+            menuFocus = true,
+            startupPage = CharacterSelectPage,
+        })
+    end)
 
 
 
@@ -735,8 +804,6 @@ function ColorClothing(ActiveCatagory, index)
     end
     SelectedColoring = true
 end
-
-
 
 --[[MenuData = {}
 TriggerEvent("redemrp_menu_base:getData", function(call)

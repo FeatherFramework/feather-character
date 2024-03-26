@@ -14,7 +14,7 @@ function GetGender()
 end
 
 function UpdatePedVariation(ped)
-    Citizen.InvokeNative(0xAAB86462966168CE, ped, true) -- UNKNOWN "Fixes outfit"- always paired with _UPDATE_PED_VARIATION
+    Citizen.InvokeNative(0xAAB86462966168CE, ped, true)                           -- UNKNOWN "Fixes outfit"- always paired with _UPDATE_PED_VARIATION
     Citizen.InvokeNative(0xCC8CA3E88256E58F, ped, false, true, true, true, false) -- _UPDATE_PED_VARIATION
 end
 
@@ -35,7 +35,7 @@ function AddComponent(ped, comp, category)
     if category ~= nil then
         RemoveTagFromMetaPed(category)
     end
-    Citizen.InvokeNative(0xD3A7B003ED343FD9, ped, comp, false, true, true)
+    Citizen.InvokeNative(0xD3A7B003ED343FD9, ped, comp, true, true, false)
     Citizen.InvokeNative(0x66b957aac2eaaeab, ped, comp, 0, 0, 1, 1) -- _UPDATE_SHOP_ITEM_WEARABLE_STATE
     UpdatePedVariation(ped)
 end
@@ -60,9 +60,8 @@ function RemoveTagFromMetaPed(category)
     UpdatePedVariation(PlayerPedId())
 end
 
-
-function EquipMetaPedOutfit(ped,hash)
-    Citizen.InvokeNative(0x1902C4CFCC5BE57C,ped,hash)
+function EquipMetaPedOutfit(ped, hash)
+    Citizen.InvokeNative(0x1902C4CFCC5BE57C, ped, hash)
     UpdatePedVariation(ped)
 end
 
@@ -92,38 +91,29 @@ function DefaultPedSetup(ped, male)
         --ApplyShopItemToPed(ped, `CLOTHING_ITEM_F_BODIES_LOWER_001_V_001`, true, true)
         --ApplyShopItemToPed(ped, `CLOTHING_ITEM_F_BODIES_UPPER_001_V_001`, true, true)
     end
-    ReadyToRender(ped)
+    IsPedReadyToRender(PlayerPedId())
     AddComponent(ped, compBody)
     AddComponent(ped, compLegs)
     AddComponent(ped, compHead)
     AddComponent(ped, compEyes)
-    UpdatePedVariation(ped)
 end
 
-function ReadyToRender(ped)
+function IsPedReadyToRender(ped)
     Citizen.InvokeNative(0xA0BC8FAED8CFEB3C, ped)
     while not Citizen.InvokeNative(0xA0BC8FAED8CFEB3C, ped) do
         Citizen.InvokeNative(0xA0BC8FAED8CFEB3C, ped)
         Wait(0)
     end
+    UpdatePedVariation(ped)
 end
 
 function EquipMetaPedOutfitPreset(ped, outfitPresetIndex, toggle)
     Citizen.InvokeNative(0x77FF8D35EEC6BBC4, ped, outfitPresetIndex, toggle)
 end
 
-function IsPedReadyToRender(ped)
-    return Citizen.InvokeNative(0xA0BC8FAED8CFEB3C, ped)
-end
-
 function ResetPedComponents(ped)
     Citizen.InvokeNative(0x0BFA1BD465CDFEFD, ped)
 end
-
-function ApplyShopItemToPed(ped, shopItemHash, immediately, isMultiplayer)
-    Citizen.InvokeNative(0xD3A7B003ED343FD9, ped, shopItemHash, immediately, isMultiplayer, false)
-end
-
 
 function GetNumComponentsInPed(ped)
     return Citizen.InvokeNative(0x90403E8107B60E81, ped, Citizen.ResultAsInteger())
@@ -135,7 +125,7 @@ end
 
 function GetComponentIndexByCategory(ped, category)
     local numComponents = GetNumComponentsInPed(ped)
-    for i=0, numComponents-1, 1 do
+    for i = 0, numComponents - 1, 1 do
         local componentCategory = GetCategoryOfComponentAtIndex(ped, i)
         if componentCategory == category then
             return i
@@ -144,21 +134,21 @@ function GetComponentIndexByCategory(ped, category)
 end
 
 function GetMetaPedAssetGuids(ped, index)
-    return Citizen.InvokeNative(0xA9C28516A6DC9D56, ped, index, Citizen.PointerValueInt(), Citizen.PointerValueInt(), Citizen.PointerValueInt(), Citizen.PointerValueInt())
+    return Citizen.InvokeNative(0xA9C28516A6DC9D56, ped, index, Citizen.PointerValueInt(), Citizen.PointerValueInt(),
+        Citizen.PointerValueInt(), Citizen.PointerValueInt())
 end
 
 function GetMetaPedAssetTint(ped, index)
-    return Citizen.InvokeNative(0xE7998FEC53A33BBE, ped, index, Citizen.PointerValueInt(), Citizen.PointerValueInt(), Citizen.PointerValueInt(), Citizen.PointerValueInt())
+    return Citizen.InvokeNative(0xE7998FEC53A33BBE, ped, index, Citizen.PointerValueInt(), Citizen.PointerValueInt(),
+        Citizen.PointerValueInt(), Citizen.PointerValueInt())
 end
 
 function SetMetaPedTag(ped, drawable, albedo, normal, material, palette, tint0, tint1, tint2)
     Citizen.InvokeNative(0xBC6DF00D7A4A6819, ped, drawable, albedo, normal, material, palette, tint0, tint1, tint2)
-
 end
 
-
 function SetSex(sex)
-    ChangeOverlay('eyebrows', 1, 1, 0, 0, 0, 1.0, 0, 1, 254, 254, 254, 0, 1.0, Albedo)
+    ChangeOverlay(PlayerPedId(),'eyebrows', 1, 1, 0, 0, 0, 1.0, 0, 1, 254, 254, 254, 0, 1.0, Albedo)
 
     if sex == 'male' then
         LoadModel('mp_male')
@@ -172,3 +162,37 @@ function SetSex(sex)
         DefaultPedSetup(PlayerPedId(), false)
     end
 end
+
+function hasData(table)
+    for _, value in pairs(table) do
+        if next(value) ~= nil then -- Check if the table is not empty
+            return true
+        end
+    end
+    return false
+end
+
+
+RegisterCommand('paint', function()
+    local drawable = `dress_fr1_002`
+    local albedo = `dress_fr1_002_c1_999_ab`
+    local normal = `dress_fr1_002_c1_000_nm`
+    local material = `dress_fr1_002_c1_000_m`
+    local palette = `metaped_tint_makeup`
+    local tint0 = 180
+    local tint1 = 255
+    local tint2 = 255
+
+    IsPedReadyToRender(PlayerPedId())
+    AddComponent(PlayerPedId(), `CLOTHING_ITEM_F_BODIES_LOWER_001_V_001`, nil)
+    AddComponent(PlayerPedId(), `CLOTHING_ITEM_F_BODIES_UPPER_001_V_001`, nil)
+    AddComponent(PlayerPedId(), `CLOTHING_ITEM_F_HEAD_001_V_001`, nil)
+    AddComponent(PlayerPedId(), `CLOTHING_ITEM_F_EYES_001_TINT_001`, nil)
+    AddComponent(PlayerPedId(), `CLOTHING_ITEM_F_HAIR_013_BLONDE`, nil)
+    SetMetaPedTag(PlayerPedId(), drawable, albedo, normal, material, palette, tint0, tint1, tint2)
+    UpdatePedVariation(PlayerPedId())
+end)
+
+RegisterCommand('lipstick', function()
+    ChangeOverlay(PlayerPedId(), 'lipsticks', 1, 1, 0, 0, 0, 1.0, 0, 1, 1, 1, 1, 1, 1.0,(SelectedAttributeElements['Albedo'].hash))
+end)

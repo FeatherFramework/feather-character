@@ -1,29 +1,25 @@
 RegisterServerEvent('feather-character:InitiateCharacter', function(id)
     local _source = source
     FeatherCore.Character.InitiateCharacter(_source, id)
-    TriggerEvent('feather-character:GetCharactersData',_source,id)
 end)
 
-RegisterServerEvent('feather-character:GetCharactersData', function(source,id)
+RegisterServerEvent('feather-character:GetCharactersData', function(id)
     local _source = source
-    local activeuser
-    if id == nil then
-        activeuser = FeatherCore.Character.GetCharacterBySrc(_source)
-        id = activeuser.id
-    end
-    local result = MySQL.query.await("SELECT * FROM characters WHERE id = @id", { ['id'] = id })
-    print(result[1].attributes)
-    TriggerClientEvent('feather-character:SendCharactersData', _source, result[1].clothing, result[1].attributes)
+    print(id)
+    result = MySQL.query.await("SELECT * FROM character_appearance WHERE id = @id", { ['id'] = id })
+    TriggerClientEvent('feather-character:SendCharactersData', _source,id,result[1].clothing, result[1].attributes,result[1].overlays)
 end)
 
-RegisterServerEvent('feather-character:UpdateClothingDB', function(Clothing)
-    local _source = source
-    FeatherCore.Character.UpdateAttribute(_source, 'clothing', json.encode(Clothing))
-end)
-
-RegisterServerEvent('feather-character:UpdateAttributeDB', function(Attributes)
-    local _source = source
-    FeatherCore.Character.UpdateAttribute(_source, 'attributes', json.encode(Attributes))
+RegisterServerEvent('feather-character:UpdateAttributeDB', function(Charid, Attributes, Clothing, Overlays)
+    local params = {
+        ['id'] = Charid,
+        ['attributes'] = Attributes,
+        ['clothing'] = Clothing,
+        ['overlays'] = Overlays
+    }
+    MySQL.query.await(
+        "INSERT INTO character_appearance (`id`, `attributes`, `clothing`,`overlays`) VALUES (@id,@attributes,@clothing,@overlays)",
+        params)
 end)
 
 FeatherCore.RPC.Register("SaveCharacterData", function(params, res, player)
@@ -35,20 +31,18 @@ FeatherCore.RPC.Register("SaveCharacterData", function(params, res, player)
         Model = v.model
         DOB = v.dob
         Img = json.encode(v.img)
-        Clothing = json.encode(v.Clothing)
-        Attributes = json.encode(v.Attributes)
+        Clothing = v.clothing
+        Attributes = v.attributes
         Desc = v.desc
     end
-    FeatherCore.Character.CreateCharacter(activeuser.id, 1, FirstName, LastName, Model, DOB,
-        Img, Config.defaults.money,
+    FeatherCore.Character.CreateCharacter(activeuser.id, 1, FirstName, LastName, Model, DOB, Img, Config.defaults.money,
         Config.defaults.gold, Config.defaults.tokens, Config.defaults.xp, Config.SpawnCoords.towns[1].startcoords.x,
-        Config.SpawnCoords.towns[1].startcoords.y, Config.SpawnCoords.towns[1].startcoords.z, "en_us",
-        Clothing,
-        Attributes, Desc)
-    local result = MySQL.query.await("SELECT id FROM characters WHERE user_id = @user_id ORDER BY user_id DESC LIMIT 1",
+        Config.SpawnCoords.towns[1].startcoords.y, Config.SpawnCoords.towns[1].startcoords.z, "en_us", Desc)
+    local result = MySQL.query.await("SELECT id FROM characters WHERE user_id = @user_id ORDER BY user_id DESC",
         { ['user_id'] = activeuser.id })
+    Charid = result[#result].id
 
-    return res(result[1].id)
+    return res(Charid)
 end)
 
 RegisterServerEvent('feather-character:CheckForUsers', function()
@@ -62,7 +56,7 @@ RegisterServerEvent('feather-character:CheckForUsers', function()
                     { ['userid'] = userid },
                     function(result)
                         if result[1] then
-                            local allchars = FeatherCore.Character.GetAvailableCharactersFromDB(_source)
+                            allchars = FeatherCore.Character.GetAvailableCharactersFromDB(_source)
                             TriggerClientEvent('feather-character:SelectCharacterScreen', _source, allchars)
                         else
                             TriggerClientEvent('feather-character:CreateNewCharacter', _source)

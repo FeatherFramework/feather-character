@@ -1,4 +1,3 @@
-
 FeaturesEyes = {
     ['Male'] = {
         612262189,
@@ -34,57 +33,75 @@ FeaturesEyes = {
     }
 }
 
-FeatureNames = {
-    ['Eyes and Brows'] = {
-        "Eyelid height",
-        "Eyelid width",
-        "Eyes depth",
-        "Eyes angle",
-        "Eyes distance",
-        "Eyes height",
-        "Eyebrow height",
-        "Eyebrow width",
-        "Eyebrow depth",
-    },
+FaceFeatures = {
+    Adjustments = {
+        ['Eyes and Brows'] = {
+            "Eyelid height",
+            "Eyelid width",
+            "Eyes depth",
+            "Eyes angle",
+            "Eyes distance",
+            "Eyes height",
+            "Eyebrow height",
+            "Eyebrow width",
+            "Eyebrow depth",
+        },
 
-    ['Ears'] = {
-        "Ears width",
-        "Ears angle",
-        "Ears height",
-        "Ears depth"
+        ['Ears'] = {
+            "Ears width",
+            "Ears angle",
+            "Ears height",
+            "Ears depth"
+        },
+        ['Cheeks'] = {
+            "Cheekbones height",
+            "Cheekbones width",
+            "Cheekbones depth",
+        },
+        ['Jaw'] = {
+            "Jaw height",
+            "Jaw width",
+            "Jaw depth",
+        },
+        ['Chin'] = {
+            "Chin height",
+            "Chin width",
+            "Chin depth",
+        },
+        ['Nose'] = {
+            "Nose width",
+            "Nose size",
+            "Nose height",
+            "Nose angle",
+            "Nose curvature",
+            "Nostrils distance",
+        },
+        ['Mouth'] = {
+            "Upper lip height",
+            "Upper lip width",
+            "Upper lip depth",
+            "Lower lip height",
+            "Lower lip width",
+            "Lower lip depth",
+        },
     },
-    ['Cheeks'] = {
-        "Cheekbones height",
-        "Cheekbones width",
-        "Cheekbones depth",
+    Makeup = {
+        ['Eyeshadows'] = 'shadows',
+        ['Blush'] = 'blush',
+        ['Eyeliners'] = 'eyeliners',
+        ['Lipstick'] = 'lipsticks',
+        ['Foundation'] = 'foundation'
     },
-    ['Jaw'] = {
-        "Jaw height",
-        "Jaw width",
-        "Jaw depth",
-    },
-    ['Chin'] = {
-        "Chin height",
-        "Chin width",
-        "Chin depth",
-    },
-    ['Nose'] = {
-        "Nose width",
-        "Nose size",
-        "Nose height",
-        "Nose angle",
-        "Nose curvature",
-        "Nostrils distance",
-    },
-    ['Mouth'] = {
-        "Upper lip height",
-        "Upper lip width",
-        "Upper lip depth",
-        "Lower lip height",
-        "Lower lip width",
-        "Lower lip depth",
-    },
-
+    Features = {
+        ['Scars'] = 'scars',
+        ['Acne'] = 'acne',
+        ['Aging'] = 'ageing',
+        ['Complexion'] = 'complex',
+        ['Discoloration'] = 'disc',
+        ['Freckles'] = 'freckles',
+        ['Moles'] = 'moles',
+        ['Spots'] = 'spots',
+    }
 
 
 }

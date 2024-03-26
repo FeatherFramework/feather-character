@@ -1,31 +1,10 @@
 local Obj1, Obj2, Obj3, Obj4
-CharModel = nil
-
+SentClothing, SentAttributes, SentOverlays = {}, {}, {}
 local spawnedPeds = {}
-RegisterNetEvent('feather-character:SendCharactersData', function(clothing, attributes)
-    SentClothing = json.decode(clothing)
-    SentAttributes = json.decode(attributes)
-    local AlbedoHash
-    LoadPlayer(CharModel)
-
-    for category, hash in pairs(SentClothing) do
-        AddComponent(PlayerPedId(), hash, category)
-    end
-    for category, attribute in pairs(SentAttributes) do
-        if category == 'Albedo' then
-            AlbedoHash = attribute.hash
-        end
-        if attribute.value then
-            SetCharExpression(PlayerPedId(), attribute.hash, attribute.value)
-        else
-            AddComponent(PlayerPedId(), attribute.hash, category)
-        end
-        if category == 'EyebrowVariant' then
-            ChangeOverlay('eyebrows', 1, tonumber(attribute.value), 0, 0, 0, 1.0, 0, 1, 254, 254, 254, 0, 1.0,tonumber(AlbedoHash))
-        end
-    end
-
-    CleanupScript()
+RegisterNetEvent('feather-character:SendCharactersData', function(id, clothing, attributes, makeup)
+    SentClothing[id] = json.decode(clothing)
+    SentAttributes[id] = json.decode(attributes)
+    SentOverlays[id] = json.decode(makeup)
 end)
 
 function CleanupCharacterSelect()
@@ -56,38 +35,40 @@ function SpawnProps()
         Config.SpawnProps.obj4.z, Config.SpawnProps.obj4.h, false, 'standard')
 end
 
-RegisterCommand('spawnped', function()
-    local coords = GetEntityCoords(PlayerPedId())
-    local ped = FeatherCore.Ped:Create('mp_male', coords.x, coords.y, coords.z, 0, 'world', false, false)
-    local rawped = ped:GetPed()
-    TriggerServerEvent('feather-character:GetCharactersData', rawped)
-    Citizen.InvokeNative(0x77FF8D35EEC6BBC4, rawped, 4, 1) -- outfits
-    DefaultPedSetup(rawped, true)
+RegisterCommand('getdata', function(source)
+    TriggerServerEvent('feather-character:GetCharactersData', PlayerId())
+end)
+local Clothing, Attributes, Makeup = {}, {}, {}
+
+RegisterCommand('testspawn', function(source)
+    local ped = FeatherCore.Ped:Create('mp_male', Config.SpawnCoords.charspots[1].x,
+    Config.SpawnCoords.charspots[1].y,
+    Config.SpawnCoords.charspots[1].z, 0, 'world', false, false)
+    local RawPed = ped:GetPed()
+
+    Citizen.InvokeNative(0x77FF8D35EEC6BBC4, RawPed, 4, 0) -- outfits
+    DefaultPedSetup(RawPed, true)
+
+    ChangeOverlay(RawPed, 'lipsticks', 1, 1, 0, 0, 0, 1.0, 0, 1, 1, 1, 1, 1, 1.0,
+    (SelectedAttributeElements['Albedo'].hash))
 end)
 
-RegisterCommand('getdata', function()
-    TriggerServerEvent('feather-character:GetCharactersData', 173)
-end)
+
 
 function SpawnCharacters(data)
     Spawned = true
-    local Clothing, Attributes = {}, {}
-
     Maxchars = Config.MaxAllowedChars --Can only be an int value
-
     SetEntityCoords(PlayerPedId(), Config.SpawnCoords.charspots[1].x,
         Config.SpawnCoords.charspots[1].y, Config.SpawnCoords.charspots[1].z, true, false, false, false)
     SetFocusEntity(PlayerPedId())
-
-
     for k, v in pairs(data) do
         if k > Maxchars then -- Have this first its more optimal, only run the code below if not maxchars
             break
         end
-        Clothing[k] = json.decode(v.clothing)
-        Attributes[k] = json.decode(v.attributes)
-        print(json.encode(Attributes[k]))
 
+        Clothing[k] = SentClothing[v.id]
+        Attributes[k] = SentAttributes[v.id]
+        Makeup[k] = SentOverlays[v.id]
         CharModel = v.model
         CharAmount = k
         -- Creates a new ped
@@ -117,17 +98,14 @@ function SpawnCharacters(data)
                     AlbedoHash = attribute.hash
                 end
                 if attribute.value then
-                    SetCharExpression(PlayerPedId(), attribute.hash, attribute.value)
+                    SetCharExpression(RawPed, attribute.hash, attribute.value)
                 else
-                    AddComponent(PlayerPedId(), attribute.hash, category)
-                end
-                if category == 'EyebrowVariant' then
-                    ChangeOverlay('eyebrows', 1, tonumber(attribute.value), 0, 0, 0, 1.0, 0, 1, 254, 254, 254, 0, 1.0,tonumber(AlbedoHash))
+                    AddComponent(RawPed, attribute.hash, category)
                 end
             end
         end
     end
-    TriggerEvent('feather-character:CharacterSelectMenu', data, 1, CharAmount, Clothing, Attributes)
+    TriggerEvent('feather-character:CharacterSelectMenu', data, 1, CharAmount, Clothing, Attributes,Makeup)
     SwitchCam(Config.CameraCoords.charcamera[1].x, Config.CameraCoords.charcamera[1].y,
         Config.CameraCoords.charcamera[1].z, Config.CameraCoords.charcamera[1].h,
         Config.CameraCoords.charcamera[1].zoom)
@@ -149,5 +127,9 @@ RegisterNetEvent('feather-character:SelectCharacterScreen', function(data)
         Config.CameraCoords.selection.z)
     StartCam(Config.CameraCoords.selection.x, Config.CameraCoords.selection.y, Config.CameraCoords.selection.z,
         Config.CameraCoords.selection.h, Config.CameraCoords.selection.zoom)
+    for k, v in pairs(data) do
+        TriggerServerEvent('feather-character:GetCharactersData', v.id)
+        Wait(250)
+    end
     SpawnCharacters(data)
 end)

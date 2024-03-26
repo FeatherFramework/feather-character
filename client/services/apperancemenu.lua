@@ -2,6 +2,8 @@
 FeatherMenu = exports['feather-menu'].initiate()
 CamZ = Config.CameraCoords.creation.z + 0.5
 local Gender = GetGender()
+ActiveTexture, ActiveColor1, ActiveColor2, ActiveColor3, ActiveOpacity, ActiveVariant = {}, {}, {}, {}, {},
+    {}
 
 MyMenu = FeatherMenu:RegisterMenu('feather:character:menu', {
     top = '1%',
@@ -14,19 +16,30 @@ MyMenu = FeatherMenu:RegisterMenu('feather:character:menu', {
     },
     contentslot = {
         style = { --This style is what is currently making the content slot scoped and scrollable. If you delete this, it will make the content height dynamic to its inner content.
-            ['height'] = '800px',
+            ['height'] = '700px',
             ['width'] = '500px',
             ['min-height'] = '500px'
         }
     },
+
     draggable = false,
     canclose = true
+}, {
+    opened = function()
+        print("MENU OPENED!")
+    end,
+    closed = function()
+        print("MENU CLOSED!")
+    end,
+    topage = function(data)
+        print("PAGE CHANGED ", data.pageid)
+    end
 })
 
 MainAppearanceMenu = MyMenu:RegisterPage('appearance:page')
 FaceActive = nil
 SelectedAttributes = {} -- This can keep track of what was selected data wise
-
+SelectedOverlayElements = {}
 
 MainAppearanceMenu:RegisterElement('header', {
     value = 'Appearance Menu',
@@ -149,28 +162,41 @@ MainAppearanceMenu:RegisterElement('button', {
 end)
 
 MainAppearanceMenu:RegisterElement('button', {
+    label = 'Facial Adjustments',
+    style = {
+    }
+}, function()
+    FaceAdjMenu = MyMenu:RegisterPage('faceadj:page')
+    SwitchCam(Config.CameraCoords.creation.x - 0.25, Config.CameraCoords.creation.y,
+        Config.CameraCoords.creation.z + 0.7, Config.CameraCoords.creation.h, 0.0)
+    FacialAdjustmentPage()
+    FaceAdjMenu:RouteTo()
+end)
+
+
+MainAppearanceMenu:RegisterElement('button', {
     label = 'Facial Features',
     style = {
     }
 }, function()
-    FacialMenu = MyMenu:RegisterPage('face:page')
+    FaceFeatMenu = MyMenu:RegisterPage('facefeat:page')
     SwitchCam(Config.CameraCoords.creation.x - 0.25, Config.CameraCoords.creation.y,
         Config.CameraCoords.creation.z + 0.7, Config.CameraCoords.creation.h, 0.0)
-    FacialFeaturesPage()
-    FacialMenu:RouteTo()
+    FacialFeatPage()
+    FaceFeatMenu:RouteTo()
 end)
 
-
-MainAppearanceMenu:RegisterElement('button', {
-    label = "Save Appearance",
+MainAppearanceMenu:RegisterElement('bottomline', {
+    slot = "footer",
     style = {
+
     }
-}, function()
-    TriggerServerEvent('feather-character:UpdateAttributeDB', SelectedAttributeElements)
-end)
+})
 
 MainAppearanceMenu:RegisterElement('button', {
     label = "Go Back",
+    slot = 'footer',
+
     style = {
     },
 }, function()
@@ -179,20 +205,184 @@ MainAppearanceMenu:RegisterElement('button', {
     MainCharacterPage:RouteTo()
 end)
 
-function FacialFeaturesPage()
+
+function FacialFeatPage()
+    FaceFeatMenu:RegisterElement('header', {
+        value = 'Facial Features',
+        slot = "header",
+        style = {}
+    })
+    FaceFeatMenu:RegisterElement('subheader', {
+        value = "First Page",
+        slot = "header",
+        style = {}
+    })
+    for k, v in pairs(FaceFeatures.Features) do
+        FaceFeatMenu:RegisterElement('button', {
+            label = k,
+            style = {
+            },
+        }, function()
+            FeatSubMenu = MyMenu:RegisterPage('featsub:page')
+            FeatSubPage(FeatSubMenu, v)
+            FeatSubMenu:RouteTo()
+        end)
+    end
+    FaceFeatMenu:RegisterElement('bottomline', {
+        slot = "footer",
+        style = {
+
+        }
+    })
+    FaceFeatMenu:RegisterElement('button', {
+        label = "Go Back",
+        slot = 'footer',
+
+        style = {
+        },
+    }, function()
+        SwitchCam(Config.CameraCoords.creation.x, Config.CameraCoords.creation.y, Config.CameraCoords.creation.z,
+            Config.CameraCoords.creation.h, Config.CameraCoords.creation.zoom)
+        MainAppearanceMenu:RouteTo()
+    end)
+end
+
+function FeatSubPage(ActivePage, selected)
+    if not SelectedOverlayElements[selected] then
+        SelectedOverlayElements[selected] = {
+            ['textureId'] = 1,
+            ['opacity'] = 1.0,
+            ['variant'] = 1,
+            ['color1'] = 1,
+            ['color2'] = 1,
+            ['color3'] = 1,
+        }
+    end
+    SetDefaultValues(selected)
+    ActivePage:RegisterElement('header', {
+        value = 'My First Menu',
+        slot = "header",
+        style = {}
+    })
+    ActivePage:RegisterElement('subheader', {
+        value = "Choose your " .. selected .. " Options",
+        slot = "header",
+        style = {}
+    })
+    ActivePage:RegisterElement('bottomline', {
+        slot = "content",
+        style = {
+
+        }
+    })
+
+    ActivePage:RegisterElement('pagearrows', {
+        total = ' Move Cam Up',
+        current = 'Move Cam Down ',
+        style = {},
+    }, function(data)
+        if data.value == 'forward' then
+            CamZ = CamZ + 0.1
+            SetCamCoord(CharacterCamera, Config.CameraCoords.creation.x - 0.2, Config.CameraCoords.creation.y, CamZ)
+        else
+            CamZ = CamZ - 0.1
+            SetCamCoord(CharacterCamera, Config.CameraCoords.creation.x - 0.2, Config.CameraCoords.creation.y, CamZ)
+        end
+    end)
+    ActivePage:RegisterElement('pagearrows', {
+        total = ' Rotate Right ',
+        current = 'Rotate Left ',
+        style = {},
+    }, function(data)
+        if data.value == 'forward' then
+            local heading = GetEntityHeading(PlayerPedId())
+            SetEntityHeading(PlayerPedId(), heading + 10.0)
+        else
+            local heading = GetEntityHeading(PlayerPedId())
+            SetEntityHeading(PlayerPedId(), heading - 10.0)
+        end
+    end)
+    ActivePage:RegisterElement('slider', {
+        label = selected .. ' Opacity',
+        start = 0,
+        min = 0,
+        max = 1,
+        steps = 0.1,
+
+    }, function(data)
+        if data.value == 1 then
+            data.value = 1.0
+        end
+        if data.value > 0 then
+        ActiveOpacity[selected] = data.value
+        -- This gets triggered whenever the sliders selected value changes
+        ChangeOverlay(PlayerPedId(),selected, 1, ActiveTexture[selected], 0, 0, 1, 1.0, 0, 1, 0, 0, 0, 1,  ActiveOpacity[selected],
+            SelectedAttributeElements['Albedo'].hash)
+        else
+            ChangeOverlay(PlayerPedId(),selected, 0, ActiveTexture[selected], 0, 0, 1, 1.0, 0, 1,
+                0, 0, 0, ActiveVariant[selected], ActiveOpacity[selected],
+                SelectedAttributeElements['Albedo'].hash)
+        end
+        SelectedOverlayElements[selected]["opacity"] = ActiveOpacity[selected]
+        print(SelectedOverlayElements[selected])
+    end)
+    ActivePage:RegisterElement('slider', {
+        label = selected .. ' Texture',
+        start = 0,
+        min = 0,
+        max = #overlays_info[selected],
+        steps = 1,
+
+    }, function(data)
+        ActiveTexture[selected] = data.value
+        print(data.value)
+        if data.value > 0 then
+            ChangeOverlay(PlayerPedId(),selected, 1, ActiveTexture[selected], 0, 0, 1, 1.0, 0, 1, 0, 0, 0,
+                ActiveVariant[selected], ActiveOpacity[selected],
+                SelectedAttributeElements['Albedo'].hash)
+        else
+            ChangeOverlay(PlayerPedId(),selected, 0, ActiveTexture[selected], 0, 0, 1, 1.0, 0, 1,
+                0, 0, 0, ActiveVariant[selected], ActiveOpacity[selected],
+                SelectedAttributeElements['Albedo'].hash)
+        end
+        SelectedOverlayElements[selected]['textureId'] = ActiveTexture[selected]
+        -- This gets triggered whenever the sliders selected value changes
+    end)
+    ActivePage:RegisterElement('line', {
+        slot = "content",
+        style = {}
+    })
+    ActivePage:RegisterElement('bottomline', {
+        slot = "footer",
+        style = {
+
+        }
+    })
+    ActivePage:RegisterElement('button', {
+        label = "Go Back",
+        slot = 'footer',
+
+        style = {
+        },
+    }, function()
+        FaceFeatMenu:RouteTo()
+    end)
+end
+
+function FacialAdjustmentPage()
     if FaceActive == nil then
-        FacialMenu:RegisterElement('header', {
+        FaceAdjMenu:RegisterElement('header', {
             value = 'Facial Features',
             slot = "header",
             style = {}
         })
-        FacialMenu:RegisterElement('subheader', {
+        FaceAdjMenu:RegisterElement('subheader', {
             value = "First Page",
             slot = "header",
             style = {}
         })
-        for key, v in pairs(FeatureNames) do
-            FaceButton = FacialMenu:RegisterElement('button', {
+        for key, v in pairs(FaceFeatures.Adjustments) do
+            FaceButton = FaceAdjMenu:RegisterElement('button', {
                 label = key,
                 style = {
                 }
@@ -235,8 +425,17 @@ function FacialFeaturesPage()
                 end
             end)
         end
-        FacialMenu:RegisterElement('button', {
+
+        FaceAdjMenu:RegisterElement('bottomline', {
+            slot = "footer",
+            style = {
+
+            }
+        })
+        FaceAdjMenu:RegisterElement('button', {
             label = "Go Back",
+            slot = 'footer',
+
             style = {
             },
         }, function()
@@ -259,8 +458,16 @@ function CreateEyesPage()
         slot = "header",
         style = {}
     })
+    EyesPage:RegisterElement('bottomline', {
+        slot = "footer",
+        style = {
+
+        }
+    })
     EyesPage:RegisterElement('button', {
         label = "Go Back",
+        slot = 'footer',
+
         style = {
         },
     }, function()
@@ -268,7 +475,7 @@ function CreateEyesPage()
         MainAppearanceMenu:RouteTo()
     end)
     EyesPage:RegisterElement('pagearrows', {
-        slot = 'content',
+        slot = 'footer',
         total = ' Move Cam Up',
         current = 'Move Cam Down ',
         style = {},
@@ -282,7 +489,7 @@ function CreateEyesPage()
         end
     end)
     EyesPage:RegisterElement('pagearrows', {
-        slot = 'content',
+        slot = 'footer',
         total = ' Rotate Right ',
         current = 'Rotate Left ',
         style = {},
@@ -418,8 +625,16 @@ function CreateCheekPage()
         slot = "header",
         style = {}
     })
+    CheekPage:RegisterElement('bottomline', {
+        slot = "footer",
+        style = {
+
+        }
+    })
     CheekPage:RegisterElement('button', {
         label = "Go Back",
+        slot = 'footer',
+
         style = {
         },
     }, function()
@@ -428,7 +643,7 @@ function CreateCheekPage()
         MainAppearanceMenu:RouteTo()
     end)
     CheekPage:RegisterElement('pagearrows', {
-        slot = 'content',
+        slot = 'footer',
         total = ' Move Cam Up',
         current = 'Move Cam Down ',
         style = {},
@@ -442,7 +657,7 @@ function CreateCheekPage()
         end
     end)
     CheekPage:RegisterElement('pagearrows', {
-        slot = 'content',
+        slot = 'footer',
         total = ' Rotate Right ',
         current = 'Rotate Left ',
         style = {},
@@ -495,8 +710,16 @@ function CreateChinPage()
         slot = "header",
         style = {}
     })
+    ChinPage:RegisterElement('bottomline', {
+        slot = "footer",
+        style = {
+
+        }
+    })
     ChinPage:RegisterElement('button', {
         label = "Go Back",
+        slot = 'footer',
+
         style = {
         },
     }, function()
@@ -505,7 +728,7 @@ function CreateChinPage()
         MainAppearanceMenu:RouteTo()
     end)
     ChinPage:RegisterElement('pagearrows', {
-        slot = 'content',
+        slot = 'footer',
         total = ' Move Cam Up',
         current = 'Move Cam Down ',
         style = {},
@@ -519,7 +742,7 @@ function CreateChinPage()
         end
     end)
     ChinPage:RegisterElement('pagearrows', {
-        slot = 'content',
+        slot = 'footer',
         total = ' Rotate Right ',
         current = 'Rotate Left ',
         style = {},
@@ -573,8 +796,16 @@ function CreateEyebrowPage()
         slot = "header",
         style = {}
     })
+    EyebrowPage:RegisterElement('bottomline', {
+        slot = "footer",
+        style = {
+
+        }
+    })
     EyebrowPage:RegisterElement('button', {
         label = "Go Back",
+        slot = 'footer',
+
         style = {
         },
     }, function()
@@ -582,7 +813,7 @@ function CreateEyebrowPage()
         EyesPage:RouteTo()
     end)
     EyebrowPage:RegisterElement('pagearrows', {
-        slot = 'content',
+        slot = 'footer',
         total = ' Move Cam Up',
         current = 'Move Cam Down ',
         style = {},
@@ -596,7 +827,7 @@ function CreateEyebrowPage()
         end
     end)
     EyebrowPage:RegisterElement('pagearrows', {
-        slot = 'content',
+        slot = 'footer',
         total = ' Rotate Right ',
         current = 'Rotate Left ',
         style = {},
@@ -622,7 +853,7 @@ function CreateEyebrowPage()
         if EyebrowOpacity == 1 then
             EyebrowOpacity = 1.0
         end
-        ChangeOverlay('eyebrows', 1, 1, 0, 0, 0, 1.0, 0, 1, 254, 254, 254, 0, EyebrowOpacity, Albedo)
+        ChangeOverlay(PlayerPedId(),'eyebrows', 1, 1, 0, 0, 0, 1.0, 0, 1, 254, 254, 254, 0, EyebrowOpacity, Albedo)
         SelectedAttributeElements['BrowOpacity'] = { value = data.value }
     end)
 
@@ -634,7 +865,7 @@ function CreateEyebrowPage()
         steps = 1,
 
     }, function(data)
-        ChangeOverlay('eyebrows', 1, data.value, 0, 0, 0, 1.0, 0, 1, 254, 254, 254, 0, EyebrowOpacity, Albedo)
+        ChangeOverlay(PlayerPedId(),'eyebrows', 1, data.value, 0, 0, 0, 1.0, 0, 1, 254, 254, 254, 0, EyebrowOpacity, Albedo)
         SelectedAttributeElements['EyebrowVariant'] = { value = data.value }
     end)
 
@@ -667,8 +898,16 @@ function CreateEarsPage()
         slot = "header",
         style = {}
     })
+    EarPage:RegisterElement('bottomline', {
+        slot = "footer",
+        style = {
+
+        }
+    })
     EarPage:RegisterElement('button', {
         label = "Go Back",
+        slot = 'footer',
+
         style = {
         },
     }, function()
@@ -677,7 +916,7 @@ function CreateEarsPage()
         MainAppearanceMenu:RouteTo()
     end)
     EarPage:RegisterElement('pagearrows', {
-        slot = 'content',
+        slot = 'footer',
         total = ' Move Cam Up',
         current = 'Move Cam Down ',
         style = {},
@@ -691,7 +930,7 @@ function CreateEarsPage()
         end
     end)
     EarPage:RegisterElement('pagearrows', {
-        slot = 'content',
+        slot = 'footer',
         total = ' Rotate Right ',
         current = 'Rotate Left ',
         style = {},
@@ -750,8 +989,16 @@ function CreateJawPage()
         slot = "header",
         style = {}
     })
+    JawPage:RegisterElement('bottomline', {
+        slot = "footer",
+        style = {
+
+        }
+    })
     JawPage:RegisterElement('button', {
         label = "Go Back",
+        slot = 'footer',
+
         style = {
         },
     }, function()
@@ -760,7 +1007,7 @@ function CreateJawPage()
         MainAppearanceMenu:RouteTo()
     end)
     JawPage:RegisterElement('pagearrows', {
-        slot = 'content',
+        slot = 'footer',
         total = ' Move Cam Up',
         current = 'Move Cam Down ',
         style = {},
@@ -774,7 +1021,7 @@ function CreateJawPage()
         end
     end)
     JawPage:RegisterElement('pagearrows', {
-        slot = 'content',
+        slot = 'footer',
         total = ' Rotate Right ',
         current = 'Rotate Left ',
         style = {},
@@ -827,8 +1074,16 @@ function CreateMouthPage()
         slot = "header",
         style = {}
     })
+    MouthPage:RegisterElement('bottomline', {
+        slot = "footer",
+        style = {
+
+        }
+    })
     MouthPage:RegisterElement('button', {
         label = "Go Back",
+        slot = 'footer',
+
         style = {
         },
     }, function()
@@ -837,7 +1092,7 @@ function CreateMouthPage()
         MainAppearanceMenu:RouteTo()
     end)
     MouthPage:RegisterElement('pagearrows', {
-        slot = 'content',
+        slot = 'footer',
         total = ' Move Cam Up',
         current = 'Move Cam Down ',
         style = {},
@@ -851,7 +1106,7 @@ function CreateMouthPage()
         end
     end)
     MouthPage:RegisterElement('pagearrows', {
-        slot = 'content',
+        slot = 'footer',
         total = ' Rotate Right ',
         current = 'Rotate Left ',
         style = {},
@@ -985,8 +1240,16 @@ function CreateNosePage()
         slot = "header",
         style = {}
     })
+    NosePage:RegisterElement('bottomline', {
+        slot = "footer",
+        style = {
+
+        }
+    })
     NosePage:RegisterElement('button', {
         label = "Go Back",
+        slot = 'footer',
+
         style = {
         },
     }, function()
@@ -996,7 +1259,7 @@ function CreateNosePage()
     end)
 
     NosePage:RegisterElement('pagearrows', {
-        slot = 'content',
+        slot = 'footer',
         total = ' Move Cam Up',
         current = 'Move Cam Down ',
         style = {},
@@ -1010,7 +1273,7 @@ function CreateNosePage()
         end
     end)
     NosePage:RegisterElement('pagearrows', {
-        slot = 'content',
+        slot = 'footer',
         total = ' Rotate Right ',
         current = 'Rotate Left ',
         style = {},
@@ -1215,7 +1478,7 @@ end
 
 --Hair Page
 function CreateHairPage()
-    local Gender = GetGender()
+    Gender = GetGender()
 
     HairandBeardPage = MyMenu:RegisterPage('hairandbeard:page')
 
@@ -1229,8 +1492,16 @@ function CreateHairPage()
         slot = "header",
         style = {}
     })
+    HairCategoryPage:RegisterElement('bottomline', {
+        slot = "footer",
+        style = {
+
+        }
+    })
     HairCategoryPage:RegisterElement('button', {
         label = "Go Back",
+        slot = 'footer',
+
         style = {
         },
     }, function()
@@ -1271,10 +1542,14 @@ function CreateHairPage()
                     local type = Citizen.InvokeNative(0xEC9A1261BF0CE510, PlayerPedId())
                     ActiveCatagory = Citizen.InvokeNative(0x5FF9A878C3D115B8,
                         HairandBeards[Gender][key][MainComponent][1].hash, type, true)
-                    SelectedAttributeElements[key .. 'Category'] = { hash = HairandBeards[Gender][key][MainComponent][1]
-                    .hash }
-                    SelectedAttributeElements[key .. 'Variant'] = { hash = HairandBeards[Gender][key][MainComponent][1]
-                    .hash }
+                    SelectedAttributeElements[key .. 'Category'] = {
+                        hash = HairandBeards[Gender][key][MainComponent][1]
+                            .hash
+                    }
+                    SelectedAttributeElements[key .. 'Variant'] = {
+                        hash = HairandBeards[Gender][key][MainComponent][1]
+                            .hash
+                    }
 
                     TextElement = TextElement:update({
                         value = HairandBeards[Gender][key][MainComponent][VariantComponent].color
@@ -1303,8 +1578,10 @@ function CreateHairPage()
                     local type = Citizen.InvokeNative(0xEC9A1261BF0CE510, PlayerPedId())
                     ActiveCatagory = Citizen.InvokeNative(0x5FF9A878C3D115B8,
                         HairandBeards[Gender][key][MainComponent][VariantComponent].hash, type, true)
-                    SelectedAttributeElements[key .. 'Variant'] = { hash = HairandBeards[Gender][key][MainComponent]
-                    [VariantComponent].hash }
+                    SelectedAttributeElements[key .. 'Variant'] = {
+                        hash = HairandBeards[Gender][key][MainComponent]
+                            [VariantComponent].hash
+                    }
 
                     TextElement = TextElement:update({
                         value = HairandBeards[Gender][key][MainComponent][VariantComponent].color
@@ -1346,8 +1623,15 @@ function CreateHairandBeardPage(choice)
         slot = "header",
         style = {}
     })
+    HairandBeardPage:RegisterElement('bottomline', {
+        slot = "footer",
+        style = {
+
+        }
+    })
     HairandBeardPage:RegisterElement('button', {
         label = "Go Back",
+        slot = 'footer',
         style = {
         },
     }, function()
@@ -1356,7 +1640,7 @@ function CreateHairandBeardPage(choice)
         MainAppearanceMenu:RouteTo()
     end)
     HairandBeardPage:RegisterElement('pagearrows', {
-        slot = 'content',
+        slot = 'footer',
         total = ' Move Cam Up',
         current = 'Move Cam Down ',
         style = {},
@@ -1370,7 +1654,7 @@ function CreateHairandBeardPage(choice)
         end
     end)
     HairandBeardPage:RegisterElement('pagearrows', {
-        slot = 'content',
+        slot = 'footer',
         total = ' Rotate Right ',
         current = 'Rotate Left ',
         style = {},
@@ -1391,9 +1675,9 @@ function CreateHairandBeardPage(choice)
 
             }, function(data)
                 if data.value == true then
-                    ChangeOverlay('beardstabble', 1, 1, 0, 0, 0, 1.0, 0, 1, 254, 254, 254, 0, 1.0, Albedo)
+                    ChangeOverlay(PlayerPedId(),'beardstabble', 1, 1, 0, 0, 0, 1.0, 0, 1, 254, 254, 254, 0, 1.0, Albedo)
                 else
-                    ChangeOverlay('beardstabble', 1, 1, 0, 0, 0, 1.0, 0, 1, 254, 254, 254, 0, 0.0, Albedo)
+                    ChangeOverlay(PlayerPedId(),'beardstabble', 1, 1, 0, 0, 0, 1.0, 0, 1, 254, 254, 254, 0, 0.0, Albedo)
                 end
                 -- This gets triggered whenever the toggle value changes
             end)
@@ -1409,7 +1693,7 @@ function CreateHairandBeardPage(choice)
                 if BeardOpacity == 1 then
                     BeardOpacity = 1.0
                 end
-                ChangeOverlay('beardstabble', 1, 1, 0, 0, 0, 1.0, 0, 1, 254, 254, 254, 0, BeardOpacity, Albedo)
+                ChangeOverlay(PlayerPedId(),'beardstabble', 1, 1, 0, 0, 0, 1.0, 0, 1, 254, 254, 254, 0, BeardOpacity, Albedo)
             end)
         end
     end
@@ -1468,14 +1752,6 @@ function CreateHairandBeardPage(choice)
             SelectedAttributes[hairacc .. 'Variant'] = VariantElement
         end
     end
-
-
-    HairandBeardPage:RegisterElement('bottomline', {
-        slot = "header",
-        style = {
-
-        }
-    })
 end
 
 RegisterNetEvent('FeatherMenu:closed', function(data)
