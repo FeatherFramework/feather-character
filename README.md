@@ -7,7 +7,6 @@
 # TODO
 - Better UI
 - Customizable UI
-- Spawn selector
 - Deduplicate the shared data.
 - Cleanup
 
