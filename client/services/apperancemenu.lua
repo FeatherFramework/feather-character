@@ -24,16 +24,6 @@ MyMenu = FeatherMenu:RegisterMenu('feather:character:menu', {
 
     draggable = false,
     canclose = true
-}, {
-    opened = function()
-        print("MENU OPENED!")
-    end,
-    closed = function()
-        print("MENU CLOSED!")
-    end,
-    topage = function(data)
-        print("PAGE CHANGED ", data.pageid)
-    end
 })
 
 MainAppearanceMenu = MyMenu:RegisterPage('appearance:page')

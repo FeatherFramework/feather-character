@@ -16,16 +16,6 @@ SpawnSelectInfo = FeatherMenu:RegisterMenu('feather:spawnselect:menu', {
     },
     draggable = false,
     canclose = true
-}, {
-    opened = function()
-        print("MENU OPENED!")
-    end,
-    closed = function()
-        print("MENU CLOSED!")
-    end,
-    topage = function(data)
-        print("PAGE CHANGED ", data.pageid)
-    end
 })
 
 local SpawnSelectPage = SpawnSelectInfo:RegisterPage('spawnselect:page')

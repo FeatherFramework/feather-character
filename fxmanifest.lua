@@ -40,18 +40,8 @@ client_scripts {
     'client/services/character/*.lua',
 }
 
-ui_page {
-    'ui/shim.html'
-}
-
-files {
-    'ui/shim.html',
-    'ui/js/*.*',
-    'ui/css/*.*',
-    'ui/fonts/*.*',
-    'ui/img/*.*'
-}
-
 dependencies {
-    'oxmysql'
+    'oxmysql',
+    'feather-menu',
+    'feather-core'
 }

@@ -1,5 +1,3 @@
-
-
 MainHeritageMenu = MyMenu:RegisterPage('heritage:page')
 
 MainHeritageMenu:RegisterElement('header', {

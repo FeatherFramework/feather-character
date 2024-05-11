@@ -1,5 +1,3 @@
-
-
 function CreateNewCharacter()
     Albedo = (CharacterConfig.General.DefaultChar[Gender][1].HeadTexture[1])
     SetSex('male')

@@ -65,7 +65,7 @@ end)
 
 
 -- Devmode commands
-if Config.DevMode == true then
+if Config.DevMode then
     RegisterCommand('spawn', function()
         TriggerEvent('feather-character:SpawnSelect')
     end)

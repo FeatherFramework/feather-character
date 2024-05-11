@@ -35,23 +35,7 @@ function SpawnProps()
         Config.SpawnProps.obj4.z, Config.SpawnProps.obj4.h, false, 'standard')
 end
 
-RegisterCommand('getdata', function(source)
-    TriggerServerEvent('feather-character:GetCharactersData', PlayerId())
-end)
 local Clothing, Attributes, Makeup = {}, {}, {}
-
-RegisterCommand('testspawn', function(source)
-    local ped = FeatherCore.Ped:Create('mp_male', Config.SpawnCoords.charspots[1].x,
-    Config.SpawnCoords.charspots[1].y,
-    Config.SpawnCoords.charspots[1].z, 0, 'world', false, false)
-    local RawPed = ped:GetPed()
-
-    Citizen.InvokeNative(0x77FF8D35EEC6BBC4, RawPed, 4, 0) -- outfits
-    DefaultPedSetup(RawPed, true)
-
-    ChangeOverlay(RawPed, 'lipsticks', 1, 1, 0, 0, 0, 1.0, 0, 1, 1, 1, 1, 1, 1.0,
-    (SelectedAttributeElements['Albedo'].hash))
-end)
 
 
 
