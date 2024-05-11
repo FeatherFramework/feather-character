@@ -1,4 +1,4 @@
-local camera, show
+local camera
 
 function StartCam(x, y, z, heading, zoom)
     DestroyAllCams(true)

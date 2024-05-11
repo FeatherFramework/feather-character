@@ -1,4 +1,4 @@
-fx_version 'adamant'
+fx_version 'cerulean'
 games { 'rdr3' }
 rdr3_warning 'I acknowledge that this is a prerelease build of RedM, and I am aware my resources *will* become incompatible once RedM ships.'
 lua54 'yes'
@@ -33,7 +33,7 @@ server_scripts {
 
 client_scripts {
     '@feather-core/shared/services/dataview.lua',
-    'client/helpers/feathercore.lua',
+    'client/imports.lua',
     'client/helpers/*.lua',
     'client/services/*.lua',
     'client/main.lua',

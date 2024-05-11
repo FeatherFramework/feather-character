@@ -49,7 +49,7 @@ RegisterServerEvent('feather-character:CheckForUsers', function()
     local _source = source
     local allChars = FeatherCore.Character.GetAvailableCharactersFromDB(_source)
     if #allChars > 0 then
-        TriggerClientEvent('feather-character:SelectCharacterScreen', _source, allchars)
+        TriggerClientEvent('feather-character:SelectCharacterScreen', _source, allChars)
     else
         TriggerClientEvent('feather-character:CreateNewCharacter', _source)
     end

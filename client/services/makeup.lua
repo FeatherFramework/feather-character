@@ -352,7 +352,7 @@ function ChangeOverlay(ped, name, visibility, tx_id, tx_normal, tx_material, tx_
     end
 
     while not Citizen.InvokeNative(0x31DC8D3F216D8509, textureId) do
-        Citizen.Wait(0)
+        Wait(5)
     end
 
     Citizen.InvokeNative(0x92DAABA2C1C10B0E, textureId)

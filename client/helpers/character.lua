@@ -1,15 +1,7 @@
-function LoadModel(sex)
-    RequestModel(sex)
-    while not HasModelLoaded(sex) do
-        Wait(10)
-    end
-end
-
 function GetGender()
     if not IsPedMale(PlayerPedId()) then
         return "Female"
     end
-
     return "Male"
 end
 
@@ -21,12 +13,11 @@ end
 function EyesAnim(anim)
     while not HasAnimDictLoaded("FACE_HUMAN@GEN_MALE@BASE") do
         RequestAnimDict("FACE_HUMAN@GEN_MALE@BASE")
-        Citizen.Wait(50)
+        Wait(50)
     end
 
     if not IsEntityPlayingAnim(PlayerPedId(), "FACE_HUMAN@GEN_MALE@BASE", anim, 3) then
-        TaskPlayAnim(PlayerPedId(), "FACE_HUMAN@GEN_MALE@BASE", anim, 1090519040,
-            -4, -1, 17, 0, 0, 0, 0, 0, 0)
+        TaskPlayAnim(PlayerPedId(), "FACE_HUMAN@GEN_MALE@BASE", anim, 1090519040, -4, -1, 17, 0, 0, 0, 0, 0, 0)
     end
     RemoveAnimDict("FACE_HUMAN@GEN_MALE@BASE")
 end
@@ -83,7 +74,7 @@ function DefaultPedSetup(ped, male)
         compHead = tonumber("0x" .. CharacterConfig.General.DefaultChar.Male[1].Heads[1])
         compLegs = tonumber("0x" .. CharacterConfig.General.DefaultChar.Male[1].Legs[1])
     else
-        EquipMetaPedOutfitPreset(ped, 7, true)
+        Citizen.InvokeNative(0x77FF8D35EEC6BBC4, ped, 7, true) -- EquipMetaPedOutfitPreset
         compEyes = 928002221
         compBody = tonumber("0x" .. CharacterConfig.General.DefaultChar.Female[1].Body[1])
         compHead = tonumber("0x" .. CharacterConfig.General.DefaultChar.Female[1].Heads[1])
@@ -91,42 +82,22 @@ function DefaultPedSetup(ped, male)
         --ApplyShopItemToPed(ped, `CLOTHING_ITEM_F_BODIES_LOWER_001_V_001`, true, true)
         --ApplyShopItemToPed(ped, `CLOTHING_ITEM_F_BODIES_UPPER_001_V_001`, true, true)
     end
-    IsPedReadyToRender(PlayerPedId())
+    Citizen.InvokeNative(0xA0BC8FAED8CFEB3C, PlayerPedId()) -- IsPedReadyToRender
+    while not Citizen.InvokeNative(0xA0BC8FAED8CFEB3C, PlayerPedId()) do
+        Citizen.InvokeNative(0xA0BC8FAED8CFEB3C, PlayerPedId())
+        Wait(5)
+    end
+    UpdatePedVariation(PlayerPedId())
     AddComponent(ped, compBody)
     AddComponent(ped, compLegs)
     AddComponent(ped, compHead)
     AddComponent(ped, compEyes)
 end
 
-function IsPedReadyToRender(ped)
-    Citizen.InvokeNative(0xA0BC8FAED8CFEB3C, ped)
-    while not Citizen.InvokeNative(0xA0BC8FAED8CFEB3C, ped) do
-        Citizen.InvokeNative(0xA0BC8FAED8CFEB3C, ped)
-        Wait(0)
-    end
-    UpdatePedVariation(ped)
-end
-
-function EquipMetaPedOutfitPreset(ped, outfitPresetIndex, toggle)
-    Citizen.InvokeNative(0x77FF8D35EEC6BBC4, ped, outfitPresetIndex, toggle)
-end
-
-function ResetPedComponents(ped)
-    Citizen.InvokeNative(0x0BFA1BD465CDFEFD, ped)
-end
-
-function GetNumComponentsInPed(ped)
-    return Citizen.InvokeNative(0x90403E8107B60E81, ped, Citizen.ResultAsInteger())
-end
-
-function GetCategoryOfComponentAtIndex(ped, componentIndex)
-    return Citizen.InvokeNative(0x9b90842304c938a7, ped, componentIndex, 0, Citizen.ResultAsInteger())
-end
-
 function GetComponentIndexByCategory(ped, category)
-    local numComponents = GetNumComponentsInPed(ped)
+    local numComponents = Citizen.InvokeNative(0x90403E8107B60E81, ped, Citizen.ResultAsInteger()) -- GetNumComponentsInPed
     for i = 0, numComponents - 1, 1 do
-        local componentCategory = GetCategoryOfComponentAtIndex(ped, i)
+        local componentCategory = Citizen.InvokeNative(0x9b90842304c938a7, ped, i, 0, Citizen.ResultAsInteger()) -- GetCategoryOfComponentAtIndex
         if componentCategory == category then
             return i
         end
@@ -150,49 +121,21 @@ end
 function SetSex(sex)
     ChangeOverlay(PlayerPedId(),'eyebrows', 1, 1, 0, 0, 0, 1.0, 0, 1, 254, 254, 254, 0, 1.0, Albedo)
 
+    local function loadModel(model)
+        RequestModel(model)
+        while not HasModelLoaded(model) do
+            Wait(10)
+        end
+    end
     if sex == 'male' then
-        LoadModel('mp_male')
+        loadModel('mp_male')
         SetPlayerModel(PlayerId(), joaat('mp_male'), false)
         Citizen.InvokeNative(0x77FF8D35EEC6BBC4, PlayerPedId(), 4, 0) -- outfits
         DefaultPedSetup(PlayerPedId(), true)
     else
-        LoadModel('mp_female')
+        loadModel('mp_female')
         SetPlayerModel(PlayerId(), joaat('mp_female'), false)
         Citizen.InvokeNative(0x77FF8D35EEC6BBC4, PlayerPedId(), 2, 0) -- outfits
         DefaultPedSetup(PlayerPedId(), false)
     end
 end
-
-function hasData(table)
-    for _, value in pairs(table) do
-        if next(value) ~= nil then -- Check if the table is not empty
-            return true
-        end
-    end
-    return false
-end
-
-
-RegisterCommand('paint', function()
-    local drawable = `dress_fr1_002`
-    local albedo = `dress_fr1_002_c1_999_ab`
-    local normal = `dress_fr1_002_c1_000_nm`
-    local material = `dress_fr1_002_c1_000_m`
-    local palette = `metaped_tint_makeup`
-    local tint0 = 180
-    local tint1 = 255
-    local tint2 = 255
-
-    IsPedReadyToRender(PlayerPedId())
-    AddComponent(PlayerPedId(), `CLOTHING_ITEM_F_BODIES_LOWER_001_V_001`, nil)
-    AddComponent(PlayerPedId(), `CLOTHING_ITEM_F_BODIES_UPPER_001_V_001`, nil)
-    AddComponent(PlayerPedId(), `CLOTHING_ITEM_F_HEAD_001_V_001`, nil)
-    AddComponent(PlayerPedId(), `CLOTHING_ITEM_F_EYES_001_TINT_001`, nil)
-    AddComponent(PlayerPedId(), `CLOTHING_ITEM_F_HAIR_013_BLONDE`, nil)
-    SetMetaPedTag(PlayerPedId(), drawable, albedo, normal, material, palette, tint0, tint1, tint2)
-    UpdatePedVariation(PlayerPedId())
-end)
-
-RegisterCommand('lipstick', function()
-    ChangeOverlay(PlayerPedId(), 'lipsticks', 1, 1, 0, 0, 0, 1.0, 0, 1, 1, 1, 1, 1, 1.0,(SelectedAttributeElements['Albedo'].hash))
-end)

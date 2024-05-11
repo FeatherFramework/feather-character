@@ -20,8 +20,8 @@ function CleanupCharacterSelect()
     end
 
     spawnedPeds = {}
-    MyMenu:Close({})
-    CharInfoMenu:Close({})
+    MyMenu:Close()
+    MyMenu:Close()
 end
 
 function SpawnProps()
@@ -94,7 +94,7 @@ function SpawnCharacters(data)
         Config.CameraCoords.charcamera[1].z, Config.CameraCoords.charcamera[1].h,
         Config.CameraCoords.charcamera[1].zoom)
     while Spawned do
-        Wait(0)
+        Wait(5)
         SetEntityVisible(PlayerPedId(), false)
         FreezeEntityPosition(PlayerPedId(), true)
     end

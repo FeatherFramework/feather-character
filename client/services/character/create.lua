@@ -2,9 +2,7 @@ function CreateNewCharacter()
     Albedo = (CharacterConfig.General.DefaultChar[Gender][1].HeadTexture[1])
     SetSex('male')
     Wait(500)
-    local obj = FeatherCore.Object:Create('p_package09', Config.SpawnCoords.gotocoords.x, Config.SpawnCoords.gotocoords
-        .y,
-        Config.SpawnCoords.gotocoords.z-0.5, 0, true, 'standard')
+    local obj = FeatherCore.Object:Create('p_package09', Config.SpawnCoords.gotocoords.x, Config.SpawnCoords.gotocoords.y, Config.SpawnCoords.gotocoords.z-0.5, 0, true, 'standard')
     local tobj = obj:GetObj()
     SetFocusEntity(PlayerPedId())
     SetEntityAlpha(tobj, 0, true)
@@ -15,14 +13,14 @@ function CreateNewCharacter()
         Config.CameraCoords.creation.z,
         Config.CameraCoords.creation.h, Config.CameraCoords.creation.zoom)
     while true do
-        Wait(0)
+        Wait(5)
         local pcoords = GetEntityCoords(PlayerPedId())
         if GetDistanceBetweenCoords(pcoords.x, pcoords.y, pcoords.z, Config.SpawnCoords.gotocoords.x, Config.SpawnCoords.gotocoords.y,
                 Config.SpawnCoords.gotocoords.z, true) < 1.0 then
             TriggerEvent('feather-character:CreateCharacterMenu')
             CreatingCharacter = true
             while CreatingCharacter do
-                Wait(0)
+                Wait(5)
                 DrawLightWithRange(Config.SpawnCoords.gotocoords.x, Config.SpawnCoords.gotocoords.y-0.5,
                     Config.SpawnCoords.gotocoords.z+1.5, 250, 250, 250, 7.0, 50.0)
             end
@@ -35,7 +33,7 @@ end
 
 RegisterNetEvent('feather-character:CreateNewCharacter', function()
     Spawned = false
-    MyMenu:Close({})
+    MyMenu:Close()
     print('Character(s) not found going to new character screen')
     DisplayRadar(false)
     DoScreenFadeOut(500)

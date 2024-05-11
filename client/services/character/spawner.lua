@@ -1,24 +1,4 @@
-SpawnSelectInfo = FeatherMenu:RegisterMenu('feather:spawnselect:menu', {
-    top = '5%',
-    left = '5%',
-    ['720width'] = '500px',
-    ['1080width'] = '600px',
-    ['2kwidth'] = '700px',
-    ['4kwidth'] = '900px',
-    style = {
-    },
-    contentslot = {
-        style = { --This style is what is currently making the content slot scoped and scrollable. If you delete this, it will make the content height dynamic to its inner content.
-            ['height'] = '750px',
-            ['width'] = '300px',
-            ['min-height'] = '300px'
-        }
-    },
-    draggable = false,
-    canclose = true
-})
-
-local SpawnSelectPage = SpawnSelectInfo:RegisterPage('spawnselect:page')
+local SpawnSelectPage = MyMenu:RegisterPage('spawnselect:page')
 
 local Header1, CityTextDisplay, SpawnButton
 
@@ -85,7 +65,7 @@ RegisterNetEvent("feather-character:SpawnSelect", function(CharInfo)
         SpawnMethod(ArrivalMethod, CharSpawnCoords,GotoCoords)
     end)
 
-    SpawnSelectInfo:Open({
+    MyMenu:Open({
         cursorFocus = true,
         menuFocus = true,
         startupPage = SpawnSelectPage,
@@ -125,7 +105,7 @@ function SpawnMethod(Method, CharSpawnCoords,GotoCoords)
             end
         end)
         while true do
-            Wait(0)
+            Wait(5)
             local pcoords = vector3(GetEntityCoords(PlayerPedId()))
             if GetDistanceBetweenCoords(pcoords,GotoCoords,true) <5.0 then
                 SetTrainCruiseSpeed(ArriveMethod, 0.0)
@@ -145,7 +125,6 @@ function SpawnMethod(Method, CharSpawnCoords,GotoCoords)
         Wait(20000)
         DeleteEntity(ArriveMethod)
     elseif Method == 'Horse' then
-        print(GotoCoords)
         local obj = FeatherCore.Object:Create('p_package09', GotoCoords.x, GotoCoords.y, GotoCoords.z, 0, false, 'standard')
         SetEntityAlpha(obj:GetObj())
         Wait(500)
@@ -158,7 +137,7 @@ function SpawnMethod(Method, CharSpawnCoords,GotoCoords)
         Wait(250)
         TaskGoToCoordAnyMeans(PlayerPedId(),GotoCoords.x, GotoCoords.y, GotoCoords.z,15.0,0,0,786603,0xbf800000)
         while true do
-            Wait(0)
+            Wait(5)
             local pcoords = vector3(GetEntityCoords(PlayerPedId()))
             if GetDistanceBetweenCoords(pcoords,GotoCoords,true) <5.0 then
                 TaskDismountAnimal(PlayerPedId(),0,0,0,0,0)
@@ -166,7 +145,5 @@ function SpawnMethod(Method, CharSpawnCoords,GotoCoords)
                 TaskFleePed(Mount,PlayerPedId,4,-1,-1,-1,0)
             end
         end
-    elseif Method == 'Boat' then
-
     end
 end

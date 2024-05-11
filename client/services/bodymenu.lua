@@ -1,7 +1,5 @@
 MainBodyMenu = MyMenu:RegisterPage('mainbody:page')
 
-local HeightPage, BodyPage = MyMenu:RegisterPage('height:page'), MyMenu:RegisterPage('body:page')
-
 local BodySlidersMade = nil
 
 

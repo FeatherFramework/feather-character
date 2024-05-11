@@ -128,12 +128,10 @@ function MakeHeritageSliders ()
 
             -- This gets triggered whenever the sliders selected value changes
         end)
-    
         HeritageSlider = HeritageSlider:update({
             label = 'Heritage',
         })
 
-        
     end
 end
 

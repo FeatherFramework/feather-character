@@ -1,9 +1,7 @@
 -- TODO: REMOVE ALL THIS STUFF AS MENUAPI/REDEMTP_MENU_BASE WILL NOT BE NEEDED.
-FeatherMenu = exports['feather-menu'].initiate()
 CamZ = Config.CameraCoords.creation.z + 0.5
 local Gender = GetGender()
-ActiveTexture, ActiveColor1, ActiveColor2, ActiveColor3, ActiveOpacity, ActiveVariant = {}, {}, {}, {}, {},
-    {}
+ActiveTexture, ActiveColor1, ActiveColor2, ActiveColor3, ActiveOpacity, ActiveVariant = {}, {}, {}, {}, {},{}
 
 MyMenu = FeatherMenu:RegisterMenu('feather:character:menu', {
     top = '1%',
@@ -1310,7 +1308,6 @@ function CreateNosePage()
         end
         CreateNoseSize()
         NosePage:RouteTo()
-        --end
     end)
 end
 
