@@ -576,13 +576,12 @@ CharInfoMenu = FeatherMenu:RegisterMenu('feather:characterinfo:menu', {
         print("PAGE CHANGED ", data.pageid)
     end
 })
-local Name, Money, Job, Birthday, Description, ID, Img = {}, {}, {}, {}, {}, {}, {}
+local Name, Money, Birthday, Description, ID, Img = {}, {}, {}, {}, {}, {}
 RegisterNetEvent('feather-character:CharacterSelectMenu',
     function(Info, CameraSpot, CharAmount, Clothing, Attributes, Overlays)
         for k, v in ipairs(Info) do
             Name[k] = v.first_name .. " " .. v.last_name
             Money[k] = v.dollars
-            Job[k] = v.job
             Birthday[k] = v.dob
             Description[k] = v.description
             ID[k] = v.id
@@ -613,10 +612,6 @@ RegisterNetEvent('feather-character:CharacterSelectMenu',
         })
         CharacterSelectPage:RegisterElement('line', {
             slot = "content",
-            style = {}
-        })
-        local jobtext = CharacterSelectPage:RegisterElement('textdisplay', {
-            value = "Job: " .. Job[CameraSpot],
             style = {}
         })
         CharacterSelectPage:RegisterElement('line', {

@@ -16,7 +16,6 @@ function CreateNewCharacter()
     CharacterCamera = StartCam(Config.CameraCoords.creation.x, Config.CameraCoords.creation.y,
         Config.CameraCoords.creation.z,
         Config.CameraCoords.creation.h, Config.CameraCoords.creation.zoom)
-    ToggleUIState()
     while true do
         Wait(0)
         local pcoords = GetEntityCoords(PlayerPedId())
