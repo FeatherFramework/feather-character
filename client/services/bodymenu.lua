@@ -53,7 +53,6 @@ function MakeBodySliders()
                 CamZ = CamZ + 0.1
                 SetCamCoord(CharacterCamera, Config.CameraCoords.creation.x - 0.2, Config.CameraCoords.creation.y, CamZ)
             else
-                print(CamZ)
                 CamZ = CamZ - 0.1
                 SetCamCoord(CharacterCamera, Config.CameraCoords.creation.x - 0.2, Config.CameraCoords.creation.y, CamZ)
             end

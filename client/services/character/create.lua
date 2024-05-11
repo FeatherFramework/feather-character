@@ -34,7 +34,6 @@ end
 RegisterNetEvent('feather-character:CreateNewCharacter', function()
     Spawned = false
     MyMenu:Close()
-    print('Character(s) not found going to new character screen')
     DisplayRadar(false)
     DoScreenFadeOut(500)
 

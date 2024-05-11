@@ -5,7 +5,6 @@ end)
 
 RegisterServerEvent('feather-character:GetCharactersData', function(id)
     local _source = source
-    print(id)
     result = MySQL.query.await("SELECT * FROM character_appearance WHERE id = @id", { ['id'] = id })
     TriggerClientEvent('feather-character:SendCharactersData', _source,id,result[1].clothing, result[1].attributes,result[1].overlays)
 end)

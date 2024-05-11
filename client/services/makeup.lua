@@ -206,7 +206,6 @@ function CreateMakeupSubPage(ActivePage, selected)
                 SelectedAttributeElements['Albedo'].hash)
         end
         SelectedOverlayElements[selected]["color1"] = ActiveColor1[selected]
-        print(TableToString(data.value))
     end)
     if selected ~= { 'lipsticks', 'foundation' } then
         ActivePage:RegisterElement('slider', {
@@ -231,8 +230,6 @@ function CreateMakeupSubPage(ActivePage, selected)
                     SelectedAttributeElements['Albedo'].hash)
             end
             SelectedOverlayElements[selected]["color2"] = ActiveColor2[selected]
-
-            print(TableToString(data.value))
         end)
     end
     if selected ~= { 'lipsticks', 'foundation' } then
@@ -282,13 +279,10 @@ end
 function ChangeOverlay(ped, name, visibility, tx_id, tx_normal, tx_material, tx_color_type, tx_opacity, tx_unk,
                        palette_id,
                        palette_color_primary, palette_color_secondary, palette_color_tertiary, var, opacity, albedo)
-    print(ped)
     for k, v in pairs(overlay_all_layers) do
         if v.name == name then
-            print('got to here')
             v.visibility = visibility
             if visibility ~= 0 then
-                print('got to here2')
 
                 v.tx_normal = tx_normal
                 v.tx_material = tx_material
@@ -300,27 +294,22 @@ function ChangeOverlay(ped, name, visibility, tx_id, tx_normal, tx_material, tx_
                     v.palette_color_primary = palette_color_primary
                     v.palette_color_secondary = palette_color_secondary
                     v.palette_color_tertiary = palette_color_tertiary
-                    print('got to here3')
 
                 end
                 if name == "shadows" or name == "eyeliners" or name == "lipsticks" then
                     v.var = var
                     v.tx_id = overlays_info[name][1].id
-                    print('got to here4')
 
                 else
                     v.var = 0
                     v.tx_id = overlays_info[name][tx_id].id
-                    print('got to here5')
 
                 end
                 v.opacity = opacity
             end
         end
     end
-    print(textureId)
     if textureId ~= -1 then
-        print('got to here6')
 
         Citizen.InvokeNative(0xB63B9178D0F58D82, textureId)
         Citizen.InvokeNative(0x6BEFAA907B076859, textureId)
@@ -331,7 +320,6 @@ function ChangeOverlay(ped, name, visibility, tx_id, tx_normal, tx_material, tx_
     if visibility > 0 then
         textureId = Citizen.InvokeNative(0xC5E7204F322E49EB, albedo, current_texture_settings.normal,
             current_texture_settings.material)
-            print('got to here7')
 
     end
     for k, v in pairs(overlay_all_layers) do
@@ -346,7 +334,6 @@ function ChangeOverlay(ped, name, visibility, tx_id, tx_normal, tx_material, tx_
 
             Citizen.InvokeNative(0x3329AAE2882FC8E4, textureId, overlay_id, v.var);
             Citizen.InvokeNative(0x6C76BC24F8BB709A, textureId, overlay_id, v.opacity);
-            print('got to here8')
 
         end
     end
@@ -358,7 +345,6 @@ function ChangeOverlay(ped, name, visibility, tx_id, tx_normal, tx_material, tx_
     Citizen.InvokeNative(0x92DAABA2C1C10B0E, textureId)
     Citizen.InvokeNative(0x0B46E25761519058, ped, joaat("heads"), textureId)
     Citizen.InvokeNative(0xCC8CA3E88256E58F, ped, false, true, true, true, false)
-    print('got to here9')
 
 end
 

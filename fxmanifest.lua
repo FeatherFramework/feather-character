@@ -25,7 +25,7 @@ shared_scripts {
 
 server_scripts {
     '@oxmysql/lib/MySQL.lua',
-    'server/helpers/feathercore.lua',
+    'server/imports.lua',
     'server/helpers/*.lua',
     'server/services/*.lua',
     'server/main.lua'

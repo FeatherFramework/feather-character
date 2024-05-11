@@ -312,7 +312,6 @@ function FeatSubPage(ActivePage, selected)
                 SelectedAttributeElements['Albedo'].hash)
         end
         SelectedOverlayElements[selected]["opacity"] = ActiveOpacity[selected]
-        print(SelectedOverlayElements[selected])
     end)
     ActivePage:RegisterElement('slider', {
         label = selected .. ' Texture',
@@ -323,7 +322,6 @@ function FeatSubPage(ActivePage, selected)
 
     }, function(data)
         ActiveTexture[selected] = data.value
-        print(data.value)
         if data.value > 0 then
             ChangeOverlay(PlayerPedId(),selected, 1, ActiveTexture[selected], 0, 0, 1, 1.0, 0, 1, 0, 0, 0,
                 ActiveVariant[selected], ActiveOpacity[selected],
@@ -1729,10 +1727,8 @@ function CreateHairandBeardPage(choice)
                 steps = 1,
 
             }, function(data)
-                print(MainComponent)
                 HairPiece = CharacterConfig.Clothing.Clothes[Gender].Accessories.HairAccesories.CategoryData
                     [MainHairComponent]
-                print(HairPiece)
                 AddComponent(PlayerPedId(), HairPiece[data.value].hash, nil)
             end)
             SelectedAttributes[hairacc .. 'Category'] = CategoryElement

@@ -78,7 +78,6 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
         style = {
         }
     }, function(data)
-        print(data.value)
         -- This gets triggered whenever the input value changes
         ImgLink = data.value
     end)
@@ -357,7 +356,6 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
             CamZ = CamZ + 0.1
             SetCamCoord(CharacterCamera, Config.CameraCoords.creation.x - 0.2, Config.CameraCoords.creation.y, CamZ)
         else
-            print(CamZ)
             CamZ = CamZ - 0.1
             SetCamCoord(CharacterCamera, Config.CameraCoords.creation.x - 0.2, Config.CameraCoords.creation.y, CamZ)
         end
@@ -423,7 +421,6 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
             CamZ = CamZ + 0.1
             SetCamCoord(CharacterCamera, Config.CameraCoords.creation.x - 0.2, Config.CameraCoords.creation.y, CamZ)
         else
-            print(CamZ)
             CamZ = CamZ - 0.1
             SetCamCoord(CharacterCamera, Config.CameraCoords.creation.x - 0.2, Config.CameraCoords.creation.y, CamZ)
         end
@@ -488,7 +485,6 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
             CamZ = CamZ + 0.1
             SetCamCoord(CharacterCamera, Config.CameraCoords.creation.x - 0.2, Config.CameraCoords.creation.y, CamZ)
         else
-            print(CamZ)
             CamZ = CamZ - 0.1
             SetCamCoord(CharacterCamera, Config.CameraCoords.creation.x - 0.2, Config.CameraCoords.creation.y, CamZ)
         end
@@ -652,7 +648,6 @@ RegisterNetEvent('feather-character:CharacterSelectMenu',
                 LoadPlayer(CharModel)
                 TriggerServerEvent('feather-character:InitiateCharacter', ID[CameraSpot])
                 Characterid = ID[CameraSpot]
-                print(Characterid)
                 for category, hash in pairs(Clothing[CameraSpot]) do
                     AddComponent(PlayerPedId(), hash, category)
                 end
