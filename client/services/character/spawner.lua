@@ -1,21 +1,13 @@
 local SpawnSelectPage = MyMenu:RegisterPage('spawnselect:page')
 
-local Header1, CityTextDisplay, SpawnButton
-
 RegisterNetEvent("feather-character:SpawnSelect", function(CharInfo)
-    if Header1 then
-        Header1:unRegister()
-        CityTextDisplay:unRegister()
-        CityTextDisplay2:unRegister()
-        SpawnButton:unRegister()
-    end
-    Header1 = SpawnSelectPage:RegisterElement('header', {
+    SpawnSelectPage:RegisterElement('header', {
         value = 'My First Menu',
         slot = "header",
         style = {}
     })
 
-    CityTextDisplay = SpawnSelectPage:RegisterElement('textdisplay', {
+    SpawnSelectPage:RegisterElement('textdisplay', {
         value = "Choose your starting city",
         style = {}
     })
@@ -30,7 +22,7 @@ RegisterNetEvent("feather-character:SpawnSelect", function(CharInfo)
     })
 
     for k, v in pairs(Config.SpawnCoords.towns) do
-        SpawnButton = SpawnSelectPage:RegisterElement('button', {
+        SpawnSelectPage:RegisterElement('button', {
             label = v.name,
             style = {
 
@@ -72,21 +64,16 @@ RegisterNetEvent("feather-character:SpawnSelect", function(CharInfo)
     })
 end)
 
-
-function LoadTrainCars(trainHash)
-    local cars = Citizen.InvokeNative(0x635423d55ca84fc8, trainHash)             -- GetNumCarsFromTrainConfig
-    for index = 0, cars - 1 do
-        local model = Citizen.InvokeNative(0x8df5f6a19f99f0d5, trainHash, index) -- GetTrainModelFromTrainConfigByCarIndex
-        RequestModel(model)
-        while not HasModelLoaded(model) do
-            Wait(10)
-        end
-    end
-end
-
 function SpawnMethod(Method, CharSpawnCoords,GotoCoords)
     if Method == 'Train' then
-        LoadTrainCars(1495948496)
+        local cars = Citizen.InvokeNative(0x635423d55ca84fc8, 1495948496)             -- GetNumCarsFromTrainConfig
+        for index = 0, cars - 1 do
+            local model = Citizen.InvokeNative(0x8df5f6a19f99f0d5, 1495948496, index) -- GetTrainModelFromTrainConfigByCarIndex
+            RequestModel(model)
+            while not HasModelLoaded(model) do
+                Wait(10)
+            end
+        end
         ArriveMethod = Citizen.InvokeNative(0xC239DBD9A57D2A71, 1495948496, CharSpawnCoords.x, CharSpawnCoords.y,
             CharSpawnCoords.z, 1, true, false, true)
             SetTrainCruiseSpeed(ArriveMethod, 0.0)

@@ -1,8 +1,6 @@
 MainBodyMenu = MyMenu:RegisterPage('mainbody:page')
 
-local BodySlidersMade = nil
-
-
+local bodySlidersMade = nil
 MainBodyMenu:RegisterElement('header', {
     value = 'My First Menu',
     slot = "header",
@@ -27,8 +25,8 @@ MainBodyMenu:RegisterElement('button', {
 end)
 
 function MakeBodySliders()
-    if BodySlidersMade == nil then
-        BodySlidersMade = true
+    if bodySlidersMade == nil then
+        bodySlidersMade = true
         MainBodyMenu:RegisterElement('pagearrows', {
             slot = 'footer',
             total = ' Zoom Cam In',

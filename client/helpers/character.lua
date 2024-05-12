@@ -62,13 +62,9 @@ function SetCharExpression(ped, expressionId, value)
 end
 
 function DefaultPedSetup(ped, male)
-    local compEyes
-    local compBody
-    local compHead
-    local compLegs
+    local compEyes, compLegs, compBody, compHead
 
     if male then
-        --Citizen.InvokeNative(0x77FF8D35EEC6BBC4, ped, 0, true)
         compEyes = 612262189
         compBody = tonumber("0x" .. CharacterConfig.General.DefaultChar.Male[1].Body[1])
         compHead = tonumber("0x" .. CharacterConfig.General.DefaultChar.Male[1].Heads[1])
@@ -79,8 +75,6 @@ function DefaultPedSetup(ped, male)
         compBody = tonumber("0x" .. CharacterConfig.General.DefaultChar.Female[1].Body[1])
         compHead = tonumber("0x" .. CharacterConfig.General.DefaultChar.Female[1].Heads[1])
         compLegs = tonumber("0x" .. CharacterConfig.General.DefaultChar.Female[1].Legs[1])
-        --ApplyShopItemToPed(ped, `CLOTHING_ITEM_F_BODIES_LOWER_001_V_001`, true, true)
-        --ApplyShopItemToPed(ped, `CLOTHING_ITEM_F_BODIES_UPPER_001_V_001`, true, true)
     end
     Citizen.InvokeNative(0xA0BC8FAED8CFEB3C, PlayerPedId()) -- IsPedReadyToRender
     while not Citizen.InvokeNative(0xA0BC8FAED8CFEB3C, PlayerPedId()) do

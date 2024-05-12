@@ -8,18 +8,80 @@ MainCharacterPage, ClothingCategoriesPage, UpperClothingPage, LowerClothingPage,
     MyMenu:RegisterPage('seventh:page')
 
 Model = 'mp_male'
-
-
 local SelectedClothing = {}         -- This can keep track of what was selected data wise
 local SelectedClothingElements = {} --This table keeps track of your clothing elements
 local SelectedColoring
 
+local function colorClothing(ActiveCatagory, index)
+    local componentIndex = GetComponentIndexByCategory(PlayerPedId(), ActiveCatagory)
+    local drawable, albedo, normal, material = GetMetaPedAssetGuids(PlayerPedId(), componentIndex)
+    local palette, tint0, tint1, tint2 = GetMetaPedAssetTint(PlayerPedId(), componentIndex)
+
+    Wait(250)
+    if SelectedColoring == nil then
+        ColorElement1 = ColorPage:RegisterElement('slider', {
+            label = 'Color 1',
+            start = 1,
+            min = 1,
+            max = 254, --#v.CategoryData[inputvalue],
+            steps = 1
+        }, function(data)
+            Color1 = data.value
+            if MainComponent > 0 then
+                RemoveTagFromMetaPed(index)
+                AddComponent(PlayerPedId(), SelectedClothingElements[index], nil)
+                SetMetaPedTag(PlayerPedId(), drawable, albedo, normal, material, palette, Color1, tint1, tint2)
+                UpdatePedVariation(PlayerPedId())
+            end
+        end)
+        ColorElement2 = ColorPage:RegisterElement('slider', {
+            label = 'Color 2',
+            start = 1,
+            min = 1,
+            max = 254, --#v.CategoryData[inputvalue],
+            steps = 1
+        }, function(data)
+            Color2 = data.value
+            if MainComponent > 0 then
+                RemoveTagFromMetaPed(index)
+                AddComponent(PlayerPedId(), SelectedClothingElements[index], nil)
+                SetMetaPedTag(PlayerPedId(), drawable, albedo, normal, material, palette, Color1, Color2, tint2)
+                UpdatePedVariation(PlayerPedId())
+            end
+        end)
+        ColorElement3 = ColorPage:RegisterElement('slider', {
+            label = 'Color 3',
+            start = 1,
+            min = 1,
+            max = 254, --#v.CategoryData[inputvalue],
+            steps = 1
+        }, function(data)
+            Color3 = data.value
+            if MainComponent > 0 then
+                RemoveTagFromMetaPed(index)
+                AddComponent(PlayerPedId(), SelectedClothingElements[index], nil)
+                SetMetaPedTag(PlayerPedId(), drawable, albedo, normal, material, palette, Color1, Color2, Color3)
+                UpdatePedVariation(PlayerPedId())
+            end
+        end)
+
+
+        ColorElement1 = ColorElement1:update({
+            label = "Color 1",
+        })
+        ColorElement2 = ColorElement2:update({
+            label = "Color 2",
+        })
+        ColorElement3 = ColorElement3:update({
+            label = "Color 3",
+        })
+    end
+    SelectedColoring = true
+end
+
 RegisterNetEvent('feather-character:CreateCharacterMenu', function()
     PageOpened = true
-    if Header1 then
-        Header1:unRegister()
-    end
-    Header1 = MainCharacterPage:RegisterElement('header', {
+    MainCharacterPage:RegisterElement('header', {
         value = 'Character Creation',
         slot = "header",
         style = {}
@@ -130,30 +192,25 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
     })
     ClothingCategoriesPage:RegisterElement('bottomline', {
         slot = "footer",
-        style = {
-
-        }
+        style = {}
     })
     ClothingCategoriesPage:RegisterElement('button', {
         label = "Go Back",
         slot = 'footer',
 
-        style = {
-        },
+        style = {}
     }, function()
         MainCharacterPage:RouteTo()
     end)
     CategoriesPage:RegisterElement('button', {
         label = 'Appearance',
-        style = {
-        }
+        style = {}
     }, function()
         MainAppearanceMenu:RouteTo()
     end)
     CategoriesPage:RegisterElement('button', {
         label = 'Body',
-        style = {
-        }
+        style = {}
     }, function()
         MakeBodySliders()
         MainBodyMenu:RouteTo()
@@ -280,7 +337,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                             },
                         }, function()
                             ColorPage:RouteTo()
-                            ColorClothing(ActiveCatagory, index)
+                            colorClothing(ActiveCatagory, index)
                         end)
                         local Line = ActivePage:RegisterElement('line', {
                             slot = "content",
@@ -694,73 +751,3 @@ RegisterNetEvent('feather-character:CharacterSelectMenu',
             startupPage = CharacterSelectPage,
         })
     end)
-
-
-
-
-function ColorClothing(ActiveCatagory, index)
-    local componentIndex = GetComponentIndexByCategory(PlayerPedId(), ActiveCatagory)
-    local drawable, albedo, normal, material = GetMetaPedAssetGuids(PlayerPedId(), componentIndex)
-    local palette, tint0, tint1, tint2 = GetMetaPedAssetTint(PlayerPedId(), componentIndex)
-
-    Wait(250)
-    if SelectedColoring == nil then
-        ColorElement1 = ColorPage:RegisterElement('slider', {
-            label = 'Color 1',
-            start = 1,
-            min = 1,
-            max = 254, --#v.CategoryData[inputvalue],
-            steps = 1
-        }, function(data)
-            Color1 = data.value
-            if MainComponent > 0 then
-                RemoveTagFromMetaPed(index)
-                AddComponent(PlayerPedId(), SelectedClothingElements[index], nil)
-                SetMetaPedTag(PlayerPedId(), drawable, albedo, normal, material, palette, Color1, tint1, tint2)
-                UpdatePedVariation(PlayerPedId())
-            end
-        end)
-        ColorElement2 = ColorPage:RegisterElement('slider', {
-            label = 'Color 2',
-            start = 1,
-            min = 1,
-            max = 254, --#v.CategoryData[inputvalue],
-            steps = 1
-        }, function(data)
-            Color2 = data.value
-            if MainComponent > 0 then
-                RemoveTagFromMetaPed(index)
-                AddComponent(PlayerPedId(), SelectedClothingElements[index], nil)
-                SetMetaPedTag(PlayerPedId(), drawable, albedo, normal, material, palette, Color1, Color2, tint2)
-                UpdatePedVariation(PlayerPedId())
-            end
-        end)
-        ColorElement3 = ColorPage:RegisterElement('slider', {
-            label = 'Color 3',
-            start = 1,
-            min = 1,
-            max = 254, --#v.CategoryData[inputvalue],
-            steps = 1
-        }, function(data)
-            Color3 = data.value
-            if MainComponent > 0 then
-                RemoveTagFromMetaPed(index)
-                AddComponent(PlayerPedId(), SelectedClothingElements[index], nil)
-                SetMetaPedTag(PlayerPedId(), drawable, albedo, normal, material, palette, Color1, Color2, Color3)
-                UpdatePedVariation(PlayerPedId())
-            end
-        end)
-
-
-        ColorElement1 = ColorElement1:update({
-            label = "Color 1",
-        })
-        ColorElement2 = ColorElement2:update({
-            label = "Color 2",
-        })
-        ColorElement3 = ColorElement3:update({
-            label = "Color 3",
-        })
-    end
-    SelectedColoring = true
-end
