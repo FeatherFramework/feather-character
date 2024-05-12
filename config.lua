@@ -108,21 +108,24 @@ Config = {
                 arrival = 'Wagon',                                                              --Method of arriving (Train,Wagon,Horse,Boat)
                 --tip = " " --Info to give to the player, don't include if not wanting
                 cameracoords = { x = 2813.99, y = -1437.91, z = 43.54, h = 90.0, zoom = 60.0 }, --Coords character will spawn at
-                coords = { x = 2813.99, y = -1437.91, z = 43.54 },                              --Coords character will spawn at
+                startcoords = { x = 2774.99, y = -1351.91, z = 46.45,h =143.0 },                              --Coords character will spawn at
+                gotocoords = { x = 2714.99, y = -1424.91, z = 46.45,h = 143.0 },
             },
             {
                 name = 'Valentine',                                                            --Name of Area
                 arrival = 'Horse',                                                             --Method of arriving (Train,Wagon,Horse,Boat)
                 --tip = " " --Info to give to the player, don't include if not wanting
                 cameracoords = { x = -165.59, y = 632.28, z = 114.03, h = 90.0, zoom = 60.0 }, --Coords character will spawn at
-                coords = { x = 2813.99, y = -1437.91, z = 43.54 },                             --Coords character will spawn at
+                startcoords = { x = 2774.99, y = -1351.91, z = 46.45,h =143.0 },                              --Coords character will spawn at
+                gotocoords = { x = 2714.99, y = -1424.91, z = 46.45,h = 143.0 },
             },
             {
                 name = 'Blackwater',                                                            --Name of Area
                 arrival = 'Boat',                                                               --Method of arriving (Train,Wagon,Horse,Boat)
                 --tip = " " --Info to give to the player, don't include if not wanting
                 cameracoords = { x = -720.31, y = -1278.59, z = 42.23, h = 90.0, zoom = 60.0 }, --Coords character will spawn at
-                coords = { x = 2813.99, y = -1437.91, z = 43.54 },                              --Coords character will spawn at
+                startcoords = { x = 2774.99, y = -1351.91, z = 46.45,h =143.0 },                              --Coords character will spawn at
+                gotocoords = { x = 2714.99, y = -1424.91, z = 46.45,h = 143.0 },
 
             },
         }
