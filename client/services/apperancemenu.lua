@@ -1,6 +1,6 @@
 -- TODO: REMOVE ALL THIS STUFF AS MENUAPI/REDEMTP_MENU_BASE WILL NOT BE NEEDED.
 CamZ = Config.CameraCoords.creation.z + 0.5
-local Gender = GetGender()
+local gender = GetGender()
 ActiveTexture, ActiveColor1, ActiveColor2, ActiveColor3, ActiveOpacity, ActiveVariant = {}, {}, {}, {}, {},{}
 
 MainAppearanceMenu = MyMenu:RegisterPage('appearance:page')
@@ -26,14 +26,14 @@ HeritageSlider = MainAppearanceMenu:RegisterElement('slider', {
     label = "Heritage",
     start = 1,
     min = 1,
-    max = #CharacterConfig.General.DefaultChar[Gender],
+    max = #CharacterConfig.General.DefaultChar[gender],
     steps = 1,
 }, function(data)
     Race = data.value
-    local Head = tonumber("0x" .. CharacterConfig.General.DefaultChar[Gender][Race].Heads[1])
-    local Body = tonumber("0x" .. CharacterConfig.General.DefaultChar[Gender][Race].Body[1])
-    local Legs = tonumber("0x" .. CharacterConfig.General.DefaultChar[Gender][Race].Legs[1])
-    local Albedo = tonumber(CharacterConfig.General.DefaultChar[Gender][Race].HeadTexture[1])
+    local Head = tonumber("0x" .. CharacterConfig.General.DefaultChar[gender][Race].Heads[1])
+    local Body = tonumber("0x" .. CharacterConfig.General.DefaultChar[gender][Race].Body[1])
+    local Legs = tonumber("0x" .. CharacterConfig.General.DefaultChar[gender][Race].Legs[1])
+    local Albedo = tonumber(CharacterConfig.General.DefaultChar[gender][Race].HeadTexture[1])
     SelectedAttributeElements['Albedo'] = { hash = Albedo }
 
     -- This gets triggered whenever the sliders selected value changes
@@ -41,7 +41,7 @@ HeritageSlider = MainAppearanceMenu:RegisterElement('slider', {
     AddComponent(PlayerPedId(), Body, nil)
     AddComponent(PlayerPedId(), Legs, nil)
     HeritageDisplay:update({
-        value = CharacterConfig.General.DefaultChar[Gender][Race].label,
+        value = CharacterConfig.General.DefaultChar[gender][Race].label,
     })
     HeadVariantSlider = HeadVariantSlider:update({
         value = 1,
@@ -62,15 +62,15 @@ HeadVariantSlider = MainAppearanceMenu:RegisterElement('slider', {
     label = "Head Variations",
     start = 1,
     min = 1,
-    max = #CharacterConfig.General.DefaultChar[Gender][1].Heads,
+    max = #CharacterConfig.General.DefaultChar[gender][1].Heads,
     steps = 1,
 }, function(data)
     local value = data.value
     local Head
     if Race == nil then
-        Head = tonumber("0x" .. CharacterConfig.General.DefaultChar[Gender][1].Heads[value])
+        Head = tonumber("0x" .. CharacterConfig.General.DefaultChar[gender][1].Heads[value])
     else
-        Head = tonumber("0x" .. CharacterConfig.General.DefaultChar[Gender][Race].Heads[value])
+        Head = tonumber("0x" .. CharacterConfig.General.DefaultChar[gender][Race].Heads[value])
     end
     AddComponent(PlayerPedId(), Head, nil)
     SelectedAttributeElements['Head'] = { hash = Head }
@@ -81,15 +81,15 @@ BodyVariantSlider = MainAppearanceMenu:RegisterElement('slider', {
     label = "Body Variations",
     start = 1,
     min = 1,
-    max = #CharacterConfig.General.DefaultChar[Gender][1].Body,
+    max = #CharacterConfig.General.DefaultChar[gender][1].Body,
     steps = 1,
 }, function(data)
     local value = data.value
     local Body
     if Race == nil then
-        Body = tonumber("0x" .. CharacterConfig.General.DefaultChar[Gender][1].Body[value])
+        Body = tonumber("0x" .. CharacterConfig.General.DefaultChar[gender][1].Body[value])
     else
-        Body = tonumber("0x" .. CharacterConfig.General.DefaultChar[Gender][Race].Body[value])
+        Body = tonumber("0x" .. CharacterConfig.General.DefaultChar[gender][Race].Body[value])
     end
     AddComponent(PlayerPedId(), Body, nil)
     SelectedAttributeElements['Body'] = { hash = Body }
@@ -100,15 +100,15 @@ LegVariantSlider = MainAppearanceMenu:RegisterElement('slider', {
     label = "Leg Variations",
     start = 1,
     min = 1,
-    max = #CharacterConfig.General.DefaultChar[Gender][1].Legs,
+    max = #CharacterConfig.General.DefaultChar[gender][1].Legs,
     steps = 1,
 }, function(data)
     local value = data.value
     local Legs
     if Race == nil then
-        Legs = tonumber("0x" .. CharacterConfig.General.DefaultChar[Gender][1].Legs[value])
+        Legs = tonumber("0x" .. CharacterConfig.General.DefaultChar[gender][1].Legs[value])
     else
-        Legs = tonumber("0x" .. CharacterConfig.General.DefaultChar[Gender][Race].Legs[value])
+        Legs = tonumber("0x" .. CharacterConfig.General.DefaultChar[gender][Race].Legs[value])
     end
     AddComponent(PlayerPedId(), Legs, nil)
     SelectedAttributeElements['Legs'] = { hash = Legs }
@@ -571,11 +571,11 @@ function CreateEyesPage()
         label = "Eye Color",
         start = 0,
         min = 1,
-        max = #FeaturesEyes[Gender],
+        max = #FeaturesEyes[gender],
         steps = 1,
     }, function(data)
-        AddComponent(PlayerPedId(), FeaturesEyes[Gender][data.value], nil)
-        SelectedAttributeElements['EyeColor'] = { hash = FeaturesEyes[Gender][data.value] }
+        AddComponent(PlayerPedId(), FeaturesEyes[gender][data.value], nil)
+        SelectedAttributeElements['EyeColor'] = { hash = FeaturesEyes[gender][data.value] }
     end)
 end
 
@@ -1442,7 +1442,7 @@ end
 
 --Hair Page
 function CreateHairPage()
-    Gender = GetGender()
+    gender = GetGender()
 
     HairandBeardPage = MyMenu:RegisterPage('hairandbeard:page')
 
@@ -1475,7 +1475,7 @@ function CreateHairPage()
     end)
 
 
-    for key, v in pairs(HairandBeards[Gender]) do
+    for key, v in pairs(HairandBeards[gender]) do
         HairCategoryPage:RegisterElement('button', {
             label = key,
             style = {
@@ -1490,7 +1490,7 @@ function CreateHairPage()
                 label = value,
                 start = 0,
                 min = 0,
-                max = #HairandBeards[Gender][key],
+                max = #HairandBeards[gender][key],
                 steps = 1
             }, function(data)
                 MainComponent = data.value
@@ -1500,23 +1500,23 @@ function CreateHairPage()
                 if MainComponent > 0 then
                     SelectedAttributes[key .. 'Variant'] = SelectedAttributes[key .. 'Variant']:update({
                         label = key .. ' variant',
-                        max = #HairandBeards[Gender][key][MainComponent], --#v.CategoryData[inputvalue],
+                        max = #HairandBeards[gender][key][MainComponent], --#v.CategoryData[inputvalue],
                     })
-                    AddComponent(PlayerPedId(), HairandBeards[Gender][key][MainComponent][VariantComponent].hash, key)
+                    AddComponent(PlayerPedId(), HairandBeards[gender][key][MainComponent][VariantComponent].hash, key)
                     local type = Citizen.InvokeNative(0xEC9A1261BF0CE510, PlayerPedId())
                     ActiveCatagory = Citizen.InvokeNative(0x5FF9A878C3D115B8,
-                        HairandBeards[Gender][key][MainComponent][1].hash, type, true)
+                        HairandBeards[gender][key][MainComponent][1].hash, type, true)
                     SelectedAttributeElements[key .. 'Category'] = {
-                        hash = HairandBeards[Gender][key][MainComponent][1]
+                        hash = HairandBeards[gender][key][MainComponent][1]
                             .hash
                     }
                     SelectedAttributeElements[key .. 'Variant'] = {
-                        hash = HairandBeards[Gender][key][MainComponent][1]
+                        hash = HairandBeards[gender][key][MainComponent][1]
                             .hash
                     }
 
                     TextElement = TextElement:update({
-                        value = HairandBeards[Gender][key][MainComponent][VariantComponent].color
+                        value = HairandBeards[gender][key][MainComponent][VariantComponent].color
                     })
                 else
                     Citizen.InvokeNative(0xDF631E4BCE1B1FC4, PlayerPedId(), ActiveCatagory, 0, 0)
@@ -1535,20 +1535,20 @@ function CreateHairPage()
                 if VariantComponent > 0 and MainComponent > 0 then
                     SelectedAttributes[key .. 'Variant'] = SelectedAttributes[key .. 'Variant']:update({
                         label = key .. ' variant',
-                        max = #HairandBeards[Gender][key][MainComponent], --#v.CategoryData[inputvalue],
+                        max = #HairandBeards[gender][key][MainComponent], --#v.CategoryData[inputvalue],
                     })
 
-                    AddComponent(PlayerPedId(), HairandBeards[Gender][key][MainComponent][VariantComponent].hash, key)
+                    AddComponent(PlayerPedId(), HairandBeards[gender][key][MainComponent][VariantComponent].hash, key)
                     local type = Citizen.InvokeNative(0xEC9A1261BF0CE510, PlayerPedId())
                     ActiveCatagory = Citizen.InvokeNative(0x5FF9A878C3D115B8,
-                        HairandBeards[Gender][key][MainComponent][VariantComponent].hash, type, true)
+                        HairandBeards[gender][key][MainComponent][VariantComponent].hash, type, true)
                     SelectedAttributeElements[key .. 'Variant'] = {
-                        hash = HairandBeards[Gender][key][MainComponent]
+                        hash = HairandBeards[gender][key][MainComponent]
                             [VariantComponent].hash
                     }
 
                     TextElement = TextElement:update({
-                        value = HairandBeards[Gender][key][MainComponent][VariantComponent].color
+                        value = HairandBeards[gender][key][MainComponent][VariantComponent].color
                     })
                 end
             end)
@@ -1560,12 +1560,12 @@ function CreateHairPage()
             SelectedAttributes[key .. 'Variant'] = VariantElement
             CategoryElement = CategoryElement:update({
                 label = key,
-                max = #HairandBeards[Gender][key], --#v.CategoryData[inputvalue],
+                max = #HairandBeards[gender][key], --#v.CategoryData[inputvalue],
             })
 
             VariantElement = VariantElement:update({
                 label = key .. ' variant',
-                max = #HairandBeards[Gender][key], --#v.CategoryData[inputvalue],
+                max = #HairandBeards[gender][key], --#v.CategoryData[inputvalue],
             })
             --end
             TextElement = HairandBeardPage:RegisterElement('textdisplay', {
@@ -1632,7 +1632,7 @@ function CreateHairandBeardPage(choice)
         end
     end)
     if choice == 'beard' then
-        if Gender == "Male" then
+        if gender == "Male" then
             HairandBeardPage:RegisterElement("toggle", {
                 label = "Beard Stuble",
                 start = false,
@@ -1663,16 +1663,16 @@ function CreateHairandBeardPage(choice)
     end
     if choice == 'hair' then
         hairacc = 'Hair Accessories'
-        if Gender == "Female" then
+        if gender == "Female" then
             CategoryElement = HairandBeardPage:RegisterElement('slider', {
                 label = "Hair Accessories",
                 start = 0,
                 min = 0,
-                max = #CharacterConfig.Clothing.Clothes[Gender].Accessories.HairAccesories.CategoryData,
+                max = #CharacterConfig.Clothing.Clothes[gender].Accessories.HairAccesories.CategoryData,
                 steps = 1,
 
             }, function(data)
-                HairPiece = CharacterConfig.Clothing.Clothes[Gender].Accessories.HairAccesories.CategoryData
+                HairPiece = CharacterConfig.Clothing.Clothes[gender].Accessories.HairAccesories.CategoryData
                 MainHairComponent = data.value
                 if VariantComponent == nil then
                     VariantComponent = 1
@@ -1680,11 +1680,11 @@ function CreateHairandBeardPage(choice)
                 if MainHairComponent > 0 then
                     SelectedAttributes[hairacc .. 'Variant'] = SelectedAttributes[hairacc .. 'Variant']:update({
                         label = hairacc .. ' variant',
-                        max = #CharacterConfig.Clothing.Clothes[Gender].Accessories.HairAccesories.CategoryData
+                        max = #CharacterConfig.Clothing.Clothes[gender].Accessories.HairAccesories.CategoryData
                             [MainHairComponent], --#v.CategoryData[inputvalue],
                     })
                     AddComponent(PlayerPedId(), HairPiece[MainHairComponent][VariantComponent].hash, hairacc)
-                    SelectedAttributeElements[hairacc] = CharacterConfig.Clothing.Clothes[Gender].Accessories
+                    SelectedAttributeElements[hairacc] = CharacterConfig.Clothing.Clothes[gender].Accessories
                         .HairAccesories.CategoryData[MainHairComponent][1].hash
                     local type = Citizen.InvokeNative(0xEC9A1261BF0CE510, PlayerPedId())
                     ActiveCatagory = Citizen.InvokeNative(0x5FF9A878C3D115B8, HairPiece[MainHairComponent][1].hash, type,
@@ -1706,7 +1706,7 @@ function CreateHairandBeardPage(choice)
                 steps = 1,
 
             }, function(data)
-                HairPiece = CharacterConfig.Clothing.Clothes[Gender].Accessories.HairAccesories.CategoryData
+                HairPiece = CharacterConfig.Clothing.Clothes[gender].Accessories.HairAccesories.CategoryData
                     [MainHairComponent]
                 AddComponent(PlayerPedId(), HairPiece[data.value].hash, nil)
             end)

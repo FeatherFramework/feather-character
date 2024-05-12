@@ -1,5 +1,5 @@
 local function createNewCharacter()
-    Albedo = (CharacterConfig.General.DefaultChar[Gender][1].HeadTexture[1])
+    Albedo = (CharacterConfig.General.DefaultChar[GetGender()][1].HeadTexture[1])
     SetSex('male')
     Wait(500)
     local obj = FeatherCore.Object:Create('p_package09', Config.SpawnCoords.gotocoords.x, Config.SpawnCoords.gotocoords.y, Config.SpawnCoords.gotocoords.z-0.5, 0, true, 'standard')

@@ -1,6 +1,7 @@
 -- TODO: REMOVE ALL THIS STUFF AS MENUAPI/REDEMTP_MENU_BASE WILL NOT BE NEEDED.
 local FirstName = ''
 local LastName = ''
+local gender = GetGender()
 Fov = 20.0
 MainCharacterPage, ClothingCategoriesPage, UpperClothingPage, LowerClothingPage, AccClothingPage, CategoriesPage, ColorPage =
     MyMenu:RegisterPage('first:page'), MyMenu:RegisterPage('second:page'), MyMenu:RegisterPage('third:page'),
@@ -254,7 +255,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
         MainCharacterPage:RouteTo()
     end)
 
-    for k, v in pairs(CharacterConfig.Clothing.Clothes[Gender]) do
+    for k, v in pairs(CharacterConfig.Clothing.Clothes[gender]) do
         ClothingCategoriesPage:RegisterElement('button', {
             label = k,
             style = {
@@ -280,7 +281,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                 SwitchCam(Config.CameraCoords.creation.x, Config.CameraCoords.creation.y, Config.CameraCoords.creation.z,
                     Config.CameraCoords.creation.h, Config.CameraCoords.creation.zoom)
             end
-            for index, key in pairs(CharacterConfig.Clothing.Clothes[Gender][k]) do
+            for index, key in pairs(CharacterConfig.Clothing.Clothes[gender][k]) do
                 table.insert(SelectedClothing, index)
                 if SelectedClothing[index .. 'Category'] == nil then
                     CategoryElement = ActivePage:RegisterElement('slider', {

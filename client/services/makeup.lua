@@ -1,5 +1,4 @@
-local textureId = -1
-Gender = GetGender()
+local textureId, gender = -1, GetGender()
 
 MainMakeupMenu = MyMenu:RegisterPage('mainmakeup:page')
 
@@ -315,7 +314,7 @@ function ChangeOverlay(ped, name, visibility, tx_id, tx_normal, tx_material, tx_
         Citizen.InvokeNative(0x6BEFAA907B076859, textureId)
     end
 
-    local current_texture_settings = texture_types[Gender]
+    local current_texture_settings = texture_types[gender]
 
     if visibility > 0 then
         textureId = Citizen.InvokeNative(0xC5E7204F322E49EB, albedo, current_texture_settings.normal,
