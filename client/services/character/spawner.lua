@@ -1,34 +1,34 @@
-local SpawnSelectPage = MyMenu:RegisterPage('spawnselect:page')
+local spawnSelectPage = MyMenu:RegisterPage('spawnselect:page')
 
 RegisterNetEvent("feather-character:SpawnSelect", function(CharInfo)
-    SpawnSelectPage:RegisterElement('header', {
+    spawnSelectPage:RegisterElement('header', {
         value = 'My First Menu',
         slot = "header",
         style = {}
     })
 
-    SpawnSelectPage:RegisterElement('textdisplay', {
+    spawnSelectPage:RegisterElement('textdisplay', {
         value = "Choose your starting city",
         style = {}
     })
 
-    SpawnSelectPage:RegisterElement('bottomline', {
+    spawnSelectPage:RegisterElement('bottomline', {
         slot = "content",
     })
 
-    CityTextDisplay2 = SpawnSelectPage:RegisterElement('textdisplay', {
+    local cityTextDisplay2 = spawnSelectPage:RegisterElement('textdisplay', {
         value = " ",
         style = {}
     })
 
     for k, v in pairs(Config.SpawnCoords.towns) do
-        SpawnSelectPage:RegisterElement('button', {
+        spawnSelectPage:RegisterElement('button', {
             label = v.name,
             style = {
 
             },
         }, function()
-            CityTextDisplay2:update({
+            cityTextDisplay2:update({
                 value = "You will arrive by " .. v.arrival,
             })
             CharSpawnCoords = vector4(v.startcoords.x, v.startcoords.y, v.startcoords.z,v.startcoords.h)
@@ -42,7 +42,7 @@ RegisterNetEvent("feather-character:SpawnSelect", function(CharInfo)
         end)
     end
 
-    SpawnSelectPage:RegisterElement('button', {
+    spawnSelectPage:RegisterElement('button', {
         label = "Spawn",
         style = {
 
@@ -60,7 +60,7 @@ RegisterNetEvent("feather-character:SpawnSelect", function(CharInfo)
     MyMenu:Open({
         cursorFocus = true,
         menuFocus = true,
-        startupPage = SpawnSelectPage,
+        startupPage = spawnSelectPage,
     })
 end)
 
