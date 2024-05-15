@@ -472,12 +472,6 @@ function CreateEyesPage()
         style = {
         },
     }, function()
-        if EyeGrid then
-            EyeGrid:unRegister()
-        end
-        if EyeGrid2 then
-            EyeGrid2:unRegister()
-        end
         EyeGrid = EyesPage:RegisterElement('gridslider', {
             leftlabel = 'Eye Depth -',
             rightlabel = 'Eye Depth +',
@@ -502,12 +496,6 @@ function CreateEyesPage()
         style = {
         },
     }, function()
-        if EyeGrid then
-            EyeGrid:unRegister()
-        end
-        if EyeGrid2 then
-            EyeGrid2:unRegister()
-        end
         EyeGrid2 = EyesPage:RegisterElement('gridslider', {
             leftlabel = 'Eye Distance -',
             rightlabel = 'Eye Distance +',
@@ -531,15 +519,6 @@ function CreateEyesPage()
         style = {
         },
     }, function()
-        if EyeGrid then
-            EyeGrid:unRegister()
-        end
-        if EyeGrid2 then
-            EyeGrid2:unRegister()
-        end
-        if EyeGrid3 then
-            EyeGrid3:unRegister()
-        end
         EyeGrid3 = EyesPage:RegisterElement('gridslider', {
             leftlabel = 'Eyelid Width -',
             rightlabel = 'Eyelid Width +',
@@ -1089,24 +1068,6 @@ function CreateMouthPage()
         style = {
         },
     }, function()
-        if MouthPlacement then
-            MouthPlacement:unRegister()
-        end
-        if UpperLipGrid then
-            UpperLipGrid:unRegister()
-        end
-        if UpperLipGrid2 then
-            UpperLipGrid2:unRegister()
-        end
-        if LowerLipGrid then
-            LowerLipGrid:unRegister()
-        end
-        if LowerLipGrid2 then
-            LowerLipGrid2:unRegister()
-        end
-        if MouthTuning then
-            MouthTuning:unRegister()
-        end
         CreateMouthPlacement()
         MouthPage:RouteTo()
     end)
@@ -1115,24 +1076,6 @@ function CreateMouthPage()
         style = {
         },
     }, function()
-        if MouthPlacement then
-            MouthPlacement:unRegister()
-        end
-        if UpperLipGrid then
-            UpperLipGrid:unRegister()
-        end
-        if UpperLipGrid2 then
-            UpperLipGrid2:unRegister()
-        end
-        if LowerLipGrid then
-            LowerLipGrid:unRegister()
-        end
-        if LowerLipGrid2 then
-            LowerLipGrid2:unRegister()
-        end
-        if MouthTuning then
-            MouthTuning:unRegister()
-        end
         MouthTuning = true
         CreateMouthTuning()
         MouthPage:RouteTo()
@@ -1143,24 +1086,6 @@ function CreateMouthPage()
         style = {
         },
     }, function()
-        if MouthPlacement then
-            MouthPlacement:unRegister()
-        end
-        if UpperLipGrid then
-            UpperLipGrid:unRegister()
-        end
-        if UpperLipGrid2 then
-            UpperLipGrid2:unRegister()
-        end
-        if LowerLipGrid then
-            LowerLipGrid:unRegister()
-        end
-        if LowerLipGrid2 then
-            LowerLipGrid2:unRegister()
-        end
-        if MouthTuning then
-            MouthTuning:unRegister()
-        end
         UpperLip = true
         CreateUpperLipTuning()
         MouthPage:RouteTo()
@@ -1170,24 +1095,6 @@ function CreateMouthPage()
         style = {
         },
     }, function()
-        if MouthPlacement then
-            MouthPlacement:unRegister()
-        end
-        if UpperLipGrid then
-            UpperLipGrid:unRegister()
-        end
-        if UpperLipGrid2 then
-            UpperLipGrid2:unRegister()
-        end
-        if LowerLipGrid then
-            LowerLipGrid:unRegister()
-        end
-        if LowerLipGrid2 then
-            LowerLipGrid2:unRegister()
-        end
-        if MouthTuning then
-            MouthTuning:unRegister()
-        end
         LowerLip = true
         CreateLowerLipTuning()
         MouthPage:RouteTo()
@@ -1257,15 +1164,6 @@ function CreateNosePage()
         style = {
         },
     }, function()
-        if NoseGrid1 then
-            NoseGrid1:unRegister()
-        end
-        if NoseGrid2 then
-            NoseGrid2:unRegister()
-        end
-        if NoseGrid3 then
-            NoseGrid3:unRegister()
-        end
         CreateNoseWidthHeight()
         NosePage:RouteTo()
     end)
@@ -1274,15 +1172,6 @@ function CreateNosePage()
         style = {
         },
     }, function()
-        if NoseGrid1 then
-            NoseGrid1:unRegister()
-        end
-        if NoseGrid2 then
-            NoseGrid2:unRegister()
-        end
-        if NoseGrid3 then
-            NoseGrid3:unRegister()
-        end
         CreateNoseSize()
         NosePage:RouteTo()
     end)
@@ -1718,9 +1607,6 @@ end
 
 RegisterNetEvent('FeatherMenu:closed', function(data)
     MenuOpened = false
-    if Header1 then
-        Header1:unRegister()
-    end
 end)
 
 

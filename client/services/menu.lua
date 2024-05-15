@@ -1,7 +1,4 @@
--- TODO: REMOVE ALL THIS STUFF AS MENUAPI/REDEMTP_MENU_BASE WILL NOT BE NEEDED.
-local FirstName = ''
-local LastName = ''
-local gender = GetGender()
+local firstName, lastName, gender = '', '', GetGender()
 Fov = 20.0
 MainCharacterPage, ClothingCategoriesPage, UpperClothingPage, LowerClothingPage, AccClothingPage, CategoriesPage, ColorPage =
     MyMenu:RegisterPage('first:page'), MyMenu:RegisterPage('second:page'), MyMenu:RegisterPage('third:page'),
@@ -9,9 +6,9 @@ MainCharacterPage, ClothingCategoriesPage, UpperClothingPage, LowerClothingPage,
     MyMenu:RegisterPage('seventh:page')
 
 Model = 'mp_male'
-local SelectedClothing = {}         -- This can keep track of what was selected data wise
-local SelectedClothingElements = {} --This table keeps track of your clothing elements
-local SelectedColoring
+local selectedClothing = {}         -- This can keep track of what was selected data wise
+local selectedClothingElements = {} --This table keeps track of your clothing elements
+local selectedColoring
 
 local function colorClothing(ActiveCatagory, index)
     local componentIndex = GetComponentIndexByCategory(PlayerPedId(), ActiveCatagory)
@@ -19,7 +16,7 @@ local function colorClothing(ActiveCatagory, index)
     local palette, tint0, tint1, tint2 = GetMetaPedAssetTint(PlayerPedId(), componentIndex)
 
     Wait(250)
-    if SelectedColoring == nil then
+    if selectedColoring == nil then
         ColorElement1 = ColorPage:RegisterElement('slider', {
             label = 'Color 1',
             start = 1,
@@ -30,7 +27,7 @@ local function colorClothing(ActiveCatagory, index)
             Color1 = data.value
             if MainComponent > 0 then
                 RemoveTagFromMetaPed(index)
-                AddComponent(PlayerPedId(), SelectedClothingElements[index], nil)
+                AddComponent(PlayerPedId(), selectedClothingElements[index], nil)
                 SetMetaPedTag(PlayerPedId(), drawable, albedo, normal, material, palette, Color1, tint1, tint2)
                 UpdatePedVariation(PlayerPedId())
             end
@@ -45,7 +42,7 @@ local function colorClothing(ActiveCatagory, index)
             Color2 = data.value
             if MainComponent > 0 then
                 RemoveTagFromMetaPed(index)
-                AddComponent(PlayerPedId(), SelectedClothingElements[index], nil)
+                AddComponent(PlayerPedId(), selectedClothingElements[index], nil)
                 SetMetaPedTag(PlayerPedId(), drawable, albedo, normal, material, palette, Color1, Color2, tint2)
                 UpdatePedVariation(PlayerPedId())
             end
@@ -60,7 +57,7 @@ local function colorClothing(ActiveCatagory, index)
             Color3 = data.value
             if MainComponent > 0 then
                 RemoveTagFromMetaPed(index)
-                AddComponent(PlayerPedId(), SelectedClothingElements[index], nil)
+                AddComponent(PlayerPedId(), selectedClothingElements[index], nil)
                 SetMetaPedTag(PlayerPedId(), drawable, albedo, normal, material, palette, Color1, Color2, Color3)
                 UpdatePedVariation(PlayerPedId())
             end
@@ -77,7 +74,7 @@ local function colorClothing(ActiveCatagory, index)
             label = "Color 3",
         })
     end
-    SelectedColoring = true
+    selectedColoring = true
 end
 
 RegisterNetEvent('feather-character:CreateCharacterMenu', function()
@@ -102,7 +99,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
         }
     }, function(data)
         -- This gets triggered whenever the input value changes
-        FirstName = data.value
+        firstName = data.value
     end)
     MainCharacterPage:RegisterElement('input', {
         label = "Last Name",
@@ -111,7 +108,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
         }
     }, function(data)
         -- This gets triggered whenever the input value changes
-        LastName = data.value
+        lastName = data.value
     end)
     MainCharacterPage:RegisterElement('input', {
         label = "Birthday",
@@ -168,12 +165,12 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
         style = {
         }
     }, function()
-        Clothing = json.encode(SelectedClothingElements)
+        Clothing = json.encode(selectedClothingElements)
         Attributes = json.encode(SelectedAttributeElements)
         Overlays = json.encode(SelectedOverlayElements)
         local data = {
-            firstname = FirstName,
-            lastname = LastName,
+            firstname = firstName,
+            lastname = lastName,
             dob = DOB,
             model = Model,
             desc = CharDesc,
@@ -282,8 +279,8 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                     Config.CameraCoords.creation.h, Config.CameraCoords.creation.zoom)
             end
             for index, key in pairs(CharacterConfig.Clothing.Clothes[gender][k]) do
-                table.insert(SelectedClothing, index)
-                if SelectedClothing[index .. 'Category'] == nil then
+                table.insert(selectedClothing, index)
+                if selectedClothing[index .. 'Category'] == nil then
                     CategoryElement = ActivePage:RegisterElement('slider', {
                         label = index,
                         start = 1,
@@ -294,7 +291,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                         MainComponent = data.value
 
                         if MainComponent > 0 then
-                            SelectedClothing[index .. 'Variant'] = SelectedClothing[index .. 'Variant']:update({
+                            selectedClothing[index .. 'Variant'] = selectedClothing[index .. 'Variant']:update({
                                 label = index .. ' variant',
                                 value = 1,
                                 max = #key.CategoryData[MainComponent], --#v.CategoryData[inputvalue],
@@ -303,10 +300,10 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                             local type = Citizen.InvokeNative(0xEC9A1261BF0CE510, PlayerPedId())
                             ActiveCatagory = Citizen.InvokeNative(0x5FF9A878C3D115B8,
                                 key.CategoryData[MainComponent][1].hash, type, true)
-                            SelectedClothingElements[index] = key.CategoryData[MainComponent][1].hash
+                            selectedClothingElements[index] = key.CategoryData[MainComponent][1].hash
                         else
-                            Citizen.InvokeNative(0x0D7FFA1B2F69ED82, PlayerPedId(), SelectedClothingElements[index], 0, 0)
-                            SelectedClothingElements[index] = nil
+                            Citizen.InvokeNative(0x0D7FFA1B2F69ED82, PlayerPedId(), selectedClothingElements[index], 0, 0)
+                            selectedClothingElements[index] = nil
                             Citizen.InvokeNative(0xCC8CA3E88256E58F, PlayerPedId(), 0, 1, 1, 1, 0) -- Refresh PedVariation
                         end
                     end)
@@ -319,7 +316,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                     }, function(data)
                         VariantComponent = data.value
                         if VariantComponent > 0 then
-                            SelectedClothing[index .. 'Variant'] = SelectedClothing[index .. 'Variant']:update({
+                            selectedClothing[index .. 'Variant'] = selectedClothing[index .. 'Variant']:update({
                                 label = index .. ' variant',
                                 max = #key.CategoryData[MainComponent], --#v.CategoryData[inputvalue],
                             })
@@ -328,7 +325,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                             local type = Citizen.InvokeNative(0xEC9A1261BF0CE510, PlayerPedId())
                             ActiveCatagory = Citizen.InvokeNative(0x5FF9A878C3D115B8,
                                 key.CategoryData[MainComponent][VariantComponent].hash, type, true)
-                            SelectedClothingElements[index] = key.CategoryData[MainComponent][VariantComponent].hash
+                            selectedClothingElements[index] = key.CategoryData[MainComponent][VariantComponent].hash
                         end
                     end)
                     if Config.DyeClothes then
@@ -349,8 +346,8 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                         Button = Button:update({})
                     end
                     -- Store your elements with unique keys so that we can easily retrieve these later when data needs to be updated. We are appenting strings so that it stays unique.
-                    SelectedClothing[index .. 'Category'] = CategoryElement
-                    SelectedClothing[index .. 'Variant'] = VariantElement
+                    selectedClothing[index .. 'Category'] = CategoryElement
+                    selectedClothing[index .. 'Variant'] = VariantElement
                     CategoryElement = CategoryElement:update({
                         label = index,
                         max = #key.CategoryData, --#v.CategoryData[inputvalue],
@@ -579,10 +576,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
 
         style = {},
     }, function()
-        ColorElement1:unRegister()
-        ColorElement2:unRegister()
-        ColorElement3:unRegister()
-        SelectedColoring = nil
+        selectedColoring = nil
         ClothingCategoriesPage:RouteTo()
     end)
     ColorPage:RegisterElement('bottomline', {
