@@ -4,9 +4,9 @@ rdr3_warning 'I acknowledge that this is a prerelease build of RedM, and I am aw
 lua54 'yes'
 
 description 'The Character service for the Feather Framework'
-author 'BCC Scripts'
+author 'Feather @Jannings'
 name 'feather-character'
-version '0.0.1'
+version '0.0.2'
 
 github_version_check 'false'
 github_version_type 'release'
@@ -26,7 +26,6 @@ shared_scripts {
 server_scripts {
     '@oxmysql/lib/MySQL.lua',
     'server/imports.lua',
-    'server/helpers/*.lua',
     'server/services/*.lua',
     'server/main.lua'
 }
