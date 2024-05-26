@@ -1,5 +1,4 @@
 -- This is the main file for core character actions.
-
 function CleanupScript()
     DisplayRadar(true)
     EndCam()
@@ -35,7 +34,7 @@ AddEventHandler("onResourceStop", function(resourceName)
         CreatingCharacter = false
         DeleteEntity(Mount)
         CleanupScript()
-        end
+    end
 end)
 
 -- Refresh Character
@@ -62,10 +61,8 @@ RegisterCommand('rc', function()
     end
 end)
 
-
-
 -- Devmode commands
-if Config.DevMode == true then
+if Config.DevMode then
     RegisterCommand('spawn', function()
         TriggerEvent('feather-character:SpawnSelect')
     end)
@@ -78,7 +75,7 @@ if Config.DevMode == true then
         RequestAnimDict("FACE_HUMAN@GEN_MALE@BASE")
 
         while not HasAnimDictLoaded("FACE_HUMAN@GEN_MALE@BASE") do
-            Wait(0)
+            Wait(5)
         end
         TaskPlayAnim(PlayerPedId(), "FACE_HUMAN@GEN_MALE@BASE", "Face_Dentistry_Loop", 1090519040, -4, -1, 17, 0, 0, 0, 0,
             0,

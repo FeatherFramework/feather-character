@@ -1,18 +1,18 @@
-local Obj1, Obj2, Obj3, Obj4
+local obj1, obj2, obj3, obj4
+local clothing, attributes, makeup, spawnedPeds = {}, {}, {}, {}
 SentClothing, SentAttributes, SentOverlays = {}, {}, {}
-local spawnedPeds = {}
-RegisterNetEvent('feather-character:SendCharactersData', function(id, clothing, attributes, makeup)
-    SentClothing[id] = json.decode(clothing)
-    SentAttributes[id] = json.decode(attributes)
-    SentOverlays[id] = json.decode(makeup)
+RegisterNetEvent('feather-character:SendCharactersData', function(id, recClothing, recAttributes, recMakeup)
+    SentClothing[id] = json.decode(recClothing)
+    SentAttributes[id] = json.decode(recAttributes)
+    SentOverlays[id] = json.decode(recMakeup)
 end)
 
 function CleanupCharacterSelect()
-    if Obj1 then
-        Obj1:Remove()
-        Obj2:Remove()
-        Obj3:Remove()
-        Obj4:Remove()
+    if obj1 then
+        obj1:Remove()
+        obj2:Remove()
+        obj3:Remove()
+        obj4:Remove()
     end
 
     for k, v in pairs(spawnedPeds) do
@@ -20,40 +20,20 @@ function CleanupCharacterSelect()
     end
 
     spawnedPeds = {}
-    MyMenu:Close({})
-    CharInfoMenu:Close({})
+    MyMenu:Close()
+    MyMenu:Close()
 end
 
 function SpawnProps()
-    Obj1 = FeatherCore.Object:Create(Config.SpawnProps.obj1.name, Config.SpawnProps.obj1.x, Config.SpawnProps.obj1.y,
+    obj1 = FeatherCore.Object:Create(Config.SpawnProps.obj1.name, Config.SpawnProps.obj1.x, Config.SpawnProps.obj1.y,
         Config.SpawnProps.obj1.z, Config.SpawnProps.obj1.h, false, 'standard')
-    Obj2 = FeatherCore.Object:Create(Config.SpawnProps.obj2.name, Config.SpawnProps.obj2.x, Config.SpawnProps.obj2.y,
+    obj2 = FeatherCore.Object:Create(Config.SpawnProps.obj2.name, Config.SpawnProps.obj2.x, Config.SpawnProps.obj2.y,
         Config.SpawnProps.obj2.z, Config.SpawnProps.obj2.h, false, 'standard')
-    Obj3 = FeatherCore.Object:Create(Config.SpawnProps.obj3.name, Config.SpawnProps.obj3.x, Config.SpawnProps.obj3.y,
+    obj3 = FeatherCore.Object:Create(Config.SpawnProps.obj3.name, Config.SpawnProps.obj3.x, Config.SpawnProps.obj3.y,
         Config.SpawnProps.obj3.z, Config.SpawnProps.obj3.h, false, 'standard')
-    Obj4 = FeatherCore.Object:Create(Config.SpawnProps.obj4.name, Config.SpawnProps.obj4.x, Config.SpawnProps.obj4.y,
+    obj4 = FeatherCore.Object:Create(Config.SpawnProps.obj4.name, Config.SpawnProps.obj4.x, Config.SpawnProps.obj4.y,
         Config.SpawnProps.obj4.z, Config.SpawnProps.obj4.h, false, 'standard')
 end
-
-RegisterCommand('getdata', function(source)
-    TriggerServerEvent('feather-character:GetCharactersData', PlayerId())
-end)
-local Clothing, Attributes, Makeup = {}, {}, {}
-
-RegisterCommand('testspawn', function(source)
-    local ped = FeatherCore.Ped:Create('mp_male', Config.SpawnCoords.charspots[1].x,
-    Config.SpawnCoords.charspots[1].y,
-    Config.SpawnCoords.charspots[1].z, 0, 'world', false, false)
-    local RawPed = ped:GetPed()
-
-    Citizen.InvokeNative(0x77FF8D35EEC6BBC4, RawPed, 4, 0) -- outfits
-    DefaultPedSetup(RawPed, true)
-
-    ChangeOverlay(RawPed, 'lipsticks', 1, 1, 0, 0, 0, 1.0, 0, 1, 1, 1, 1, 1, 1.0,
-    (SelectedAttributeElements['Albedo'].hash))
-end)
-
-
 
 function SpawnCharacters(data)
     Spawned = true
@@ -62,20 +42,14 @@ function SpawnCharacters(data)
         Config.SpawnCoords.charspots[1].y, Config.SpawnCoords.charspots[1].z, true, false, false, false)
     SetFocusEntity(PlayerPedId())
     for k, v in pairs(data) do
-        if k > Maxchars then -- Have this first its more optimal, only run the code below if not maxchars
-            break
-        end
+        if k > Maxchars then break end
 
-        Clothing[k] = SentClothing[v.id]
-        Attributes[k] = SentAttributes[v.id]
-        Makeup[k] = SentOverlays[v.id]
+        clothing[k] = SentClothing[v.id]
+        attributes[k] = SentAttributes[v.id]
+        makeup[k] = SentOverlays[v.id]
         CharModel = v.model
         CharAmount = k
-        -- Creates a new ped
-        local ped = FeatherCore.Ped:Create(v.model, Config.SpawnCoords.charspots[k].x,
-            Config.SpawnCoords.charspots[k].y,
-            Config.SpawnCoords.charspots[k].z, 0, 'world', false, false)
-        --Get the rawpedid of the ped that was JUST created
+        local ped = FeatherCore.Ped:Create(v.model, Config.SpawnCoords.charspots[k].x, Config.SpawnCoords.charspots[k].y, Config.SpawnCoords.charspots[k].z, 0, 'world', false, false)
         local RawPed = ped:GetPed()
 
         Citizen.InvokeNative(0x77FF8D35EEC6BBC4, RawPed, 4, 0) -- outfits
@@ -87,13 +61,13 @@ function SpawnCharacters(data)
         ped:SetHeading(90.0)
         ped:Freeze(true)
         table.insert(spawnedPeds, ped)
-        if Clothing[k] ~= nil then
-            for category, hash in pairs(Clothing[k]) do
+        if clothing[k] ~= nil then
+            for category, hash in pairs(clothing[k]) do
                 AddComponent(RawPed, hash, category)
             end
         end
-        if Attributes[k] ~= nil then
-            for category, attribute in pairs(Attributes[k]) do
+        if attributes[k] ~= nil then
+            for category, attribute in pairs(attributes[k]) do
                 if category == 'Albedo' then
                     AlbedoHash = attribute.hash
                 end
@@ -105,12 +79,12 @@ function SpawnCharacters(data)
             end
         end
     end
-    TriggerEvent('feather-character:CharacterSelectMenu', data, 1, CharAmount, Clothing, Attributes,Makeup)
+    TriggerEvent('feather-character:CharacterSelectMenu', data, 1, CharAmount, clothing, attributes, makeup)
     SwitchCam(Config.CameraCoords.charcamera[1].x, Config.CameraCoords.charcamera[1].y,
         Config.CameraCoords.charcamera[1].z, Config.CameraCoords.charcamera[1].h,
         Config.CameraCoords.charcamera[1].zoom)
     while Spawned do
-        Wait(0)
+        Wait(5)
         SetEntityVisible(PlayerPedId(), false)
         FreezeEntityPosition(PlayerPedId(), true)
     end

@@ -5,7 +5,6 @@ end)
 
 RegisterServerEvent('feather-character:GetCharactersData', function(id)
     local _source = source
-    print(id)
     result = MySQL.query.await("SELECT * FROM character_appearance WHERE id = @id", { ['id'] = id })
     TriggerClientEvent('feather-character:SendCharactersData', _source,id,result[1].clothing, result[1].attributes,result[1].overlays)
 end)
@@ -47,22 +46,10 @@ end)
 
 RegisterServerEvent('feather-character:CheckForUsers', function()
     local _source = source
-    for k, v in ipairs(GetPlayerIdentifiers(_source)) do
-        if string.match(v, "license:") then
-            local license = MySQL.query.await("SELECT * FROM users WHERE license = license") --Migrate this to check the user cache (saves a db call)
-            if license[1] then
-                local userid = license[1].id
-                exports.ghmattimysql:execute("SELECT * FROM `characters` WHERE user_id = @userid",
-                    { ['userid'] = userid },
-                    function(result)
-                        if result[1] then
-                            allchars = FeatherCore.Character.GetAvailableCharactersFromDB(_source)
-                            TriggerClientEvent('feather-character:SelectCharacterScreen', _source, allchars)
-                        else
-                            TriggerClientEvent('feather-character:CreateNewCharacter', _source)
-                        end
-                    end)
-            end
-        end
+    local allChars = FeatherCore.Character.GetAvailableCharactersFromDB(_source)
+    if #allChars > 0 then
+        TriggerClientEvent('feather-character:SelectCharacterScreen', _source, allChars)
+    else
+        TriggerClientEvent('feather-character:CreateNewCharacter', _source)
     end
 end)

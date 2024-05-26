@@ -1,12 +1,12 @@
-fx_version 'adamant'
+fx_version 'cerulean'
 games { 'rdr3' }
 rdr3_warning 'I acknowledge that this is a prerelease build of RedM, and I am aware my resources *will* become incompatible once RedM ships.'
 lua54 'yes'
 
 description 'The Character service for the Feather Framework'
-author 'BCC Scripts'
+author 'Feather @Jannings'
 name 'feather-character'
-version '0.0.1'
+version '0.0.2'
 
 github_version_check 'false'
 github_version_type 'release'
@@ -25,33 +25,22 @@ shared_scripts {
 
 server_scripts {
     '@oxmysql/lib/MySQL.lua',
-    'server/helpers/feathercore.lua',
-    'server/helpers/*.lua',
+    'server/imports.lua',
     'server/services/*.lua',
     'server/main.lua'
 }
 
 client_scripts {
     '@feather-core/shared/services/dataview.lua',
-    'client/helpers/feathercore.lua',
+    'client/imports.lua',
     'client/helpers/*.lua',
     'client/services/*.lua',
     'client/main.lua',
     'client/services/character/*.lua',
 }
 
-ui_page {
-    'ui/shim.html'
-}
-
-files {
-    'ui/shim.html',
-    'ui/js/*.*',
-    'ui/css/*.*',
-    'ui/fonts/*.*',
-    'ui/img/*.*'
-}
-
 dependencies {
-    'oxmysql'
+    'oxmysql',
+    'feather-menu',
+    'feather-core'
 }

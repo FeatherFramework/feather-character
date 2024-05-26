@@ -1,72 +1,34 @@
-SpawnSelectInfo = FeatherMenu:RegisterMenu('feather:spawnselect:menu', {
-    top = '5%',
-    left = '5%',
-    ['720width'] = '500px',
-    ['1080width'] = '600px',
-    ['2kwidth'] = '700px',
-    ['4kwidth'] = '900px',
-    style = {
-    },
-    contentslot = {
-        style = { --This style is what is currently making the content slot scoped and scrollable. If you delete this, it will make the content height dynamic to its inner content.
-            ['height'] = '750px',
-            ['width'] = '300px',
-            ['min-height'] = '300px'
-        }
-    },
-    draggable = false,
-    canclose = true
-}, {
-    opened = function()
-        print("MENU OPENED!")
-    end,
-    closed = function()
-        print("MENU CLOSED!")
-    end,
-    topage = function(data)
-        print("PAGE CHANGED ", data.pageid)
-    end
-})
-
-local SpawnSelectPage = SpawnSelectInfo:RegisterPage('spawnselect:page')
-
-local Header1, CityTextDisplay, SpawnButton
+local spawnSelectPage = MyMenu:RegisterPage('spawnselect:page')
 
 RegisterNetEvent("feather-character:SpawnSelect", function(CharInfo)
-    if Header1 then
-        Header1:unRegister()
-        CityTextDisplay:unRegister()
-        CityTextDisplay2:unRegister()
-        SpawnButton:unRegister()
-    end
-    Header1 = SpawnSelectPage:RegisterElement('header', {
+    spawnSelectPage:RegisterElement('header', {
         value = 'My First Menu',
         slot = "header",
         style = {}
     })
 
-    CityTextDisplay = SpawnSelectPage:RegisterElement('textdisplay', {
+    spawnSelectPage:RegisterElement('textdisplay', {
         value = "Choose your starting city",
         style = {}
     })
 
-    SpawnSelectPage:RegisterElement('bottomline', {
+    spawnSelectPage:RegisterElement('bottomline', {
         slot = "content",
     })
 
-    CityTextDisplay2 = SpawnSelectPage:RegisterElement('textdisplay', {
+    local cityTextDisplay2 = spawnSelectPage:RegisterElement('textdisplay', {
         value = " ",
         style = {}
     })
 
     for k, v in pairs(Config.SpawnCoords.towns) do
-        SpawnButton = SpawnSelectPage:RegisterElement('button', {
+        spawnSelectPage:RegisterElement('button', {
             label = v.name,
             style = {
 
             },
         }, function()
-            CityTextDisplay2:update({
+            cityTextDisplay2:update({
                 value = "You will arrive by " .. v.arrival,
             })
             CharSpawnCoords = vector4(v.startcoords.x, v.startcoords.y, v.startcoords.z,v.startcoords.h)
@@ -80,7 +42,7 @@ RegisterNetEvent("feather-character:SpawnSelect", function(CharInfo)
         end)
     end
 
-    SpawnSelectPage:RegisterElement('button', {
+    spawnSelectPage:RegisterElement('button', {
         label = "Spawn",
         style = {
 
@@ -95,28 +57,23 @@ RegisterNetEvent("feather-character:SpawnSelect", function(CharInfo)
         SpawnMethod(ArrivalMethod, CharSpawnCoords,GotoCoords)
     end)
 
-    SpawnSelectInfo:Open({
+    MyMenu:Open({
         cursorFocus = true,
         menuFocus = true,
-        startupPage = SpawnSelectPage,
+        startupPage = spawnSelectPage,
     })
 end)
 
-
-function LoadTrainCars(trainHash)
-    local cars = Citizen.InvokeNative(0x635423d55ca84fc8, trainHash)             -- GetNumCarsFromTrainConfig
-    for index = 0, cars - 1 do
-        local model = Citizen.InvokeNative(0x8df5f6a19f99f0d5, trainHash, index) -- GetTrainModelFromTrainConfigByCarIndex
-        RequestModel(model)
-        while not HasModelLoaded(model) do
-            Wait(10)
-        end
-    end
-end
-
 function SpawnMethod(Method, CharSpawnCoords,GotoCoords)
     if Method == 'Train' then
-        LoadTrainCars(1495948496)
+        local cars = Citizen.InvokeNative(0x635423d55ca84fc8, 1495948496)             -- GetNumCarsFromTrainConfig
+        for index = 0, cars - 1 do
+            local model = Citizen.InvokeNative(0x8df5f6a19f99f0d5, 1495948496, index) -- GetTrainModelFromTrainConfigByCarIndex
+            RequestModel(model)
+            while not HasModelLoaded(model) do
+                Wait(10)
+            end
+        end
         ArriveMethod = Citizen.InvokeNative(0xC239DBD9A57D2A71, 1495948496, CharSpawnCoords.x, CharSpawnCoords.y,
             CharSpawnCoords.z, 1, true, false, true)
             SetTrainCruiseSpeed(ArriveMethod, 0.0)
@@ -135,7 +92,7 @@ function SpawnMethod(Method, CharSpawnCoords,GotoCoords)
             end
         end)
         while true do
-            Wait(0)
+            Wait(5)
             local pcoords = vector3(GetEntityCoords(PlayerPedId()))
             if GetDistanceBetweenCoords(pcoords,GotoCoords,true) <5.0 then
                 SetTrainCruiseSpeed(ArriveMethod, 0.0)
@@ -155,7 +112,6 @@ function SpawnMethod(Method, CharSpawnCoords,GotoCoords)
         Wait(20000)
         DeleteEntity(ArriveMethod)
     elseif Method == 'Horse' then
-        print(GotoCoords)
         local obj = FeatherCore.Object:Create('p_package09', GotoCoords.x, GotoCoords.y, GotoCoords.z, 0, false, 'standard')
         SetEntityAlpha(obj:GetObj())
         Wait(500)
@@ -168,7 +124,7 @@ function SpawnMethod(Method, CharSpawnCoords,GotoCoords)
         Wait(250)
         TaskGoToCoordAnyMeans(PlayerPedId(),GotoCoords.x, GotoCoords.y, GotoCoords.z,15.0,0,0,786603,0xbf800000)
         while true do
-            Wait(0)
+            Wait(5)
             local pcoords = vector3(GetEntityCoords(PlayerPedId()))
             if GetDistanceBetweenCoords(pcoords,GotoCoords,true) <5.0 then
                 TaskDismountAnimal(PlayerPedId(),0,0,0,0,0)
@@ -176,7 +132,5 @@ function SpawnMethod(Method, CharSpawnCoords,GotoCoords)
                 TaskFleePed(Mount,PlayerPedId,4,-1,-1,-1,0)
             end
         end
-    elseif Method == 'Boat' then
-
     end
 end

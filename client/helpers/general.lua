@@ -1,20 +1,8 @@
-function DrawText(text, x, y, fontscale, fontsize, r, g, b, alpha, textcentred, shadow)
-    local str = CreateVarString(10, "LITERAL_STRING", text)
-    SetTextScale(fontscale, fontsize)
-    SetTextColor(r, g, b, alpha)
-    SetTextCentre(textcentred)
-    if shadow then
-        SetTextDropshadow(1, 0, 0, 255)
-    end
-    SetTextFontForCurrentCommand(6)
-    DisplayText(str, x, y)
-end
-
-local Gender = GetGender()
+local gender = GetGender()
 
 SelectedAttributeElements = {
-    ['Albedo'] = { hash = tonumber(CharacterConfig.General.DefaultChar[Gender][1].HeadTexture[1]) },
-    ['Body'] = { hash = tonumber("0x" .. CharacterConfig.General.DefaultChar[Gender][1].Body[1]) },
+    ['Albedo'] = { hash = tonumber(CharacterConfig.General.DefaultChar[gender][1].HeadTexture[1]) },
+    ['Body'] = { hash = tonumber("0x" .. CharacterConfig.General.DefaultChar[gender][1].Body[1]) },
     ['BodyType'] = { hash = BODYTYPES[1] },
     ['BrowOpacity'] = { value = 1.0 },
     ['CalvesSize'] = { hash = 42067, value = 0.0 },
@@ -29,7 +17,7 @@ SelectedAttributeElements = {
     ['EarHeight'] = { hash = 0x2844, value = 0.0 },
     ['EarSize'] = { hash = 0xED30, value = 0.0 },
     ['EarWidth'] = { hash = 0xC04F, value = 0.0 },
-    ['EyeColor'] = { hash = FeaturesEyes[Gender][1] },
+    ['EyeColor'] = { hash = FeaturesEyes[gender][1] },
     ['EyeDepth'] = { hash = 60996, value = 0.0 },
     ['EyeDistance'] = { hash = 42318, value = 0.0 },
     ['EyeHeight'] = { hash = 56827, value = 0.0 },
@@ -39,13 +27,13 @@ SelectedAttributeElements = {
     ['EyelidHeight'] = { hash = 35627, value = 0.0 },
     ['EyelidWidth'] = { hash = 7019, value = 0.0 },
     ['ForearmSize'] = { hash = 8420, value = 0.0 },
-    ['Head'] = { hash = tonumber("0x" .. CharacterConfig.General.DefaultChar[Gender][1].Heads[1]) },
+    ['Head'] = { hash = tonumber("0x" .. CharacterConfig.General.DefaultChar[gender][1].Heads[1]) },
     ['Height'] = { value = 1.0 },
     ['HipWidth'] = { hash = 49787, value = 0.0 },
     ['JawDepth'] = { hash = 0x1DF6, value = 0.0 },
     ['JawHeight'] = { hash = 0x8D0A, value = 0.0 },
     ['JawWidth'] = { hash = 0xEBAE, value = 0.0 },
-    ['Legs'] = { hash = tonumber("0x" .. CharacterConfig.General.DefaultChar[Gender][1].Legs[1]) },
+    ['Legs'] = { hash = tonumber("0x" .. CharacterConfig.General.DefaultChar[gender][1].Legs[1]) },
     ['LowLipDepth'] = { hash = 0x5D16, value = 0.0 },
     ['LowLipHeight'] = { hash = 0xBB4D, value = 0.0 },
     ['LowLipWidth'] = { hash = 0xB0B0, value = 0.0 },
