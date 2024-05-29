@@ -582,7 +582,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                     label = "Variant",
                                     start = 1,
                                     min = 0,
-                                    max = #overlays_info['eyebrows'],
+                                    max = #OverlayInfo['eyebrows'],
                                     steps = 1
                                 }, function(data)
                                     ChangeOverlay(PlayerPedId(),'eyebrows', 1, data.value, 0, 0, 0, 1.0, 0, 1, 254, 254, 254, 0, EyebrowOpacity, Albedo)
@@ -616,7 +616,15 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                 AddComponent(PlayerPedId(), FeaturesEyes[gender][data.value], nil)
                                 SelectedAttributeElements['EyeColor'] = { hash = FeaturesEyes[gender][data.value] }
                             end)
-                            EyesAnim("mood_normal_eyes_wide")
+                            -- playing eye anim
+                            while not HasAnimDictLoaded("FACE_HUMAN@GEN_MALE@BASE") do
+                                RequestAnimDict("FACE_HUMAN@GEN_MALE@BASE")
+                                Wait(50)
+                            end
+                            if not IsEntityPlayingAnim(PlayerPedId(), "FACE_HUMAN@GEN_MALE@BASE", "FACE_HUMAN@GEN_MALE@BASE", 3) then
+                                TaskPlayAnim(PlayerPedId(), "FACE_HUMAN@GEN_MALE@BASE", "FACE_HUMAN@GEN_MALE@BASE", 1090519040, -4, -1, 17, 0, 0, 0, 0, 0, 0)
+                            end
+                            RemoveAnimDict("FACE_HUMAN@GEN_MALE@BASE")
                             eyesPage:RouteTo()
                         end
                         if key == 'Cheeks' then
@@ -1298,7 +1306,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                             label = v .. ' Texture',
                             start = 0,
                             min = 0,
-                            max = #overlays_info[v],
+                            max = #OverlayInfo[v],
                             steps = 1
                         }, function(data)
                             ActiveTexture[v] = data.value
@@ -1428,34 +1436,34 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                     label = "Body Type",
                     start = 0,
                     min = 1,
-                    max = #BODYTYPES,
+                    max = #BodyTypes,
                     steps = 1
                 }, function(data)
                     local size = data.value
-                    SelectedAttributeElements['BodyType'] = { hash = BODYTYPES[size] }
-                    EquipMetaPedOutfit(PlayerPedId(), BODYTYPES[size])
+                    SelectedAttributeElements['BodyType'] = { hash = BodyTypes[size] }
+                    EquipMetaPedOutfit(PlayerPedId(), BodyTypes[size])
                 end)
                 ChestSlider  = bodyPage:RegisterElement('slider', {
                     label = "Chest Size",
                     start = 0,
                     min = 1,
-                    max = #CHESTTYPE,
+                    max = #ChestType,
                     steps = 1
                 }, function(data)
                     local size = data.value
-                    SelectedAttributeElements['ChestSize'] = { hash = CHESTTYPE[size] }
-                    EquipMetaPedOutfit(PlayerPedId(), CHESTTYPE[size])
+                    SelectedAttributeElements['ChestSize'] = { hash = ChestType[size] }
+                    EquipMetaPedOutfit(PlayerPedId(), ChestType[size])
                 end)
                 WaistSlider  = bodyPage:RegisterElement('slider', {
                     label = "Waist Size",
                     start = 0,
                     min = 1,
-                    max = #WAISTTYPES,
+                    max = #WaistTypes,
                     steps = 1,
                 }, function(data)
                     local size = data.value
-                    SelectedAttributeElements['WaistSize'] = { hash = WAISTTYPES[size] }
-                    EquipMetaPedOutfit(PlayerPedId(), WAISTTYPES[size])
+                    SelectedAttributeElements['WaistSize'] = { hash = WaistTypes[size] }
+                    EquipMetaPedOutfit(PlayerPedId(), WaistTypes[size])
                 end)
                 ForearmGrid1 = bodyPage:RegisterElement('gridslider', {
                     leftlabel = 'Forearm Size -',
@@ -1807,9 +1815,16 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                         slot = "header",
                                         style = {}
                                     })
-                                    local componentIndex = GetComponentIndexByCategory(PlayerPedId(), ActiveCatagory)
-                                    local drawable, albedo, normal, material = GetMetaPedAssetGuids(PlayerPedId(), componentIndex)
-                                    local palette, tint0, tint1, tint2 = GetMetaPedAssetTint(PlayerPedId(), componentIndex)
+                                    local componentIndex
+                                    local numComponents = Citizen.InvokeNative(0x90403E8107B60E81, PlayerPedId(), Citizen.ResultAsInteger()) -- GetNumComponentsInPed
+                                    for i = 0, numComponents - 1, 1 do
+                                        local componentCategory = Citizen.InvokeNative(0x9b90842304c938a7, PlayerPedId(), i, 0, Citizen.ResultAsInteger()) -- GetCategoryOfComponentAtIndex
+                                        if componentCategory == ActiveCatagory then
+                                            componentIndex = i break
+                                        end
+                                    end
+                                    local drawable, albedo, normal, material = Citizen.InvokeNative(0xA9C28516A6DC9D56, PlayerPedId(), componentIndex, Citizen.PointerValueInt(), Citizen.PointerValueInt(), Citizen.PointerValueInt(), Citizen.PointerValueInt()) -- GetMetaPedAssetGuids
+                                    local palette, tint0, tint1, tint2 = Citizen.InvokeNative(0xE7998FEC53A33BBE, PlayerPedId(), componentIndex, Citizen.PointerValueInt(), Citizen.PointerValueInt(), Citizen.PointerValueInt(), Citizen.PointerValueInt())
                                     Wait(250)
                                     if selectedColoring == nil then
                                         local colorElement1 = colorPage:RegisterElement('slider', {
@@ -1823,7 +1838,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                             if MainComponent > 0 then
                                                 RemoveTagFromMetaPed(index)
                                                 AddComponent(PlayerPedId(), selectedClothingElements[index], nil)
-                                                SetMetaPedTag(PlayerPedId(), drawable, albedo, normal, material, palette, Color1, tint1, tint2)
+                                                Citizen.InvokeNative(0xBC6DF00D7A4A6819, PlayerPedId(), drawable, albedo, normal, material, palette, Color1, tint1, tint2)
                                                 UpdatePedVariation(PlayerPedId())
                                             end
                                         end)
@@ -1838,7 +1853,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                             if MainComponent > 0 then
                                                 RemoveTagFromMetaPed(index)
                                                 AddComponent(PlayerPedId(), selectedClothingElements[index], nil)
-                                                SetMetaPedTag(PlayerPedId(), drawable, albedo, normal, material, palette, Color1, Color2, tint2)
+                                                Citizen.InvokeNative(0xBC6DF00D7A4A6819, PlayerPedId(), drawable, albedo, normal, material, palette, Color1, Color2, tint2)
                                                 UpdatePedVariation(PlayerPedId())
                                             end
                                         end)
@@ -1853,7 +1868,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                             if MainComponent > 0 then
                                                 RemoveTagFromMetaPed(index)
                                                 AddComponent(PlayerPedId(), selectedClothingElements[index], nil)
-                                                SetMetaPedTag(PlayerPedId(), drawable, albedo, normal, material, palette, Color1, Color2, Color3)
+                                                Citizen.InvokeNative(0xBC6DF00D7A4A6819, PlayerPedId(), drawable, albedo, normal, material, palette, Color1, Color2, Color3)
                                                 UpdatePedVariation(PlayerPedId())
                                             end
                                         end)
@@ -2220,44 +2235,85 @@ end)
 
 --Global function goes here as our local textureId is used
 function ChangeOverlay(ped, name, visibility, tx_id, tx_normal, tx_material, tx_color_type, tx_opacity, tx_unk, palette_id, palette_color_primary, palette_color_secondary, palette_color_tertiary, var, opacity, albedo)
-    for k, v in pairs(overlay_all_layers) do
-        if v.name == name then
-            v.visibility = visibility
-            if visibility ~= 0 then
-                v.tx_normal = tx_normal
-                v.tx_material = tx_material
-                v.tx_color_type = tx_color_type
-                v.tx_opacity = tx_opacity
-                v.tx_unk = tx_unk
-                if tx_color_type == 0 then
-                    v.palette = color_palettes[palette_id][1]
-                    v.palette_color_primary = palette_color_primary
-                    v.palette_color_secondary = palette_color_secondary
-                    v.palette_color_tertiary = palette_color_tertiary
-                end
-                if name == "shadows" or name == "eyeliners" or name == "lipsticks" then
-                    v.var = var
-                    v.tx_id = overlays_info[name][1].id
-                else
-                    v.var = 0
-                    v.tx_id = overlays_info[name][tx_id].id
-                end
-                v.opacity = opacity
-            end
+    local layer = OverlayAllLayers[name]
+    layer.visibility = visibility
+    if visibility ~= 0 then
+        layer.tx_normal = tx_normal
+        layer.tx_material = tx_material
+        layer.tx_color_type = tx_color_type
+        layer.tx_opacity = tx_opacity
+        layer.tx_unk = tx_unk
+        if tx_color_type == 0 then
+            local colorPalettes = {
+                { 0x3F6E70FF},
+                { 0x0105607B},
+                { 0x17CBCC83},
+                { 0x29F81B2A},
+                { 0x3385C5DB},
+                { 0x37CD36D4},
+                { 0x4101ED87},
+                { 0x63838A81},
+                { 0x6765BC15},
+                { 0x8BA18876},
+                { 0x9AC34F34},
+                { 0x9E4803A0},
+                { 0xA4041CEF},
+                { 0xA4CFABD0},
+                { 0xAA65D8A3},
+                { 0xB562025C},
+                { 0xB9E7F722},
+                { 0xBBF43EF8},
+                { 0xD1476963},
+                { 0xD799E1C2},
+                { 0xDC6BC93B},
+                { 0xDFB1F64C},
+                { 0xF509C745},
+                { 0xF93DB0C8},
+                { 0xFB71527B}
+            }
+            layer.palette = colorPalettes[palette_id][1]
+            layer.palette_color_primary = palette_color_primary
+            layer.palette_color_secondary = palette_color_secondary
+            layer.palette_color_tertiary = palette_color_tertiary
         end
+        if name == "shadows" or name == "eyeliners" or name == "lipsticks" then
+            layer.var = var
+            layer.tx_id = OverlayInfo[name][1].id
+        else
+            layer.var = 0
+            layer.tx_id = OverlayInfo[name][tx_id].id
+        end
+        layer.opacity = opacity
     end
     if textureId ~= -1 then
         Citizen.InvokeNative(0xB63B9178D0F58D82, textureId)
         Citizen.InvokeNative(0x6BEFAA907B076859, textureId)
     end
-    local current_texture_settings = texture_types[gender]
+    local textureTypes = {
+        ["Male"] = {
+            albedo = GetHashKey("head_fr1_sc08_soft_c0_001_ab"),
+            normal = GetHashKey("mp_head_mr1_000_nm"),
+            material = 0x50A4BBA9,
+            color_type = 1,
+            texture_opacity = 1.0,
+            unk_arg = 0
+        },
+        ["Female"] = {
+            albedo = GetHashKey("mp_head_fr1_sc08_c0_000_ab"),
+            normal = GetHashKey("head_fr1_mp_002_nm"),
+            material = 0x7FC5B1E1,
+            color_type = 1,
+            texture_opacity = 1.0,
+            unk_arg = 0
+        }
+    }
+    local current_texture_settings = textureTypes[gender]
     if visibility > 0 then
         textureId = Citizen.InvokeNative(0xC5E7204F322E49EB, albedo, current_texture_settings.normal, current_texture_settings.material)
     end
-    for k, v in pairs(overlay_all_layers) do
+    for k, v in pairs(OverlayAllLayers) do
         if v.visibility and v.visibility ~= 0 then
-            local overlay_id = Citizen.InvokeNative(0x86BB5FF45F193A02, textureId, v.tx_id, v.tx_normal,
-                v.tx_material, v.tx_color_type, v.tx_opacity, v.tx_unk)
+            local overlay_id = Citizen.InvokeNative(0x86BB5FF45F193A02, textureId, v.tx_id, v.tx_normal, v.tx_material, v.tx_color_type, v.tx_opacity, v.tx_unk)
             if v.tx_color_type == 0 then
                 Citizen.InvokeNative(0x1ED8588524AC9BE1, textureId, overlay_id, v.palette)
                 Citizen.InvokeNative(0x2DF59FFE6FFD6044, textureId, overlay_id, v.palette_color_primary, v.palette_color_secondary, v.palette_color_tertiary)

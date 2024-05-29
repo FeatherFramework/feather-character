@@ -13,7 +13,7 @@ FeaturesEyes = {
         3096645940,
         3983864603,
         2739887825,
-        2432743988,
+        2432743988
     },
     ['Female'] = {
         928002221,
@@ -29,7 +29,7 @@ FeaturesEyes = {
         869083847,
         3045109292,
         2210319017,
-        2451302243,
+        2451302243
     }
 }
 
@@ -44,9 +44,8 @@ FaceFeatures = {
             "Eyes height",
             "Eyebrow height",
             "Eyebrow width",
-            "Eyebrow depth",
+            "Eyebrow depth"
         },
-
         ['Ears'] = {
             "Ears width",
             "Ears angle",
@@ -56,17 +55,17 @@ FaceFeatures = {
         ['Cheeks'] = {
             "Cheekbones height",
             "Cheekbones width",
-            "Cheekbones depth",
+            "Cheekbones depth"
         },
         ['Jaw'] = {
             "Jaw height",
             "Jaw width",
-            "Jaw depth",
+            "Jaw depth"
         },
         ['Chin'] = {
             "Chin height",
             "Chin width",
-            "Chin depth",
+            "Chin depth"
         },
         ['Nose'] = {
             "Nose width",
@@ -74,7 +73,7 @@ FaceFeatures = {
             "Nose height",
             "Nose angle",
             "Nose curvature",
-            "Nostrils distance",
+            "Nostrils distance"
         },
         ['Mouth'] = {
             "Upper lip height",
@@ -82,8 +81,8 @@ FaceFeatures = {
             "Upper lip depth",
             "Lower lip height",
             "Lower lip width",
-            "Lower lip depth",
-        },
+            "Lower lip depth"
+        }
     },
     Makeup = {
         ['Eyeshadows'] = 'shadows',
@@ -100,21 +99,19 @@ FaceFeatures = {
         ['Discoloration'] = 'disc',
         ['Freckles'] = 'freckles',
         ['Moles'] = 'moles',
-        ['Spots'] = 'spots',
+        ['Spots'] = 'spots'
     }
-
-
 }
 
-BODYTYPES = {
+BodyTypes = {
     -1241887289,
     61606861,
     -369348190,
     -20262001,
-    32611963,
+    32611963
 }
 
-WAISTTYPES = {
+WaistTypes = {
     -2045421226, -- smallest
     -1745814259,
     -325933489,
@@ -135,10 +132,10 @@ WAISTTYPES = {
     2040610690,
     -1173634986,
     -867801909,
-    1960266524, -- biggest
+    1960266524 -- biggest
 }
 
-CHESTTYPE =
+ChestType =
 {
     1676751061, -- Upperbody size -- smallest
     1437242440, -- Upperbody size
@@ -150,5 +147,5 @@ CHESTTYPE =
     2123392559, -- Upperbody size
     290229161,  -- Upperbody size
     870174923,  -- Upperbody size
-    465805723,  -- Upperbody size -- biggest
+    465805723  -- Upperbody size -- biggest
 }

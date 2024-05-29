@@ -6,30 +6,24 @@ RegisterNetEvent("feather-character:SpawnSelect", function(CharInfo)
         slot = "header",
         style = {}
     })
-
     spawnSelectPage:RegisterElement('textdisplay', {
         value = "Choose your starting city",
         style = {}
     })
-
     spawnSelectPage:RegisterElement('bottomline', {
         slot = "content",
     })
-
     local cityTextDisplay2 = spawnSelectPage:RegisterElement('textdisplay', {
         value = " ",
         style = {}
     })
-
     for k, v in pairs(Config.SpawnCoords.towns) do
         spawnSelectPage:RegisterElement('button', {
             label = v.name,
-            style = {
-
-            },
+            style = {}
         }, function()
             cityTextDisplay2:update({
-                value = "You will arrive by " .. v.arrival,
+                value = "You will arrive by " .. v.arrival
             })
             CharSpawnCoords = vector4(v.startcoords.x, v.startcoords.y, v.startcoords.z,v.startcoords.h)
             GotoCoords = vector4(v.gotocoords.x,v.gotocoords.y,v.gotocoords.z,v.gotocoords.h)
@@ -44,15 +38,11 @@ RegisterNetEvent("feather-character:SpawnSelect", function(CharInfo)
 
     spawnSelectPage:RegisterElement('button', {
         label = "Spawn",
-        style = {
-
-        },
-
+        style = {}
     }, function()
         DoScreenFadeOut(250)
         TriggerServerEvent('feather-character:InitiateCharacter', CharInfo)
-        SetEntityCoords(PlayerPedId(), CharSpawnCoords.x+5.0, CharSpawnCoords.y, CharSpawnCoords.z, true, false, false,
-            false)
+        SetEntityCoords(PlayerPedId(), CharSpawnCoords.x+5.0, CharSpawnCoords.y, CharSpawnCoords.z, true, false, false, false)
         CleanupScript()
         SpawnMethod(ArrivalMethod, CharSpawnCoords,GotoCoords)
     end)
@@ -60,7 +50,7 @@ RegisterNetEvent("feather-character:SpawnSelect", function(CharInfo)
     MyMenu:Open({
         cursorFocus = true,
         menuFocus = true,
-        startupPage = spawnSelectPage,
+        startupPage = spawnSelectPage
     })
 end)
 
