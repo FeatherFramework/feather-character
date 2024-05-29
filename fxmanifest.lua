@@ -6,7 +6,7 @@ lua54 'yes'
 description 'The Character service for the Feather Framework'
 author 'Feather @Jannings'
 name 'feather-character'
-version '0.0.2'
+version '0.0.3'
 
 github_version_check 'false'
 github_version_type 'release'
@@ -26,6 +26,7 @@ shared_scripts {
 server_scripts {
     '@oxmysql/lib/MySQL.lua',
     'server/imports.lua',
+    'server/controllers/*.lua',
     'server/services/*.lua'
 }
 
