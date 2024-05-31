@@ -36,7 +36,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                 slot = "content"
             })
             local heritageDisplay, headVariantSlider, bodyVariantSlider, legVariantSlider = nil, nil, nil, nil
-            local heritageSlider = mainAppearanceMenu:RegisterElement('slider', {
+            mainAppearanceMenu:RegisterElement('slider', {
                 label = "Heritage",
                 start = 1,
                 min = 1,
@@ -44,14 +44,10 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                 steps = 1
             }, function(data)
                 Race = data.value
-                local head = tonumber("0x" .. CharacterConfig.General.DefaultChar[gender][Race].Heads[1])
-                local body = tonumber("0x" .. CharacterConfig.General.DefaultChar[gender][Race].Body[1])
-                local legs = tonumber("0x" .. CharacterConfig.General.DefaultChar[gender][Race].Legs[1])
-                local albedo = tonumber(CharacterConfig.General.DefaultChar[gender][Race].HeadTexture[1])
-                SelectedAttributeElements['Albedo'] = { hash = albedo }
-                AddComponent(PlayerPedId(), head, nil)
-                AddComponent(PlayerPedId(), body, nil)
-                AddComponent(PlayerPedId(), legs, nil)
+                SelectedAttributeElements['Albedo'] = { hash = tonumber(CharacterConfig.General.DefaultChar[gender][Race].HeadTexture[1]) }
+                AddComponent(PlayerPedId(), tonumber("0x" .. CharacterConfig.General.DefaultChar[gender][Race].Heads[1]), nil)
+                AddComponent(PlayerPedId(), tonumber("0x" .. CharacterConfig.General.DefaultChar[gender][Race].Body[1]), nil)
+                AddComponent(PlayerPedId(), tonumber("0x" .. CharacterConfig.General.DefaultChar[gender][Race].Legs[1]), nil)
                 if heritageDisplay then
                     heritageDisplay:update({
                         value = CharacterConfig.General.DefaultChar[gender][Race].label,
@@ -102,14 +98,14 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                 steps = 1,
             }, function(data)
                 local value = data.value
-                local Body
+                local body
                 if Race == nil then
-                    Body = tonumber("0x" .. CharacterConfig.General.DefaultChar[gender][1].Body[value])
+                    body = tonumber("0x" .. CharacterConfig.General.DefaultChar[gender][1].Body[value])
                 else
-                    Body = tonumber("0x" .. CharacterConfig.General.DefaultChar[gender][Race].Body[value])
+                    body = tonumber("0x" .. CharacterConfig.General.DefaultChar[gender][Race].Body[value])
                 end
-                AddComponent(PlayerPedId(), Body, nil)
-                SelectedAttributeElements['Body'] = { hash = Body }
+                AddComponent(PlayerPedId(), body, nil)
+                SelectedAttributeElements['Body'] = { hash = body }
             end)
             legVariantSlider = mainAppearanceMenu:RegisterElement('slider', {
                 label = "Leg Variations",
@@ -119,14 +115,14 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                 steps = 1
             }, function(data)
                 local value = data.value
-                local Legs
+                local legs
                 if Race == nil then
-                    Legs = tonumber("0x" .. CharacterConfig.General.DefaultChar[gender][1].Legs[value])
+                    legs = tonumber("0x" .. CharacterConfig.General.DefaultChar[gender][1].Legs[value])
                 else
-                    Legs = tonumber("0x" .. CharacterConfig.General.DefaultChar[gender][Race].Legs[value])
+                    legs = tonumber("0x" .. CharacterConfig.General.DefaultChar[gender][Race].Legs[value])
                 end
-                AddComponent(PlayerPedId(), Legs, nil)
-                SelectedAttributeElements['Legs'] = { hash = Legs }
+                AddComponent(PlayerPedId(), legs, nil)
+                SelectedAttributeElements['Legs'] = { hash = legs }
             end)
             mainAppearanceMenu:RegisterElement('bottomline', {
                 slot = "footer",
@@ -214,7 +210,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                             slot = 'footer',
                             total = ' Rotate Right ',
                             current = 'Rotate Left ',
-                            style = {},
+                            style = {}
                         }, function(data)
                             if data.value == 'forward' then
                                 local heading = GetEntityHeading(PlayerPedId())
@@ -230,7 +226,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                     label = "Beard Stuble",
                                     start = false
                                 }, function(data)
-                                    if data.value == true then
+                                    if data.value then
                                         ChangeOverlay(PlayerPedId(),'beardstabble', 1, 1, 0, 0, 0, 1.0, 0, 1, 254, 254, 254, 0, 1.0, Albedo)
                                     else
                                         ChangeOverlay(PlayerPedId(),'beardstabble', 1, 1, 0, 0, 0, 1.0, 0, 1, 254, 254, 254, 0, 0.0, Albedo)
@@ -252,7 +248,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                             end
                         end
                         if key == 'hair' then
-                            hairacc = 'Hair Accessories'
+                            local hairacc = 'Hair Accessories'
                             if gender == "Female" then
                                 CategoryElement = hairAndBeardPage:RegisterElement('slider', {
                                     label = "Hair Accessories",
@@ -269,7 +265,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                     if MainHairComponent > 0 then
                                         selectedAttributes[hairacc .. 'Variant'] = selectedAttributes[hairacc .. 'Variant']:update({
                                             label = hairacc .. ' variant',
-                                            max = #CharacterConfig.Clothing.Clothes[gender].Accessories.HairAccesories.CategoryData[MainHairComponent], --#v.CategoryData[inputvalue],
+                                            max = #CharacterConfig.Clothing.Clothes[gender].Accessories.HairAccesories.CategoryData[MainHairComponent], 
                                         })
                                         AddComponent(PlayerPedId(), HairPiece[MainHairComponent][VariantComponent].hash, hairacc)
                                         SelectedAttributeElements[hairacc] = CharacterConfig.Clothing.Clothes[gender].Accessories.HairAccesories.CategoryData[MainHairComponent][1].hash
@@ -314,7 +310,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                             if MainComponent > 0 then
                                 selectedAttributes[key .. 'Variant'] = selectedAttributes[key .. 'Variant']:update({
                                     label = key .. ' variant',
-                                    max = #HairandBeards[gender][key][MainComponent], --#v.CategoryData[inputvalue],
+                                    max = #HairandBeards[gender][key][MainComponent], 
                                 })
                                 AddComponent(PlayerPedId(), HairandBeards[gender][key][MainComponent][VariantComponent].hash, key)
                                 local type = Citizen.InvokeNative(0xEC9A1261BF0CE510, PlayerPedId())
@@ -333,14 +329,14 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                             label = key .. ' variant',
                             start = 1,
                             min = 1,
-                            max = 5, --#v.CategoryData[inputvalue],
+                            max = 5, 
                             steps = 1
                         }, function(data)
                             VariantComponent = data.value
                             if VariantComponent > 0 and MainComponent > 0 then
                                 selectedAttributes[key .. 'Variant'] = selectedAttributes[key .. 'Variant']:update({
                                     label = key .. ' variant',
-                                    max = #HairandBeards[gender][key][MainComponent], --#v.CategoryData[inputvalue],
+                                    max = #HairandBeards[gender][key][MainComponent],
                                 })
                                 AddComponent(PlayerPedId(), HairandBeards[gender][key][MainComponent][VariantComponent].hash, key)
                                 local type = Citizen.InvokeNative(0xEC9A1261BF0CE510, PlayerPedId())
@@ -355,11 +351,11 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                         selectedAttributes[key .. 'Variant'] = VariantElement
                         CategoryElement = CategoryElement:update({
                             label = key,
-                            max = #HairandBeards[gender][key], --#v.CategoryData[inputvalue],
+                            max = #HairandBeards[gender][key],
                         })
                         VariantElement = VariantElement:update({
                             label = key .. ' variant',
-                            max = #HairandBeards[gender][key], --#v.CategoryData[inputvalue],
+                            max = #HairandBeards[gender][key]
                         })
                         TextElement = hairAndBeardPage:RegisterElement('textdisplay', {
                             value = 'test',
@@ -1753,7 +1749,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                     selectedClothing[index .. 'Variant'] = selectedClothing[index .. 'Variant']:update({
                                         label = index .. ' variant',
                                         value = 1,
-                                        max = #key.CategoryData[MainComponent], --#v.CategoryData[inputvalue],
+                                        max = #key.CategoryData[MainComponent], 
                                     })
                                     AddComponent(PlayerPedId(), key.CategoryData[MainComponent][1].hash, index)
                                     local type = Citizen.InvokeNative(0xEC9A1261BF0CE510, PlayerPedId())
@@ -1770,14 +1766,14 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                 label = index .. ' variant',
                                 start = 1,
                                 min = 1,
-                                max = 5, --#v.CategoryData[inputvalue],
+                                max = 5, 
                                 steps = 1
                             }, function(data)
                                 VariantComponent = data.value
                                 if VariantComponent > 0 then
                                     selectedClothing[index .. 'Variant'] = selectedClothing[index .. 'Variant']:update({
                                         label = index .. ' variant',
-                                        max = #key.CategoryData[MainComponent], --#v.CategoryData[inputvalue],
+                                        max = #key.CategoryData[MainComponent], 
                                     })
                                     AddComponent(PlayerPedId(), key.CategoryData[MainComponent][VariantComponent].hash, index)
                                     local type = Citizen.InvokeNative(0xEC9A1261BF0CE510, PlayerPedId())
@@ -1831,7 +1827,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                             label = 'Color 1',
                                             start = 1,
                                             min = 1,
-                                            max = 254, --#v.CategoryData[inputvalue],
+                                            max = 254, 
                                             steps = 1
                                         }, function(data)
                                             Color1 = data.value
@@ -1846,7 +1842,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                             label = 'Color 2',
                                             start = 1,
                                             min = 1,
-                                            max = 254, --#v.CategoryData[inputvalue],
+                                            max = 254, 
                                             steps = 1
                                         }, function(data)
                                             Color2 = data.value
@@ -1861,7 +1857,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                             label = 'Color 3',
                                             start = 1,
                                             min = 1,
-                                            max = 254, --#v.CategoryData[inputvalue],
+                                            max = 254, 
                                             steps = 1
                                         }, function(data)
                                             Color3 = data.value
@@ -1897,11 +1893,11 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                             selectedClothing[index .. 'Variant'] = VariantElement
                             CategoryElement = CategoryElement:update({
                                 label = index,
-                                max = #key.CategoryData, --#v.CategoryData[inputvalue],
+                                max = #key.CategoryData, 
                             })
                             VariantElement = VariantElement:update({
                                 label = index .. ' variant',
-                                max = #key.CategoryData, --#v.CategoryData[inputvalue],
+                                max = #key.CategoryData, 
                             })
                             Line = activePage:RegisterElement('line', {
                                 slot = "content",

@@ -14,24 +14,32 @@ function CleanupCharacterSelect()
         obj3:Remove()
         obj4:Remove()
     end
-
     for k, v in pairs(spawnedPeds) do
         v:Remove()
     end
-
     spawnedPeds = {}
     MyMenu:Close()
     MyMenu:Close()
 end
 
-local function spawnProps()
+--------- Net Events ------
+RegisterNetEvent('feather-character:SelectCharacterScreen', function(data)
+    FeatherCore.RPC.CallAsync("CreateInstance", { id = 123 })
+    -- Spawning Props
     obj1 = FeatherCore.Object:Create(Config.SpawnProps.obj1.name, Config.SpawnProps.obj1.x, Config.SpawnProps.obj1.y, Config.SpawnProps.obj1.z, Config.SpawnProps.obj1.h, false, 'standard')
     obj2 = FeatherCore.Object:Create(Config.SpawnProps.obj2.name, Config.SpawnProps.obj2.x, Config.SpawnProps.obj2.y, Config.SpawnProps.obj2.z, Config.SpawnProps.obj2.h, false, 'standard')
     obj3 = FeatherCore.Object:Create(Config.SpawnProps.obj3.name, Config.SpawnProps.obj3.x, Config.SpawnProps.obj3.y, Config.SpawnProps.obj3.z, Config.SpawnProps.obj3.h, false, 'standard')
     obj4 = FeatherCore.Object:Create(Config.SpawnProps.obj4.name, Config.SpawnProps.obj4.x, Config.SpawnProps.obj4.y, Config.SpawnProps.obj4.z, Config.SpawnProps.obj4.h, false, 'standard')
-end
-
-function SpawnCharacters(data)
+    -- Preparing To Spawn Player
+    SetEntityVisible(PlayerPedId(), false)
+    DisplayRadar(false)
+    SetEntityCoords(PlayerPedId(), Config.CameraCoords.selection.x, Config.CameraCoords.selection.y, Config.CameraCoords.selection.z)
+    StartCam(Config.CameraCoords.selection.x, Config.CameraCoords.selection.y, Config.CameraCoords.selection.z, Config.CameraCoords.selection.h, Config.CameraCoords.selection.zoom)
+    for k, v in pairs(data) do
+        TriggerServerEvent('feather-character:GetCharactersData', v.id)
+        Wait(250)
+    end
+    -- Spawning The players chars
     Spawned = true
     Maxchars = Config.MaxAllowedChars --Can only be an int value
     SetEntityCoords(PlayerPedId(), Config.SpawnCoords.charspots[1].x, Config.SpawnCoords.charspots[1].y, Config.SpawnCoords.charspots[1].z, true, false, false, false)
@@ -80,19 +88,4 @@ function SpawnCharacters(data)
         SetEntityVisible(PlayerPedId(), false)
         FreezeEntityPosition(PlayerPedId(), true)
     end
-end
-
---------- Net Events ------
-RegisterNetEvent('feather-character:SelectCharacterScreen', function(data)
-    FeatherCore.RPC.CallAsync("CreateInstance", { id = 123 })
-    spawnProps()
-    SetEntityVisible(PlayerPedId(), false)
-    DisplayRadar(false)
-    SetEntityCoords(PlayerPedId(), Config.CameraCoords.selection.x, Config.CameraCoords.selection.y, Config.CameraCoords.selection.z)
-    StartCam(Config.CameraCoords.selection.x, Config.CameraCoords.selection.y, Config.CameraCoords.selection.z, Config.CameraCoords.selection.h, Config.CameraCoords.selection.zoom)
-    for k, v in pairs(data) do
-        TriggerServerEvent('feather-character:GetCharactersData', v.id)
-        Wait(250)
-    end
-    SpawnCharacters(data)
 end)
