@@ -1,5 +1,4 @@
-overlays_info = {
-
+OverlayInfo = {
     ["eyebrows"] = {
         { id = 0x07844317, albedo = 0xF81B2E66, normal = 0x7BC4288B, ma = 0x202674A1}, --   {albedo="mp_u_faov_eyebrow_m_012_ab",normal="mp_u_faov_eyebrow_m_012_nm",ma="mp_u_faov_eyebrow_m_012_ma",},
         { id = 0x0A83CA6E, albedo = 0x8FA4286B, normal = 0xBD811948, ma = 0xB82C8FBB}, --   {albedo="mp_u_faov_eyebrow_m_006_ab",normal="mp_u_faov_eyebrow_m_006_nm",ma="mp_u_faov_eyebrow_m_006_ma",},
@@ -26,9 +25,7 @@ overlays_info = {
         { id = 0xF9052779, albedo = 0x8AEADE78, normal = 0x21BB2D97, ma = 0x75A0B928 }, --   {albedo="mp_u_faov_eyebrow_m_000_ab",normal="mp_u_faov_eyebrow_m_000_nm",ma="mp_u_faov_eyebrow_m_000_ma",},
         { id = 0xFE183197, albedo = 0x92B508CD, normal = 0x6AA92A3E, ma = 0xB4A436DB } --   {albedo="mp_u_faov_eyebrow_m_004_ab",normal="mp_u_faov_eyebrow_m_004_nm",ma="mp_u_faov_eyebrow_m_004_ma",},
     },
-
-
-    ["scars"]        = {
+    ["scars"] = {
         { id = 0xC8E45B5B, albedo = 0x6245579F, normal = 0xD53A336F},   -- {albedo="mp_u_faov_scar_000_ab",normal="mp_u_faov_scar_000_nm",},
         { id = 0x90D86B44, albedo = 0xA1538E6F, normal = 0xDFCB1159},   -- {albedo="mp_u_faov_scar_001_ab",normal="mp_u_faov_scar_001_nm",},
         { id = 0x23190FC3, albedo = 0x39683ECE, normal = 0x249C1A0A},   -- {albedo="mp_u_faov_scar_002_ab",normal="mp_u_faov_scar_002_nm",},
@@ -45,30 +42,23 @@ overlays_info = {
         { id = 0xE490E784, albedo = 0x50853115, normal = 0xDA7F2A1E},   -- {albedo="mp_u_faov_scar_013_ab",normal="mp_u_faov_scar_013_nm",},
         { id = 0x0ED23C06, albedo = 0xAEA45D76, normal = 0x364DAAA6},   -- {albedo="mp_u_faov_scar_014_ab",normal="mp_u_faov_scar_014_nm",},
         { id = 0x5712CCB6, albedo = 0x9318AF61, normal = 0x98104C8C}   -- {albedo="mp_u_faov_scar_015_ab",normal="mp_u_faov_scar_015_nm",},
-
     },
-
-    ["eyeliners"]    = {
+    ["eyeliners"] = {
         { id = 0x29A2E58F, albedo = 0xA952BF75, ma = 0xDD55AF2A}   -- {albedo="mp_u_faov_eyeliner_000_ab",ma="mp_u_faov_eyeliner_000_ma",},
     },
-
-    ["lipsticks"]    = {
+    ["lipsticks"] = {
         { id = 0x887E11E0, albedo = 0x96A5E4FB, normal = 0x1C77591C, ma = 0x4255A5F4} -- {albedo="mp_u_faov_lipstick_000_ab",normal="mp_u_faov_lipstick_000_nm",ma="mp_u_faov_lipstick_000_ma",},  -- 7variantov
     },
-
-    ["acne"]         = {
+    ["acne"] = {
         { id = 0x96DD8F42, albedo = 0x1BA4244B, normal = 0xBA46CE92}   -- {albedo="mp_u_faov_acne_000_ab",normal="mp_u_faov_acne_000_nm",},
     },
-
-    ["shadows"]      = {
+    ["shadows"] = {
         { id = 0x47BD7289, albedo = 0x5C5C98FC, ma = 0xE20345CC}   -- {albedo="mp_u_faov_eyeshadow_000_ab",ma="mp_u_faov_eyeshadow_000_ma",},  -- 6 variantov
     },
-
     ["beardstabble"] = {
         { id = 0x375D4807, albedo = 0xB5827817, normal = 0x5041B648, ma = 0x83F42340} -- {albedo="mp_u_faov_beard_000_ab",normal="mp_u_faov_beard_000_nm",ma="mp_u_faov_beard_000_ma",},
     },
-
-    ["ageing"]       = {
+    ["ageing"] = {
         { id = 0x96DD8F42, albedo = 0x1BA4244B, normal = 0xBA46CE92},   -- {albedo="mp_u_faov_acne_000_ab",normal="mp_u_faov_acne_000_nm",},
         { id = 0x6D9DC405, albedo = 0xAFE82F0C, normal = 0x5CF8808E},   -- {albedo="mp_u_faov_ageing_000_ab",normal="mp_u_faov_ageing_000_nm",},
         { id = 0x2761B792, albedo = 0x4105C6B3, normal = 0x8607CC56},   -- {albedo="mp_u_faov_ageing_001_ab",normal="mp_u_faov_ageing_001_nm",},
@@ -95,13 +85,13 @@ overlays_info = {
         { id = 0x91D40EBD, albedo = 0x5DCD1D4E, normal = 0xA1B5F71F},   -- {albedo="mp_u_faov_ageing_022_ab",normal="mp_u_faov_ageing_022_nm",},
         { id = 0x6B94C23F, albedo = 0xF17FE41C, normal = 0x0C480977}   -- {albedo="mp_u_faov_ageing_023_ab",normal="mp_u_faov_ageing_023_nm",},
     },
-    ["blush"]        = {
+    ["blush"] = {
         { id = 0x6DB440FA, albedo = 0x43B1AACA},      -- {albedo="mp_u_faov_blush_000_ab",},
         { id = 0x47617455, albedo = 0x9CAD2EF0},      -- {albedo="mp_u_faov_blush_001_ab",},
         { id = 0x114D082D, albedo = 0xA52E3B98},      -- {albedo="mp_u_faov_blush_002_ab",},
         { id = 0xEC6F3E72, albedo = 0xB5CED4CB}      -- {albedo="mp_u_faov_blush_003_ab",},
     },
-    ["complex"]      = {
+    ["complex"] = {
         { id = 0xF679EDE7, albedo = 0xFAAE9FF0},      -- {albedo="mp_u_faov_complex_000_ab",},
         { id = 0x3FFB80ED, albedo = 0x1FDFD4A1},      -- {albedo="mp_u_faov_complex_001_ab",},
         { id = 0x31C0E478, albedo = 0xC72D0698},      -- {albedo="mp_u_faov_complex_002_ab",},
@@ -117,7 +107,7 @@ overlays_info = {
         { id = 0x293453C3, albedo = 0x6C556574},      -- {albedo="mp_u_faov_complex_012_ab",},
         { id = 0x43150800, albedo = 0x1E486F85}      -- {albedo="mp_u_faov_complex_013_ab",},
     },
-    ["disc"]         = {
+    ["disc"] = {
         { id = 0xD44A5ABA, albedo = 0x2D3AEB2F},      -- {albedo="mp_u_faov_disc_000_ab",},
         { id = 0xE2CF77C4, albedo = 0xB8945AC0},      -- {albedo="mp_u_faov_disc_001_ab",},
         { id = 0xCF57D0E9, albedo = 0xB15E4E47},      -- {albedo="mp_u_faov_disc_002_ab",},
@@ -135,10 +125,10 @@ overlays_info = {
         { id = 0xB4611324, albedo = 0x26FEBDD4},      -- {albedo="mp_u_faov_disc_014_ab",},
         { id = 0xC6ABB7B9, albedo = 0xC162C835}      -- {albedo="mp_u_faov_disc_015_ab",},
     },
-    ["foundation"]   = {
+    ["foundation"] = {
         { id = 0xEF5AB280, albedo = 0xD9264247, ma = 0x1535C7C9}   -- {albedo="mp_u_faov_foundation_000_ab",ma="mp_u_faov_foundation_000_ma",},
     },
-    ["freckles"]     = {
+    ["freckles"] = {
         { id = 0x1B794C51, albedo = 0x59B8159A},      -- {albedo="mp_u_faov_freckles_000_ab",},
         { id = 0x29BFE8DE, albedo = 0x03FCF67B},      -- {albedo="mp_u_faov_freckles_001_ab",},
         { id = 0x0EF6B34C, albedo = 0x21E2FD82},      -- {albedo="mp_u_faov_freckles_002_ab",},
@@ -155,7 +145,7 @@ overlays_info = {
         { id = 0x70F273C2, albedo = 0x81A25BCE},      -- {albedo="mp_u_faov_freckles_013_ab",},
         { id = 0x61C7D56D, albedo = 0x197A1335}      -- {albedo="mp_u_faov_freckles_014_ab",},
     },
-    ["grime"]        = {
+    ["grime"] = {
         { id = 0xA2F30923, albedo = 0x16CDD724, normal = 0x136165B3, ma = 0xF3DFA7AC}, -- {albedo="mp_u_faov_grime_000_ab",normal="mp_u_faov_grime_000_nm",ma="mp_u_faov_grime_000_ma",},
         { id = 0xD5B1EEA0, albedo = 0x0E599D69, normal = 0x5C67FB68, ma = 0x40FEC59E}, -- {albedo="mp_u_faov_grime_001_ab",normal="mp_u_faov_grime_001_nm",ma="mp_u_faov_grime_001_ma",},
         { id = 0x7EC740CC, albedo = 0x0FAE8DC6, normal = 0x9E7A4B63, ma = 0xB48BF65A}, -- {albedo="mp_u_faov_grime_002_ab",normal="mp_u_faov_grime_002_nm",ma="mp_u_faov_grime_002_ma",},
@@ -173,13 +163,13 @@ overlays_info = {
         { id = 0xFB09D881, albedo = 0xC4A40DA0, normal = 0xADD1DC3D, ma = 0xFD797A87}, -- {albedo="mp_u_faov_grime_014_ab",normal="mp_u_faov_grime_014_nm",ma="mp_u_faov_grime_014_ma",},
         { id = 0x11530513, albedo = 0x67C6D30F, normal = 0x26AA38C3, ma = 0x89C2FFE3} -- {albedo="mp_u_faov_grime_015_ab",normal="mp_u_faov_grime_015_nm",ma="mp_u_faov_grime_015_ma",},
     },
-    ["hair"]         = {
+    ["hair"] = {
         { id = 0x39051515, albedo = 0x60A4A360, normal = 0x8D65EFF2, ma = 0x62759D82}, -- {albedo="mp_u_faov_m_hair_000_ab",normal="mp_u_faov_m_hair_000_nm",ma="mp_u_faov_m_hair_000_ma",},
         { id = 0x5E71DFEE, albedo = 0x71147B90, ma = 0xD8EB57BC},                     -- {albedo="mp_u_faov_m_hair_002_ab",ma="mp_u_faov_m_hair_002_ma",},
         { id = 0xDD735DEF, albedo = 0x493214E4, ma = 0x6613D121},                     -- {albedo="mp_u_faov_m_hair_009_ab",ma="mp_u_faov_m_hair_009_ma",},
         { id = 0x69622EAD, albedo = 0xA6E819C4, ma = 0xE581D851}                     -- {albedo="mp_u_faov_m_hair_shared_000_ab",ma="mp_u_faov_m_hair_shared_000_ma",},
     },
-    ["moles"]        = {
+    ["moles"] = {
         { id = 0x821FD077, albedo = 0xDFDA0798, normal = 0xE4E90C92},   -- {albedo="mp_u_faov_moles_000_ab",normal="mp_u_faov_moles_000_nm",},
         { id = 0xCD38E6A8, albedo = 0xE9CF623E, normal = 0x43FAEA4B},   -- {albedo="mp_u_faov_moles_001_ab",normal="mp_u_faov_moles_001_nm",},
         { id = 0x9F9D8B72, albedo = 0x27450B2F, normal = 0x0808DBFB},   -- {albedo="mp_u_faov_moles_002_ab",normal="mp_u_faov_moles_002_nm",},
@@ -197,7 +187,7 @@ overlays_info = {
         { id = 0x84F55502, albedo = 0x47BE6D32, normal = 0xDCF7108E},   -- {albedo="mp_u_faov_moles_014_ab",normal="mp_u_faov_moles_014_nm",},
         { id = 0xBD9A464B, albedo = 0x9DABB1B9, normal = 0x4A3B1739}   -- {albedo="mp_u_faov_moles_015_ab",normal="mp_u_faov_moles_015_nm",},
     },
-    ["spots"]        = {
+    ["spots"] = {
         { id = 0x5BBFF5F7, albedo = 0x24968425, normal = 0xA5D532AD},   -- {albedo="mp_u_faov_spots_000_ab",normal="mp_u_faov_spots_000_nm",},
         { id = 0x65EC0A4F, albedo = 0x326A7845, normal = 0xC09B2354},   -- {albedo="mp_u_faov_spots_001_ab",normal="mp_u_faov_spots_001_nm",},
         { id = 0x3F143CA0, albedo = 0x91D7E39E, normal = 0xD607DF75},   -- {albedo="mp_u_faov_spots_002_ab",normal="mp_u_faov_spots_002_nm",},
@@ -217,71 +207,23 @@ overlays_info = {
     }
 }
 
-color_palettes = {
-    { 0x3F6E70FF},
-    { 0x0105607B},
-    { 0x17CBCC83},
-    { 0x29F81B2A},
-    { 0x3385C5DB},
-    { 0x37CD36D4},
-    { 0x4101ED87},
-    { 0x63838A81},
-    { 0x6765BC15},
-    { 0x8BA18876},
-    { 0x9AC34F34},
-    { 0x9E4803A0},
-    { 0xA4041CEF},
-    { 0xA4CFABD0},
-    { 0xAA65D8A3},
-    { 0xB562025C},
-    { 0xB9E7F722},
-    { 0xBBF43EF8},
-    { 0xD1476963},
-    { 0xD799E1C2},
-    { 0xDC6BC93B},
-    { 0xDFB1F64C},
-    { 0xF509C745},
-    { 0xF93DB0C8},
-    { 0xFB71527B}
-}
-
-
-texture_types = {
-    ["Male"] = {
-        albedo = GetHashKey("head_fr1_sc08_soft_c0_001_ab"),
-        normal = GetHashKey("mp_head_mr1_000_nm"),
-        material = 0x50A4BBA9,
-        color_type = 1,
-        texture_opacity = 1.0,
-        unk_arg = 0,
-    },
-    ["Female"] = {
-        albedo = GetHashKey("mp_head_fr1_sc08_c0_000_ab"),
-        normal = GetHashKey("head_fr1_mp_002_nm"),
-        material = 0x7FC5B1E1,
-        color_type = 1,
-        texture_opacity = 1.0,
-        unk_arg = 0,
-    }
-}
-
-overlay_all_layers = {
-    { name = "eyebrows",   visibility = 0, tx_id = 1, tx_normal = 0, tx_material = 0, tx_color_type = 0, tx_opacity = 1.0, tx_unk = 0, palette = 0, palette_color_primary = 0, palette_color_secondary = 0, palette_color_tertiary = 0, var = 0, opacity = 1.0},
-    { name = "scars",      visibility = 0, tx_id = 1, tx_normal = 0, tx_material = 0, tx_color_type = 0, tx_opacity = 1.0, tx_unk = 0, palette = 0, palette_color_primary = 0, palette_color_secondary = 0, palette_color_tertiary = 0, var = 0, opacity = 1.0},
-    { name = "eyeliners",  visibility = 0, tx_id = 1, tx_normal = 0, tx_material = 0, tx_color_type = 0, tx_opacity = 1.0, tx_unk = 0, palette = 0, palette_color_primary = 0, palette_color_secondary = 0, palette_color_tertiary = 0, var = 0, opacity = 1.0},
-    { name = "lipsticks",  visibility = 0, tx_id = 1, tx_normal = 0, tx_material = 0, tx_color_type = 0, tx_opacity = 1.0, tx_unk = 0, palette = 0, palette_color_primary = 0, palette_color_secondary = 0, palette_color_tertiary = 0, var = 0, opacity = 1.0},
-    { name = "acne",       visibility = 0, tx_id = 1, tx_normal = 0, tx_material = 0, tx_color_type = 0, tx_opacity = 1.0, tx_unk = 0, palette = 0, palette_color_primary = 0, palette_color_secondary = 0, palette_color_tertiary = 0, var = 0, opacity = 1.0},
-    { name = "shadows",    visibility = 0, tx_id = 1, tx_normal = 0, tx_material = 0, tx_color_type = 0, tx_opacity = 1.0, tx_unk = 0, palette = 0, palette_color_primary = 0, palette_color_secondary = 0, palette_color_tertiary = 0, var = 0, opacity = 1.0},
-    { name = "beardstabble", visibility = 0, tx_id = 1, tx_normal = 0, tx_material = 0, tx_color_type = 0, tx_opacity = 1.0, tx_unk = 0, palette = 0, palette_color_primary = 0, palette_color_secondary = 0, palette_color_tertiary = 0, var = 0, opacity = 1.0},
-    { name = "paintedmasks", visibility = 0, tx_id = 1, tx_normal = 0, tx_material = 0, tx_color_type = 0, tx_opacity = 1.0, tx_unk = 0, palette = 0, palette_color_primary = 0, palette_color_secondary = 0, palette_color_tertiary = 0, var = 0, opacity = 1.0},
-    { name = "ageing",     visibility = 0, tx_id = 1, tx_normal = 0, tx_material = 0, tx_color_type = 0, tx_opacity = 1.0, tx_unk = 0, palette = 0, palette_color_primary = 0, palette_color_secondary = 0, palette_color_tertiary = 0, var = 0, opacity = 1.0},
-    { name = "blush",      visibility = 0, tx_id = 1, tx_normal = 0, tx_material = 0, tx_color_type = 0, tx_opacity = 1.0, tx_unk = 0, palette = 0, palette_color_primary = 0, palette_color_secondary = 0, palette_color_tertiary = 0, var = 0, opacity = 1.0},
-    { name = "complex",    visibility = 0, tx_id = 1, tx_normal = 0, tx_material = 0, tx_color_type = 0, tx_opacity = 1.0, tx_unk = 0, palette = 0, palette_color_primary = 0, palette_color_secondary = 0, palette_color_tertiary = 0, var = 0, opacity = 1.0},
-    { name = "disc",       visibility = 0, tx_id = 1, tx_normal = 0, tx_material = 0, tx_color_type = 0, tx_opacity = 1.0, tx_unk = 0, palette = 0, palette_color_primary = 0, palette_color_secondary = 0, palette_color_tertiary = 0, var = 0, opacity = 1.0},
-    { name = "foundation", visibility = 0, tx_id = 1, tx_normal = 0, tx_material = 0, tx_color_type = 0, tx_opacity = 1.0, tx_unk = 0, palette = 0, palette_color_primary = 0, palette_color_secondary = 0, palette_color_tertiary = 0, var = 0, opacity = 1.0},
-    { name = "freckles",   visibility = 0, tx_id = 1, tx_normal = 0, tx_material = 0, tx_color_type = 0, tx_opacity = 1.0, tx_unk = 0, palette = 0, palette_color_primary = 0, palette_color_secondary = 0, palette_color_tertiary = 0, var = 0, opacity = 1.0},
-    { name = "grime",      visibility = 0, tx_id = 1, tx_normal = 0, tx_material = 0, tx_color_type = 0, tx_opacity = 1.0, tx_unk = 0, palette = 0, palette_color_primary = 0, palette_color_secondary = 0, palette_color_tertiary = 0, var = 0, opacity = 1.0},
-    { name = "hair",       visibility = 0, tx_id = 1, tx_normal = 0, tx_material = 0, tx_color_type = 0, tx_opacity = 1.0, tx_unk = 0, palette = 0, palette_color_primary = 0, palette_color_secondary = 0, palette_color_tertiary = 0, var = 0, opacity = 1.0},
-    { name = "moles",      visibility = 0, tx_id = 1, tx_normal = 0, tx_material = 0, tx_color_type = 0, tx_opacity = 1.0, tx_unk = 0, palette = 0, palette_color_primary = 0, palette_color_secondary = 0, palette_color_tertiary = 0, var = 0, opacity = 1.0},
-    { name = "spots",      visibility = 0, tx_id = 1, tx_normal = 0, tx_material = 0, tx_color_type = 0, tx_opacity = 1.0, tx_unk = 0, palette = 0, palette_color_primary = 0, palette_color_secondary = 0, palette_color_tertiary = 0, var = 0, opacity = 1.0}
+OverlayAllLayers = {
+    ['eyebrows'] = { visibility = 0, tx_id = 1, tx_normal = 0, tx_material = 0, tx_color_type = 0, tx_opacity = 1.0, tx_unk = 0, palette = 0, palette_color_primary = 0, palette_color_secondary = 0, palette_color_tertiary = 0, var = 0, opacity = 1.0},
+    ['scars'] = { visibility = 0, tx_id = 1, tx_normal = 0, tx_material = 0, tx_color_type = 0, tx_opacity = 1.0, tx_unk = 0, palette = 0, palette_color_primary = 0, palette_color_secondary = 0, palette_color_tertiary = 0, var = 0, opacity = 1.0},
+    ['eyeliners'] = { visibility = 0, tx_id = 1, tx_normal = 0, tx_material = 0, tx_color_type = 0, tx_opacity = 1.0, tx_unk = 0, palette = 0, palette_color_primary = 0, palette_color_secondary = 0, palette_color_tertiary = 0, var = 0, opacity = 1.0},
+    ['lipsticks'] = { visibility = 0, tx_id = 1, tx_normal = 0, tx_material = 0, tx_color_type = 0, tx_opacity = 1.0, tx_unk = 0, palette = 0, palette_color_primary = 0, palette_color_secondary = 0, palette_color_tertiary = 0, var = 0, opacity = 1.0},
+    ['acne'] = { visibility = 0, tx_id = 1, tx_normal = 0, tx_material = 0, tx_color_type = 0, tx_opacity = 1.0, tx_unk = 0, palette = 0, palette_color_primary = 0, palette_color_secondary = 0, palette_color_tertiary = 0, var = 0, opacity = 1.0},
+    ['shadows'] = { visibility = 0, tx_id = 1, tx_normal = 0, tx_material = 0, tx_color_type = 0, tx_opacity = 1.0, tx_unk = 0, palette = 0, palette_color_primary = 0, palette_color_secondary = 0, palette_color_tertiary = 0, var = 0, opacity = 1.0},
+    ['beardstabble'] = { visibility = 0, tx_id = 1, tx_normal = 0, tx_material = 0, tx_color_type = 0, tx_opacity = 1.0, tx_unk = 0, palette = 0, palette_color_primary = 0, palette_color_secondary = 0, palette_color_tertiary = 0, var = 0, opacity = 1.0},
+    ['paintedmasks'] = { visibility = 0, tx_id = 1, tx_normal = 0, tx_material = 0, tx_color_type = 0, tx_opacity = 1.0, tx_unk = 0, palette = 0, palette_color_primary = 0, palette_color_secondary = 0, palette_color_tertiary = 0, var = 0, opacity = 1.0},
+    ['ageing'] = { visibility = 0, tx_id = 1, tx_normal = 0, tx_material = 0, tx_color_type = 0, tx_opacity = 1.0, tx_unk = 0, palette = 0, palette_color_primary = 0, palette_color_secondary = 0, palette_color_tertiary = 0, var = 0, opacity = 1.0},
+    ['blush'] = { visibility = 0, tx_id = 1, tx_normal = 0, tx_material = 0, tx_color_type = 0, tx_opacity = 1.0, tx_unk = 0, palette = 0, palette_color_primary = 0, palette_color_secondary = 0, palette_color_tertiary = 0, var = 0, opacity = 1.0},
+    ['complex'] = { visibility = 0, tx_id = 1, tx_normal = 0, tx_material = 0, tx_color_type = 0, tx_opacity = 1.0, tx_unk = 0, palette = 0, palette_color_primary = 0, palette_color_secondary = 0, palette_color_tertiary = 0, var = 0, opacity = 1.0},
+    ['disc'] = { visibility = 0, tx_id = 1, tx_normal = 0, tx_material = 0, tx_color_type = 0, tx_opacity = 1.0, tx_unk = 0, palette = 0, palette_color_primary = 0, palette_color_secondary = 0, palette_color_tertiary = 0, var = 0, opacity = 1.0},
+    ['foundation'] = { visibility = 0, tx_id = 1, tx_normal = 0, tx_material = 0, tx_color_type = 0, tx_opacity = 1.0, tx_unk = 0, palette = 0, palette_color_primary = 0, palette_color_secondary = 0, palette_color_tertiary = 0, var = 0, opacity = 1.0},
+    ['freckles'] = { visibility = 0, tx_id = 1, tx_normal = 0, tx_material = 0, tx_color_type = 0, tx_opacity = 1.0, tx_unk = 0, palette = 0, palette_color_primary = 0, palette_color_secondary = 0, palette_color_tertiary = 0, var = 0, opacity = 1.0},
+    ['grime'] = { visibility = 0, tx_id = 1, tx_normal = 0, tx_material = 0, tx_color_type = 0, tx_opacity = 1.0, tx_unk = 0, palette = 0, palette_color_primary = 0, palette_color_secondary = 0, palette_color_tertiary = 0, var = 0, opacity = 1.0},
+    ['hair'] = { visibility = 0, tx_id = 1, tx_normal = 0, tx_material = 0, tx_color_type = 0, tx_opacity = 1.0, tx_unk = 0, palette = 0, palette_color_primary = 0, palette_color_secondary = 0, palette_color_tertiary = 0, var = 0, opacity = 1.0},
+    ['moles'] = { visibility = 0, tx_id = 1, tx_normal = 0, tx_material = 0, tx_color_type = 0, tx_opacity = 1.0, tx_unk = 0, palette = 0, palette_color_primary = 0, palette_color_secondary = 0, palette_color_tertiary = 0, var = 0, opacity = 1.0},
+    ['spots'] = { visibility = 0, tx_id = 1, tx_normal = 0, tx_material = 0, tx_color_type = 0, tx_opacity = 1.0, tx_unk = 0, palette = 0, palette_color_primary = 0, palette_color_secondary = 0, palette_color_tertiary = 0, var = 0, opacity = 1.0}
 }

@@ -3,13 +3,13 @@ local gender = GetGender()
 SelectedAttributeElements = {
     ['Albedo'] = { hash = tonumber(CharacterConfig.General.DefaultChar[gender][1].HeadTexture[1]) },
     ['Body'] = { hash = tonumber("0x" .. CharacterConfig.General.DefaultChar[gender][1].Body[1]) },
-    ['BodyType'] = { hash = BODYTYPES[1] },
+    ['BodyType'] = { hash = BodyTypes[1] },
     ['BrowOpacity'] = { value = 1.0 },
     ['CalvesSize'] = { hash = 42067, value = 0.0 },
     ['CheekboneDepth'] = { hash = 0x358D, value = 0.0 },
     ['CheekboneHeight'] = { hash = 0x6A0B, value = 0.0 },
     ['CheekboneWidth'] = { hash = 0xABCF, value = 0.0 },
-    ['ChestSize'] = { hash = CHESTTYPE[1] },
+    ['ChestSize'] = { hash = ChestType[1] },
     ['ChinDepth'] = { hash = 0xE323, value = 0.0 },
     ['ChinHeight'] = { hash = 0x3C0F, value = 0.0 },
     ['ChinWidth'] = { hash = 0xC3B2, value = 0.0 },
@@ -50,6 +50,6 @@ SelectedAttributeElements = {
     ['UpLipDepth'] = { hash = 0xC375, value = 0.0 },
     ['UpLipHeight'] = { hash = 0x1A00, value = 0.0 },
     ['UpLipWidth'] = { hash = 0x91C1, value = 0.0 },
-    ['WaistSize'] = { value = WAISTTYPES[1] },
+    ['WaistSize'] = { value = WaistTypes[1] },
     ['WaistWidth'] = { hash = 50460, value = 0.0 }
-} --This table keeps track of your clothing elements
+}

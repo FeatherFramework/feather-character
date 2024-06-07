@@ -1,6 +1,26 @@
 local function createNewCharacter()
     Albedo = (CharacterConfig.General.DefaultChar[GetGender()][1].HeadTexture[1])
-    SetSex('male')
+    local function setSex(sex) -- can likely remove this function in future just dont want to dig into how quite yet
+        ChangeOverlay(PlayerPedId(),'eyebrows', 1, 1, 0, 0, 0, 1.0, 0, 1, 254, 254, 254, 0, 1.0, Albedo)
+        local function loadModel(model)
+            RequestModel(model)
+            while not HasModelLoaded(model) do
+                Wait(10)
+            end
+        end
+        if sex == 'male' then
+            loadModel('mp_male')
+            SetPlayerModel(PlayerId(), joaat('mp_male'), false)
+            Citizen.InvokeNative(0x77FF8D35EEC6BBC4, PlayerPedId(), 4, 0) -- outfits
+            DefaultPedSetup(PlayerPedId(), true)
+        else
+            loadModel('mp_female')
+            SetPlayerModel(PlayerId(), joaat('mp_female'), false)
+            Citizen.InvokeNative(0x77FF8D35EEC6BBC4, PlayerPedId(), 2, 0) -- outfits
+            DefaultPedSetup(PlayerPedId(), false)
+        end
+    end
+    setSex('male')
     Wait(500)
     local obj = FeatherCore.Object:Create('p_package09', Config.SpawnCoords.gotocoords.x, Config.SpawnCoords.gotocoords.y, Config.SpawnCoords.gotocoords.z-0.5, 0, true, 'standard')
     local tobj = obj:GetObj()
@@ -30,7 +50,6 @@ local function createNewCharacter()
 end
 
 --------- Net Events ------
-
 RegisterNetEvent('feather-character:CreateNewCharacter', function()
     Spawned = false
     MyMenu:Close()

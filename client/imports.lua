@@ -8,8 +8,7 @@ MyMenu = FeatherMenu:RegisterMenu('feather:character:menu', {
     ['1080width'] = '600px',
     ['2kwidth'] = '700px',
     ['4kwidth'] = '900px',
-    style = {
-    },
+    style = {},
     contentslot = {
         style = { --This style is what is currently making the content slot scoped and scrollable. If you delete this, it will make the content height dynamic to its inner content.
             ['height'] = '700px',

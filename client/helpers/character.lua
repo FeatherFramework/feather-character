@@ -10,18 +10,6 @@ function UpdatePedVariation(ped)
     Citizen.InvokeNative(0xCC8CA3E88256E58F, ped, false, true, true, true, false) -- _UPDATE_PED_VARIATION
 end
 
-function EyesAnim(anim)
-    while not HasAnimDictLoaded("FACE_HUMAN@GEN_MALE@BASE") do
-        RequestAnimDict("FACE_HUMAN@GEN_MALE@BASE")
-        Wait(50)
-    end
-
-    if not IsEntityPlayingAnim(PlayerPedId(), "FACE_HUMAN@GEN_MALE@BASE", anim, 3) then
-        TaskPlayAnim(PlayerPedId(), "FACE_HUMAN@GEN_MALE@BASE", anim, 1090519040, -4, -1, 17, 0, 0, 0, 0, 0, 0)
-    end
-    RemoveAnimDict("FACE_HUMAN@GEN_MALE@BASE")
-end
-
 function AddComponent(ped, comp, category)
     if category ~= nil then
         RemoveTagFromMetaPed(category)
@@ -86,50 +74,4 @@ function DefaultPedSetup(ped, male)
     AddComponent(ped, compLegs)
     AddComponent(ped, compHead)
     AddComponent(ped, compEyes)
-end
-
-function GetComponentIndexByCategory(ped, category)
-    local numComponents = Citizen.InvokeNative(0x90403E8107B60E81, ped, Citizen.ResultAsInteger()) -- GetNumComponentsInPed
-    for i = 0, numComponents - 1, 1 do
-        local componentCategory = Citizen.InvokeNative(0x9b90842304c938a7, ped, i, 0, Citizen.ResultAsInteger()) -- GetCategoryOfComponentAtIndex
-        if componentCategory == category then
-            return i
-        end
-    end
-end
-
-function GetMetaPedAssetGuids(ped, index)
-    return Citizen.InvokeNative(0xA9C28516A6DC9D56, ped, index, Citizen.PointerValueInt(), Citizen.PointerValueInt(),
-        Citizen.PointerValueInt(), Citizen.PointerValueInt())
-end
-
-function GetMetaPedAssetTint(ped, index)
-    return Citizen.InvokeNative(0xE7998FEC53A33BBE, ped, index, Citizen.PointerValueInt(), Citizen.PointerValueInt(),
-        Citizen.PointerValueInt(), Citizen.PointerValueInt())
-end
-
-function SetMetaPedTag(ped, drawable, albedo, normal, material, palette, tint0, tint1, tint2)
-    Citizen.InvokeNative(0xBC6DF00D7A4A6819, ped, drawable, albedo, normal, material, palette, tint0, tint1, tint2)
-end
-
-function SetSex(sex)
-    ChangeOverlay(PlayerPedId(),'eyebrows', 1, 1, 0, 0, 0, 1.0, 0, 1, 254, 254, 254, 0, 1.0, Albedo)
-
-    local function loadModel(model)
-        RequestModel(model)
-        while not HasModelLoaded(model) do
-            Wait(10)
-        end
-    end
-    if sex == 'male' then
-        loadModel('mp_male')
-        SetPlayerModel(PlayerId(), joaat('mp_male'), false)
-        Citizen.InvokeNative(0x77FF8D35EEC6BBC4, PlayerPedId(), 4, 0) -- outfits
-        DefaultPedSetup(PlayerPedId(), true)
-    else
-        loadModel('mp_female')
-        SetPlayerModel(PlayerId(), joaat('mp_female'), false)
-        Citizen.InvokeNative(0x77FF8D35EEC6BBC4, PlayerPedId(), 2, 0) -- outfits
-        DefaultPedSetup(PlayerPedId(), false)
-    end
 end
