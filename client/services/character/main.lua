@@ -54,10 +54,7 @@ RegisterCommand('rc', function()
         end
     end
     for category, overlays in pairs(SentOverlays[Characterid]) do
-        ChangeOverlay(PlayerPedId(), category, 1, overlays['textureId'], 0, 0, 0, 1.0, 0, 1,
-            overlays['color1'],
-            overlays['color2'], overlays['color3'], overlays['variant'], overlays['opacity'],
-            SelectedAttributeElements['Albedo'].hash)
+        ChangeOverlay(PlayerPedId(), category, 1, overlays['textureId'], 0, 0, 0, 1.0, 0, 1, overlays['color1'], overlays['color2'], overlays['color3'], overlays['variant'], overlays['opacity'], SelectedAttributeElements['Albedo'].hash)
     end
 end)
 
@@ -77,9 +74,7 @@ if Config.DevMode then
         while not HasAnimDictLoaded("FACE_HUMAN@GEN_MALE@BASE") do
             Wait(5)
         end
-        TaskPlayAnim(PlayerPedId(), "FACE_HUMAN@GEN_MALE@BASE", "Face_Dentistry_Loop", 1090519040, -4, -1, 17, 0, 0, 0, 0,
-            0,
-            0)
+        TaskPlayAnim(PlayerPedId(), "FACE_HUMAN@GEN_MALE@BASE", "Face_Dentistry_Loop", 1090519040, -4, -1, 17, 0, 0, 0, 0, 0, 0)
     end)
 
     RegisterCommand('check', function()

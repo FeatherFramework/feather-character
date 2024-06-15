@@ -11,7 +11,7 @@ RegisterNetEvent('feather-character:CharacterSelectMenu', function(info, cameraS
     local characterSelectPage = MyMenu:RegisterPage('first:page')
 
     characterSelectPage:RegisterElement('header', {
-        value = 'Character Menu',
+        value = FeatherCore.Locale.translate(0, "charMenu"),
         slot = "header",
         style = {}
     })
@@ -20,7 +20,7 @@ RegisterNetEvent('feather-character:CharacterSelectMenu', function(info, cameraS
         style = {}
     })
     characterSelectPage:RegisterElement('textdisplay', {
-        value = "Name: " .. name[cameraSpot],
+        value = FeatherCore.Locale.translate(0, "name") .. name[cameraSpot],
         style = {}
     })
     characterSelectPage:RegisterElement('line', {
@@ -28,7 +28,7 @@ RegisterNetEvent('feather-character:CharacterSelectMenu', function(info, cameraS
         style = {}
     })
     characterSelectPage:RegisterElement('textdisplay', {
-        value = "Money: " .. money[cameraSpot],
+        value = FeatherCore.Locale.translate(0, "money") .. money[cameraSpot],
         style = {}
     })
     characterSelectPage:RegisterElement('line', {
@@ -40,8 +40,7 @@ RegisterNetEvent('feather-character:CharacterSelectMenu', function(info, cameraS
         style = {}
     })
     characterSelectPage:RegisterElement('textdisplay', {
-        value = "Date of Birth: "
-            .. '\n' .. ' ' .. birthday[cameraSpot],
+        value = FeatherCore.Locale.translate(0, "dob") .. ": " .. '\n' .. ' ' .. birthday[cameraSpot],
         style = {}
     })
     characterSelectPage:RegisterElement('line', {
@@ -49,7 +48,7 @@ RegisterNetEvent('feather-character:CharacterSelectMenu', function(info, cameraS
         style = {}
     })
     characterSelectPage:RegisterElement('textdisplay', {
-        value = "Character Description: ",
+        value = FeatherCore.Locale.translate(0, "charDesc") .. ": ",
         style = {}
     })
     characterSelectPage:RegisterElement('textdisplay', {
@@ -87,7 +86,7 @@ RegisterNetEvent('feather-character:CharacterSelectMenu', function(info, cameraS
         end
     end)
     characterSelectPage:RegisterElement('button', {
-        label = "Select",
+        label = FeatherCore.Locale.translate(0, "select"),
         style = {}
     }, function()
         if cameraSpot ~= nil then
@@ -115,7 +114,7 @@ RegisterNetEvent('feather-character:CharacterSelectMenu', function(info, cameraS
         end
     end)
     characterSelectPage:RegisterElement('button', {
-        label = "Create New Character",
+        label = FeatherCore.Locale.translate(0, "createNewChar"),
         style = {}
     }, function()
         TriggerEvent('feather-character:CreateNewCharacter')
