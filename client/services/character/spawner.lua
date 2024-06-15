@@ -2,12 +2,12 @@ local spawnSelectPage = MyMenu:RegisterPage('spawnselect:page')
 
 RegisterNetEvent("feather-character:SpawnSelect", function(CharInfo)
     spawnSelectPage:RegisterElement('header', {
-        value = 'My First Menu',
+        value = FeatherCore.Locale.translate(0, "spawnSelect"),
         slot = "header",
         style = {}
     })
     spawnSelectPage:RegisterElement('textdisplay', {
-        value = "Choose your starting city",
+        value = FeatherCore.Locale.translate(0, "chooseCity"),
         style = {}
     })
     spawnSelectPage:RegisterElement('bottomline', {
@@ -23,7 +23,7 @@ RegisterNetEvent("feather-character:SpawnSelect", function(CharInfo)
             style = {}
         }, function()
             cityTextDisplay2:update({
-                value = "You will arrive by " .. v.arrival
+                value = FeatherCore.Locale.translate(0, "arriveBy") .. v.arrival
             })
             CharSpawnCoords = vector4(v.startcoords.x, v.startcoords.y, v.startcoords.z,v.startcoords.h)
             GotoCoords = vector4(v.gotocoords.x,v.gotocoords.y,v.gotocoords.z,v.gotocoords.h)
@@ -37,7 +37,7 @@ RegisterNetEvent("feather-character:SpawnSelect", function(CharInfo)
     end
 
     spawnSelectPage:RegisterElement('button', {
-        label = "Spawn",
+        label = FeatherCore.Locale.translate(0, "spawn"),
         style = {}
     }, function()
         DoScreenFadeOut(250)

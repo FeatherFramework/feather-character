@@ -8,36 +8,28 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
     PageOpened = true
     local mainCreationPage = MyMenu:RegisterPage('feather-character:MainCreationPage')
     mainCreationPage:RegisterElement('header', {
-        value = 'Character Creation',
+        value = FeatherCore.Locale.translate(0, "charCreation"),
         slot = "header",
         style = {}
     })
     mainCreationPage:RegisterElement('button', {
-        label = "Customize Character",
+        label = FeatherCore.Locale.translate(0, "custChar"),
         style = {}
     }, function()
         local categoriesPage = MyMenu:RegisterPage('feather-character:CustomizationPage')
         categoriesPage:RegisterElement('button', {
-            label = 'Appearance',
+            label = FeatherCore.Locale.translate(0, "appearance"),
             style = {}
         }, function()
             local mainAppearanceMenu = MyMenu:RegisterPage('feather-character:MainAppearanceMenu')
             mainAppearanceMenu:RegisterElement('header', {
-                value = 'Appearance Menu',
+                value = FeatherCore.Locale.translate(0, "appearanceMenu"),
                 slot = "header",
                 style = {}
-            })
-            mainAppearanceMenu:RegisterElement('subheader', {
-                value = "First Page",
-                slot = "header",
-                style = {}
-            })
-            mainAppearanceMenu:RegisterElement('bottomline', {
-                slot = "content"
             })
             local heritageDisplay, headVariantSlider, bodyVariantSlider, legVariantSlider = nil, nil, nil, nil
             mainAppearanceMenu:RegisterElement('slider', {
-                label = "Heritage",
+                label = FeatherCore.Locale.translate(0, "heritage"),
                 start = 1,
                 min = 1,
                 max = #CharacterConfig.General.DefaultChar[gender],
@@ -70,11 +62,11 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                 end
             end)
             heritageDisplay = mainAppearanceMenu:RegisterElement('textdisplay', {
-                value = "European",
+                value = FeatherCore.Locale.translate(0, "europian"),
                 style = {}
             })
             headVariantSlider = mainAppearanceMenu:RegisterElement('slider', {
-                label = "Head Variations",
+                label = FeatherCore.Locale.translate(0, "headVars"),
                 start = 1,
                 min = 1,
                 max = #CharacterConfig.General.DefaultChar[gender][1].Heads,
@@ -91,11 +83,11 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                 SelectedAttributeElements['Head'] = { hash = Head }
             end)
             bodyVariantSlider = mainAppearanceMenu:RegisterElement('slider', {
-                label = "Body Variations",
+                label = FeatherCore.Locale.translate(0, "bodyVars"),
                 start = 1,
                 min = 1,
                 max = #CharacterConfig.General.DefaultChar[gender][1].Body,
-                steps = 1,
+                steps = 1
             }, function(data)
                 local value = data.value
                 local body
@@ -108,7 +100,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                 SelectedAttributeElements['Body'] = { hash = body }
             end)
             legVariantSlider = mainAppearanceMenu:RegisterElement('slider', {
-                label = "Leg Variations",
+                label = FeatherCore.Locale.translate(0, "legVars"),
                 start = 1,
                 min = 1,
                 max = #CharacterConfig.General.DefaultChar[gender][1].Legs,
@@ -129,7 +121,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                 style = {}
             })
             mainAppearanceMenu:RegisterElement('button', {
-                label = "Go Back",
+                label = FeatherCore.Locale.translate(0, "goBack"),
                 slot = 'footer',
                 style = {}
             }, function()
@@ -137,18 +129,13 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                 mainCreationPage:RouteTo()
             end)
             mainAppearanceMenu:RegisterElement('button', {
-                label = 'Hair',
+                label = FeatherCore.Locale.translate(0, "hair"),
                 style = {}
             }, function()
                 local hairCategoryPage = MyMenu:RegisterPage('feather-character:HairCategoryPage')
                 SwitchCam(Config.CameraCoords.creation.x - 0.25, Config.CameraCoords.creation.y, Config.CameraCoords.creation.z + 0.7, Config.CameraCoords.creation.h, 0.0)
                 hairCategoryPage:RegisterElement('header', {
-                    value = 'My First Menu',
-                    slot = "header",
-                    style = {}
-                })
-                hairCategoryPage:RegisterElement('subheader', {
-                    value = "First Page",
+                    value = FeatherCore.Locale.translate(0, "hairPage"),
                     slot = "header",
                     style = {}
                 })
@@ -157,7 +144,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                     style = {}
                 })
                 hairCategoryPage:RegisterElement('button', {
-                    label = "Go Back",
+                    label = FeatherCore.Locale.translate(0, "goBack"),
                     slot = 'footer',
                     style = {}
                 }, function()
@@ -171,12 +158,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                     }, function()
                         local hairAndBeardPage = MyMenu:RegisterPage('feather-character:HairandBeardPage')
                         hairAndBeardPage:RegisterElement('header', {
-                            value = 'My First Menu',
-                            slot = "header",
-                            style = {}
-                        })
-                        hairAndBeardPage:RegisterElement('subheader', {
-                            value = "First Page",
+                            value = FeatherCore.Locale.translate(0, "hairPage"),
                             slot = "header",
                             style = {}
                         })
@@ -185,7 +167,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                             style = {}
                         })
                         hairAndBeardPage:RegisterElement('button', {
-                            label = "Go Back",
+                            label = FeatherCore.Locale.translate(0, "goBack"),
                             slot = 'footer',
                             style = {}
                         }, function()
@@ -194,9 +176,9 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                         end)
                         hairAndBeardPage:RegisterElement('pagearrows', {
                             slot = 'footer',
-                            total = ' Move Cam Up',
-                            current = 'Move Cam Down ',
-                            style = {},
+                            total = FeatherCore.Locale.translate(0, "moveCamUp"),
+                            current = FeatherCore.Locale.translate(0, "moveCamDown"),
+                            style = {}
                         }, function(data)
                             if data.value == 'forward' then
                                 CamZ = CamZ + 0.1
@@ -208,8 +190,8 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                         end)
                         hairAndBeardPage:RegisterElement('pagearrows', {
                             slot = 'footer',
-                            total = ' Rotate Right ',
-                            current = 'Rotate Left ',
+                            total = FeatherCore.Locale.translate(0, "rotateRight"),
+                            current = FeatherCore.Locale.translate(0, "rotateLeft"),
                             style = {}
                         }, function(data)
                             if data.value == 'forward' then
@@ -223,7 +205,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                         if key == 'beard' then
                             if gender == "Male" then
                                 hairAndBeardPage:RegisterElement("toggle", {
-                                    label = "Beard Stuble",
+                                    label = FeatherCore.Locale.translate(0, "beardStubble"),
                                     start = false
                                 }, function(data)
                                     if data.value then
@@ -233,7 +215,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                     end
                                 end)
                                 hairAndBeardPage:RegisterElement('arrows', {
-                                    label = "Opacity",
+                                    label = FeatherCore.Locale.translate(0, "opacity"),
                                     start = 11,
                                     options = {
                                         0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0
@@ -251,11 +233,11 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                             local hairacc = 'Hair Accessories'
                             if gender == "Female" then
                                 CategoryElement = hairAndBeardPage:RegisterElement('slider', {
-                                    label = "Hair Accessories",
+                                    label = FeatherCore.Locale.translate(0, "hairAccessories"),
                                     start = 0,
                                     min = 0,
                                     max = #CharacterConfig.Clothing.Clothes[gender].Accessories.HairAccesories.CategoryData,
-                                    steps = 1,
+                                    steps = 1
                                 }, function(data)
                                     HairPiece = CharacterConfig.Clothing.Clothes[gender].Accessories.HairAccesories.CategoryData
                                     MainHairComponent = data.value
@@ -264,7 +246,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                     end
                                     if MainHairComponent > 0 then
                                         selectedAttributes[hairacc .. 'Variant'] = selectedAttributes[hairacc .. 'Variant']:update({
-                                            label = hairacc .. ' variant',
+                                            label = hairacc .. " " .. FeatherCore.Locale.translate(0, "variant"),
                                             max = #CharacterConfig.Clothing.Clothes[gender].Accessories.HairAccesories.CategoryData[MainHairComponent], 
                                         })
                                         AddComponent(PlayerPedId(), HairPiece[MainHairComponent][VariantComponent].hash, hairacc)
@@ -272,7 +254,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                         local type = Citizen.InvokeNative(0xEC9A1261BF0CE510, PlayerPedId())
                                         ActiveCatagory = Citizen.InvokeNative(0x5FF9A878C3D115B8, HairPiece[MainHairComponent][1].hash, type, true)
                                         VariantElement = VariantElement:update({
-                                            label = hairacc .. ' variant',
+                                            label = hairacc .. " " .. FeatherCore.Locale.translate(0, "variant"),
                                             max = #HairPiece[MainHairComponent]
                                         })
                                     else
@@ -281,7 +263,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                     end
                                 end)
                                 VariantElement = hairAndBeardPage:RegisterElement('slider', {
-                                    label = "Hair Accessories Variants",
+                                    label = FeatherCore.Locale.translate(0, "hairAccessoriesVariants"),
                                     start = 1,
                                     min = 1,
                                     max = 10,
@@ -309,7 +291,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                             end
                             if MainComponent > 0 then
                                 selectedAttributes[key .. 'Variant'] = selectedAttributes[key .. 'Variant']:update({
-                                    label = key .. ' variant',
+                                    label = key .. " " .. FeatherCore.Locale.translate(0, "variant"),
                                     max = #HairandBeards[gender][key][MainComponent], 
                                 })
                                 AddComponent(PlayerPedId(), HairandBeards[gender][key][MainComponent][VariantComponent].hash, key)
@@ -326,17 +308,17 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                             end
                         end)
                         VariantElement = hairAndBeardPage:RegisterElement('slider', {
-                            label = key .. ' variant',
+                            label = key .. " " .. FeatherCore.Locale.translate(0, "variant"),
                             start = 1,
                             min = 1,
-                            max = 5, 
+                            max = 5,
                             steps = 1
                         }, function(data)
                             VariantComponent = data.value
                             if VariantComponent > 0 and MainComponent > 0 then
                                 selectedAttributes[key .. 'Variant'] = selectedAttributes[key .. 'Variant']:update({
-                                    label = key .. ' variant',
-                                    max = #HairandBeards[gender][key][MainComponent],
+                                    label = key .. " " .. FeatherCore.Locale.translate(0, "variant"),
+                                    max = #HairandBeards[gender][key][MainComponent]
                                 })
                                 AddComponent(PlayerPedId(), HairandBeards[gender][key][MainComponent][VariantComponent].hash, key)
                                 local type = Citizen.InvokeNative(0xEC9A1261BF0CE510, PlayerPedId())
@@ -354,12 +336,8 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                             max = #HairandBeards[gender][key],
                         })
                         VariantElement = VariantElement:update({
-                            label = key .. ' variant',
+                            label = key .. " " .. FeatherCore.Locale.translate(0, "variant"),
                             max = #HairandBeards[gender][key]
-                        })
-                        TextElement = hairAndBeardPage:RegisterElement('textdisplay', {
-                            value = 'test',
-                            style = {}
                         })
                         hairAndBeardPage:RouteTo()
                     end)
@@ -367,17 +345,12 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                 hairCategoryPage:RouteTo()
             end)
             mainAppearanceMenu:RegisterElement('button', {
-                label = 'Facial Adjustments',
+                label = FeatherCore.Locale.translate(0, "facialAdjustments"),
                 style = {}
             }, function()
                 local faceAdjMenu = MyMenu:RegisterPage('feather-character:FaceAdjMenu')
                 faceAdjMenu:RegisterElement('header', {
-                    value = 'Facial Features',
-                    slot = "header",
-                    style = {}
-                })
-                faceAdjMenu:RegisterElement('subheader', {
-                    value = "First Page",
+                    value = FeatherCore.Locale.translate(0, "facialFeatures"),
                     slot = "header",
                     style = {}
                 })
@@ -389,12 +362,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                         if key == 'Eyes and Brows' then
                             local eyesPage = MyMenu:RegisterPage('feather-character:EyesPage')
                             eyesPage:RegisterElement('header', {
-                                value = 'My First Menu',
-                                slot = "header",
-                                style = {}
-                            })
-                            eyesPage:RegisterElement('subheader', {
-                                value = "First Page",
+                                value = FeatherCore.Locale.translate(0, "eyebrowPage"),
                                 slot = "header",
                                 style = {}
                             })
@@ -403,7 +371,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                 style = {}
                             })
                             eyesPage:RegisterElement('button', {
-                                label = "Go Back",
+                                label = FeatherCore.Locale.translate(0, "goBack"),
                                 slot = 'footer',
                                 style = {}
                             }, function()
@@ -412,8 +380,8 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                             end)
                             eyesPage:RegisterElement('pagearrows', {
                                 slot = 'footer',
-                                total = ' Move Cam Up',
-                                current = 'Move Cam Down ',
+                                total = FeatherCore.Locale.translate(0, "moveCamUp"),
+                                current = FeatherCore.Locale.translate(0, "moveCamDown"),
                                 style = {}
                             }, function(data)
                                 if data.value == 'forward' then
@@ -426,8 +394,8 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                             end)
                             eyesPage:RegisterElement('pagearrows', {
                                 slot = 'footer',
-                                total = ' Rotate Right ',
-                                current = 'Rotate Left ',
+                                total = FeatherCore.Locale.translate(0, "rotateRight"),
+                                current = FeatherCore.Locale.translate(0, "rotateLeft"),
                                 style = {}
                             }, function(data)
                                 if data.value == 'forward' then
@@ -439,14 +407,14 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                 end
                             end)
                             eyesPage:RegisterElement('button', {
-                                label = "Eye Height and Depth",
+                                label = FeatherCore.Locale.translate(0, "eyeHeightAndDepth"),
                                 style = {}
                             }, function()
                                 EyeGrid = eyesPage:RegisterElement('gridslider', {
-                                    leftlabel = 'Eye Depth -',
-                                    rightlabel = 'Eye Depth +',
-                                    toplabel = 'Eye Height +',
-                                    bottomlabel = 'Eye Height -',
+                                    leftlabel = FeatherCore.Locale.translate(0, "eyeDepthMinus"),
+                                    rightlabel = FeatherCore.Locale.translate(0, "eyeDepthPlus"),
+                                    toplabel = FeatherCore.Locale.translate(0, "eyeHeightPlus"),
+                                    bottomlabel = FeatherCore.Locale.translate(0, "eyeHeightMinus"),
                                     maxx = 1,
                                     maxy = 1,
                                     arrowsteps = 10,
@@ -461,14 +429,14 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                 eyesPage:RouteTo()
                             end)
                             eyesPage:RegisterElement('button', {
-                                label = "Eye Distance and Angle",
+                                label = FeatherCore.Locale.translate(0, "eyeDistAndAngle"),
                                 style = {}
                             }, function()
                                 EyeGrid2 = eyesPage:RegisterElement('gridslider', {
-                                    leftlabel = 'Eye Distance -',
-                                    rightlabel = 'Eye Distance +',
-                                    toplabel = 'Eye Angle +',
-                                    bottomlabel = 'Eye Angle -',
+                                    leftlabel = FeatherCore.Locale.translate(0, "eyeDistPlus"),
+                                    rightlabel = FeatherCore.Locale.translate(0, "eyeDistMinus"),
+                                    toplabel = FeatherCore.Locale.translate(0, "eyeAnglePlus"),
+                                    bottomlabel = FeatherCore.Locale.translate(0, "eyeAngleMinus"),
                                     maxx = 1,
                                     maxy = 1,
                                     arrowsteps = 10,
@@ -483,14 +451,14 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                 eyesPage:RouteTo()
                             end)
                             eyesPage:RegisterElement('button', {
-                                label = "Eyelid Width and Height",
+                                label = FeatherCore.Locale.translate(0, "eyelidWidthAndHeight"),
                                 style = {}
                             }, function()
                                 EyeGrid3 = eyesPage:RegisterElement('gridslider', {
-                                    leftlabel = 'Eyelid Width -',
-                                    rightlabel = 'Eyelid Width +',
-                                    toplabel = 'Eyelid Height +',
-                                    bottomlabel = 'Eyelid Height -',
+                                    leftlabel = FeatherCore.Locale.translate(0, "eyelidWidthMinus"),
+                                    rightlabel = FeatherCore.Locale.translate(0, "eyelidWidthPlus"),
+                                    toplabel = FeatherCore.Locale.translate(0, "eyelidHeightPlus"),
+                                    bottomlabel = FeatherCore.Locale.translate(0, "eyelidHeightMinus"),
                                     maxx = 1,
                                     maxy = 1,
                                     arrowsteps = 10,
@@ -505,18 +473,13 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                 eyesPage:RouteTo()
                             end)
                             eyesPage:RegisterElement('button', {
-                                label = "Eyebrows",
+                                label = FeatherCore.Locale.translate(0, "eyebrows"),
                                 style = {}
                             }, function()
                                 local eyebrowPage = MyMenu:RegisterPage('feather-character:EyebrowPage')
                                 EyebrowOpacity = 1.0
                                 eyebrowPage:RegisterElement('header', {
-                                    value = 'My First Menu',
-                                    slot = "header",
-                                    style = {}
-                                })
-                                eyebrowPage:RegisterElement('subheader', {
-                                    value = "First Page",
+                                    value = FeatherCore.Locale.translate(0, "eyebrows"),
                                     slot = "header",
                                     style = {}
                                 })
@@ -525,7 +488,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                     style = {}
                                 })
                                 eyebrowPage:RegisterElement('button', {
-                                    label = "Go Back",
+                                    label = FeatherCore.Locale.translate(0, "goBack"),
                                     slot = 'footer',
                                     style = {}
                                 }, function()
@@ -534,8 +497,8 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                 end)
                                 eyebrowPage:RegisterElement('pagearrows', {
                                     slot = 'footer',
-                                    total = ' Move Cam Up',
-                                    current = 'Move Cam Down ',
+                                    total = FeatherCore.Locale.translate(0, "moveCamUp"),
+                                    current = FeatherCore.Locale.translate(0, "moveCamDown"),
                                     style = {}
                                 }, function(data)
                                     if data.value == 'forward' then
@@ -548,8 +511,8 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                 end)
                                 eyebrowPage:RegisterElement('pagearrows', {
                                     slot = 'footer',
-                                    total = ' Rotate Right ',
-                                    current = 'Rotate Left ',
+                                    total = FeatherCore.Locale.translate(0, "rotateRight"),
+                                    current = FeatherCore.Locale.translate(0, "rotateLeft"),
                                     style = {}
                                 }, function(data)
                                     if data.value == 'forward' then
@@ -561,7 +524,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                     end
                                 end)
                                 eyebrowPage:RegisterElement('arrows', {
-                                    label = "Opacity",
+                                    label = FeatherCore.Locale.translate(0, "opacity"),
                                     start = 11,
                                     options = {
                                         0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0
@@ -575,7 +538,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                     SelectedAttributeElements['BrowOpacity'] = { value = data.value }
                                 end)
                                 eyebrowPage:RegisterElement('slider', {
-                                    label = "Variant",
+                                    label = FeatherCore.Locale.translate(0, "variant"),
                                     start = 1,
                                     min = 0,
                                     max = #OverlayInfo['eyebrows'],
@@ -585,10 +548,10 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                     SelectedAttributeElements['EyebrowVariant'] = { value = data.value }
                                 end)
                                 EyebrowGrid = eyebrowPage:RegisterElement('gridslider', {
-                                    leftlabel = 'Eyebrow Width -',
-                                    rightlabel = 'Eyebrow Width +',
-                                    toplabel = 'Eyebrow Height +',
-                                    bottomlabel = 'Eyebrow Height -',
+                                    leftlabel = FeatherCore.Locale.translate(0, "eyebrowWidthMinus"),
+                                    rightlabel = FeatherCore.Locale.translate(0, "eyebrowWidthPlus"),
+                                    toplabel = FeatherCore.Locale.translate(0, "eyebrowHeightPlus"),
+                                    bottomlabel = FeatherCore.Locale.translate(0, "eyebrowHeightMinus"),
                                     maxx = 1,
                                     maxy = 1,
                                     arrowsteps = 10,
@@ -603,7 +566,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                 eyebrowPage:RouteTo()
                             end)
                             eyesPage:RegisterElement('slider', {
-                                label = "Eye Color",
+                                label = FeatherCore.Locale.translate(0, "eyeColor"),
                                 start = 0,
                                 min = 1,
                                 max = #FeaturesEyes[gender],
@@ -626,12 +589,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                         if key == 'Cheeks' then
                             local cheekPage = MyMenu:RegisterPage('feather-character:CheekPage')
                             cheekPage:RegisterElement('header', {
-                                value = 'My First Menu',
-                                slot = "header",
-                                style = {}
-                            })
-                            cheekPage:RegisterElement('subheader', {
-                                value = "First Page",
+                                value = FeatherCore.Locale.translate(0, "cheeksPage"),
                                 slot = "header",
                                 style = {}
                             })
@@ -640,7 +598,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                 style = {}
                             })
                             cheekPage:RegisterElement('button', {
-                                label = "Go Back",
+                                label = FeatherCore.Locale.translate(0, "goBack"),
                                 slot = 'footer',
                                 style = {}
                             }, function()
@@ -649,8 +607,8 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                             end)
                             cheekPage:RegisterElement('pagearrows', {
                                 slot = 'footer',
-                                total = ' Move Cam Up',
-                                current = 'Move Cam Down ',
+                                total = FeatherCore.Locale.translate(0, "moveCamUp"),
+                                current = FeatherCore.Locale.translate(0, "moveCamDown"),
                                 style = {}
                             }, function(data)
                                 if data.value == 'forward' then
@@ -663,8 +621,8 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                             end)
                             cheekPage:RegisterElement('pagearrows', {
                                 slot = 'footer',
-                                total = ' Rotate Right ',
-                                current = 'Rotate Left ',
+                                total = FeatherCore.Locale.translate(0, "rotateRight"),
+                                current = FeatherCore.Locale.translate(0, "rotateLeft"),
                                 style = {}
                             }, function(data)
                                 if data.value == 'forward' then
@@ -676,10 +634,10 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                 end
                             end)
                             CheekGrid1 = cheekPage:RegisterElement('gridslider', {
-                                leftlabel = 'Cheekbone Width -',
-                                rightlabel = 'Cheekbone Width +',
-                                toplabel = 'Cheekbone Height +',
-                                bottomlabel = 'Cheekbone Height -',
+                                leftlabel = FeatherCore.Locale.translate(0, "cheekboneWidthMinus"),
+                                rightlabel = FeatherCore.Locale.translate(0, "cheekboneWidthPlus"),
+                                toplabel = FeatherCore.Locale.translate(0, "cheekboneHeightPlus"),
+                                bottomlabel = FeatherCore.Locale.translate(0, "cheekboneHeightMinus"),
                                 maxx = 1,
                                 maxy = 1,
                                 arrowsteps = 10,
@@ -692,8 +650,8 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                 UpdatePedVariation(PlayerPedId())
                             end)
                             CheekGrid2 = cheekPage:RegisterElement('gridslider', {
-                                leftlabel = 'Cheekbone Depth -',
-                                rightlabel = 'Cheekbone Depth +',
+                                leftlabel = FeatherCore.Locale.translate(0, "cheekboneDepthMinus"),
+                                rightlabel = FeatherCore.Locale.translate(0, "cheekboneDepthPlus"),
                                 maxx = 1,
                                 arrowsteps = 10,
                                 precision = 1
@@ -707,12 +665,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                         if key == 'Chin' then
                             local chinPage = MyMenu:RegisterPage('feather-character:ChinPage')
                             chinPage:RegisterElement('header', {
-                                value = 'My First Menu',
-                                slot = "header",
-                                style = {}
-                            })
-                            chinPage:RegisterElement('subheader', {
-                                value = "First Page",
+                                value = FeatherCore.Locale.translate(0, "chinPage"),
                                 slot = "header",
                                 style = {}
                             })
@@ -721,7 +674,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                 style = {}
                             })
                             chinPage:RegisterElement('button', {
-                                label = "Go Back",
+                                label = FeatherCore.Locale.translate(0, "goBack"),
                                 slot = 'footer',
                                 style = {}
                             }, function()
@@ -730,8 +683,8 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                             end)
                             chinPage:RegisterElement('pagearrows', {
                                 slot = 'footer',
-                                total = ' Move Cam Up',
-                                current = 'Move Cam Down ',
+                                total = FeatherCore.Locale.translate(0, "moveCamUp"),
+                                current = FeatherCore.Locale.translate(0, "moveCamDown"),
                                 style = {},
                             }, function(data)
                                 if data.value == 'forward' then
@@ -744,8 +697,8 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                             end)
                             chinPage:RegisterElement('pagearrows', {
                                 slot = 'footer',
-                                total = ' Rotate Right ',
-                                current = 'Rotate Left ',
+                                total = FeatherCore.Locale.translate(0, "rotateRight"),
+                                current = FeatherCore.Locale.translate(0, "rotateLeft"),
                                 style = {},
                             }, function(data)
                                 if data.value == 'forward' then
@@ -757,10 +710,10 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                 end
                             end)
                             ChinGrid1 = chinPage:RegisterElement('gridslider', {
-                                leftlabel = 'Chin Width -',
-                                rightlabel = 'Chin Width +',
-                                toplabel = 'Chin Height +',
-                                bottomlabel = 'Chin Height -',
+                                leftlabel = FeatherCore.Locale.translate(0, "chinWidthMinus"),
+                                rightlabel = FeatherCore.Locale.translate(0, "chinWidthPlus"),
+                                toplabel = FeatherCore.Locale.translate(0, "chinHeightPlus"),
+                                bottomlabel = FeatherCore.Locale.translate(0, "chinHeightMinus"),
                                 maxx = 1,
                                 maxy = 1,
                                 arrowsteps = 10,
@@ -773,8 +726,8 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                 UpdatePedVariation(PlayerPedId())
                             end)
                             ChinGrid2 = chinPage:RegisterElement('gridslider', {
-                                leftlabel = 'Chin Depth -',
-                                rightlabel = 'Chin Depth +',
+                                leftlabel = FeatherCore.Locale.translate(0, "chinDepthMinus"),
+                                rightlabel = FeatherCore.Locale.translate(0, "chinDepthPlus"),
                                 maxx = 1,
                                 arrowsteps = 10,
                                 precision = 1
@@ -788,12 +741,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                         if key == 'Ears' then
                             local earPage = MyMenu:RegisterPage('feather-character:EarPage')
                             earPage:RegisterElement('header', {
-                                value = 'My First Menu',
-                                slot = "header",
-                                style = {}
-                            })
-                            earPage:RegisterElement('subheader', {
-                                value = "First Page",
+                                value = FeatherCore.Locale.translate(0, "earPage"),
                                 slot = "header",
                                 style = {}
                             })
@@ -802,7 +750,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                 style = {}
                             })
                             earPage:RegisterElement('button', {
-                                label = "Go Back",
+                                label = FeatherCore.Locale.translate(0, "goBack"),
                                 slot = 'footer',
                                 style = {}
                             }, function()
@@ -811,8 +759,8 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                             end)
                             earPage:RegisterElement('pagearrows', {
                                 slot = 'footer',
-                                total = ' Move Cam Up',
-                                current = 'Move Cam Down ',
+                                total = FeatherCore.Locale.translate(0, "moveCamUp"),
+                                current = FeatherCore.Locale.translate(0, "moveCamDown"),
                                 style = {}
                             }, function(data)
                                 if data.value == 'forward' then
@@ -825,8 +773,8 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                             end)
                             earPage:RegisterElement('pagearrows', {
                                 slot = 'footer',
-                                total = ' Rotate Right ',
-                                current = 'Rotate Left ',
+                                total = FeatherCore.Locale.translate(0, "rotateRight"),
+                                current = FeatherCore.Locale.translate(0, "rotateLeft"),
                                 style = {}
                             }, function(data)
                                 if data.value == 'forward' then
@@ -838,10 +786,10 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                 end
                             end)
                             EarGrid1 = earPage:RegisterElement('gridslider', {
-                                leftlabel = 'Ear Width -',
-                                rightlabel = 'Ear Width +',
-                                toplabel = 'Ear Height +',
-                                bottomlabel = 'Ear Height -',
+                                leftlabel = FeatherCore.Locale.translate(0, "earWidthMinus"),
+                                rightlabel = FeatherCore.Locale.translate(0, "earWidthPlus"),
+                                toplabel = FeatherCore.Locale.translate(0, "earHeightPlus"),
+                                bottomlabel = FeatherCore.Locale.translate(0, "earHeightMinus"),
                                 maxx = 1,
                                 maxy = 1,
                                 arrowsteps = 10,
@@ -854,10 +802,10 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                 UpdatePedVariation(PlayerPedId())
                             end)
                             EarGrid2 = earPage:RegisterElement('gridslider', {
-                                leftlabel = 'Earlobe Size -',
-                                rightlabel = 'Earlobe Size +',
-                                toplabel = 'Ear Angle +',
-                                bottomlabel = 'Ear Angle -',
+                                leftlabel = FeatherCore.Locale.translate(0, "earlobeSizeMinus"),
+                                rightlabel = FeatherCore.Locale.translate(0, "earlobeSizePlus"),
+                                toplabel = FeatherCore.Locale.translate(0, "earAnglePlus"),
+                                bottomlabel = FeatherCore.Locale.translate(0, "earAngleMinus"),
                                 maxx = 1,
                                 maxy = 1,
                                 arrowsteps = 10,
@@ -874,12 +822,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                         if key == 'Jaw' then
                             local jawPage = MyMenu:RegisterPage('feather-character:JawPage')
                             jawPage:RegisterElement('header', {
-                                value = 'My First Menu',
-                                slot = "header",
-                                style = {}
-                            })
-                            jawPage:RegisterElement('subheader', {
-                                value = "First Page",
+                                value = FeatherCore.Locale.translate(0, "jawPage"),
                                 slot = "header",
                                 style = {}
                             })
@@ -888,7 +831,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                 style = {}
                             })
                             jawPage:RegisterElement('button', {
-                                label = "Go Back",
+                                label = FeatherCore.Locale.translate(0, "goBack"),
                                 slot = 'footer',
                                 style = {}
                             }, function()
@@ -897,8 +840,8 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                             end)
                             jawPage:RegisterElement('pagearrows', {
                                 slot = 'footer',
-                                total = ' Move Cam Up',
-                                current = 'Move Cam Down ',
+                                total = FeatherCore.Locale.translate(0, "moveCamUp"),
+                                current = FeatherCore.Locale.translate(0, "moveCamDown"),
                                 style = {}
                             }, function(data)
                                 if data.value == 'forward' then
@@ -911,8 +854,8 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                             end)
                             jawPage:RegisterElement('pagearrows', {
                                 slot = 'footer',
-                                total = ' Rotate Right ',
-                                current = 'Rotate Left ',
+                                total = FeatherCore.Locale.translate(0, "rotateRight"),
+                                current = FeatherCore.Locale.translate(0, "rotateLeft"),
                                 style = {}
                             }, function(data)
                                 if data.value == 'forward' then
@@ -924,10 +867,10 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                 end
                             end)
                             JawGrid1 = jawPage:RegisterElement('gridslider', {
-                                leftlabel = 'Jaw Width -',
-                                rightlabel = 'Jaw Width +',
-                                toplabel = 'Jaw Height +',
-                                bottomlabel = 'Jaw Height -',
+                                leftlabel = FeatherCore.Locale.translate(0, "jawWidthMinus"),
+                                rightlabel = FeatherCore.Locale.translate(0, "jawWidthPlus"),
+                                toplabel = FeatherCore.Locale.translate(0, "jawHeightPlus"),
+                                bottomlabel = FeatherCore.Locale.translate(0, "jawHeightMinus"),
                                 maxx = 1,
                                 maxy = 1,
                                 arrowsteps = 10,
@@ -940,8 +883,8 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                 UpdatePedVariation(PlayerPedId())
                             end)
                             JawGrid2 = jawPage:RegisterElement('gridslider', {
-                                leftlabel = 'Jaw Depth -',
-                                rightlabel = 'Jaw Depth +',
+                                leftlabel = FeatherCore.Locale.translate(0, "jawDepthMinus"),
+                                rightlabel = FeatherCore.Locale.translate(0, "jawDepthPlus"),
                                 maxx = 1,
                                 arrowsteps = 10,
                                 precision = 1
@@ -955,12 +898,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                         if key == 'Mouth' then
                             local mouthPage = MyMenu:RegisterPage('feather-character:MouthPage')
                             mouthPage:RegisterElement('header', {
-                                value = 'My First Menu',
-                                slot = "header",
-                                style = {}
-                            })
-                            mouthPage:RegisterElement('subheader', {
-                                value = "First Page",
+                                value = FeatherCore.Locale.translate(0, "mouthPage"),
                                 slot = "header",
                                 style = {}
                             })
@@ -969,7 +907,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                 style = {}
                             })
                             mouthPage:RegisterElement('button', {
-                                label = "Go Back",
+                                label = FeatherCore.Locale.translate(0, "goBack"),
                                 slot = 'footer',
                                 style = {}
                             }, function()
@@ -978,8 +916,8 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                             end)
                             mouthPage:RegisterElement('pagearrows', {
                                 slot = 'footer',
-                                total = ' Move Cam Up',
-                                current = 'Move Cam Down ',
+                                total = FeatherCore.Locale.translate(0, "moveCamUp"),
+                                current = FeatherCore.Locale.translate(0, "moveCamDown"),
                                 style = {}
                             }, function(data)
                                 if data.value == 'forward' then
@@ -992,8 +930,8 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                             end)
                             mouthPage:RegisterElement('pagearrows', {
                                 slot = 'footer',
-                                total = ' Rotate Right ',
-                                current = 'Rotate Left ',
+                                total = FeatherCore.Locale.translate(0, "rotateRight"),
+                                current = FeatherCore.Locale.translate(0, "rotateLeft"),
                                 style = {}
                             }, function(data)
                                 if data.value == 'forward' then
@@ -1005,10 +943,10 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                 end
                             end)
                             UpperLipGrid = mouthPage:RegisterElement('gridslider', {
-                                leftlabel = 'Upper Lip Width -',
-                                rightlabel = 'Upper Lip Width +',
-                                toplabel = 'Upper Lip Height +',
-                                bottomlabel = 'Upper Lip Height -',
+                                leftlabel = FeatherCore.Locale.translate(0, "upperLipWidthMinus"),
+                                rightlabel = FeatherCore.Locale.translate(0, "upperLipWidthPlus"),
+                                toplabel = FeatherCore.Locale.translate(0, "upperLipHeightPlus"),
+                                bottomlabel = FeatherCore.Locale.translate(0, "upperLipHeightMinus"),
                                 maxx = 1,
                                 maxy = 1,
                                 arrowsteps = 10,
@@ -1021,8 +959,8 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                 UpdatePedVariation(PlayerPedId())
                             end)
                             UpperLipGrid2 = mouthPage:RegisterElement('gridslider', {
-                                leftlabel = 'Upper Lip Depth -',
-                                rightlabel = 'Upper Lip Depth +',
+                                leftlabel = FeatherCore.Locale.translate(0, "upperLipDepthMinus"),
+                                rightlabel = FeatherCore.Locale.translate(0, "upperLipDepthPlus"),
                                 maxx = 1,
                                 arrowsteps = 10,
                                 precision = 1
@@ -1032,10 +970,10 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                 UpdatePedVariation(PlayerPedId())
                             end)
                             LowerLipGrid = mouthPage:RegisterElement('gridslider', {
-                                leftlabel = 'Lower Lip Width -',
-                                rightlabel = 'Lower Lip Width +',
-                                toplabel = 'Lower Lip Height +',
-                                bottomlabel = 'Lower Lip Height -',
+                                leftlabel = FeatherCore.Locale.translate(0, "lowerLipWidthMinus"),
+                                rightlabel = FeatherCore.Locale.translate(0, "lowerLipWidthPlus"),
+                                toplabel = FeatherCore.Locale.translate(0, "lowerLipHeightPlus"),
+                                bottomlabel = FeatherCore.Locale.translate(0, "lowerLipHeightMinus"),
                                 maxx = 1,
                                 maxy = 1,
                                 arrowsteps = 10,
@@ -1048,8 +986,8 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                 UpdatePedVariation(PlayerPedId())
                             end)
                             LowerLipGrid2 = mouthPage:RegisterElement('gridslider', {
-                                leftlabel = 'Lower Lip Depth -',
-                                rightlabel = 'Lower Lip Depth +',
+                                leftlabel = FeatherCore.Locale.translate(0, "lowerLipDepthMinus"),
+                                rightlabel = FeatherCore.Locale.translate(0, "lowerLipDepthPlus"),
                                 maxx = 1,
                                 arrowsteps = 10,
                                 precision = 1
@@ -1059,10 +997,10 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                 UpdatePedVariation(PlayerPedId())
                             end)
                             MouthTuning = mouthPage:RegisterElement('gridslider', {
-                                leftlabel = 'Mouth Width -',
-                                rightlabel = 'Mouth Width +',
-                                toplabel = 'Mouth Depth +',
-                                bottomlabel = 'Mouth Depth -',
+                                leftlabel = FeatherCore.Locale.translate(0, "mouthWidthMinus"),
+                                rightlabel = FeatherCore.Locale.translate(0, "mouthWidthPlus"),
+                                toplabel = FeatherCore.Locale.translate(0, "mouthDepthPlus"),
+                                bottomlabel = FeatherCore.Locale.translate(0, "mouthDepthMinus"),
                                 maxx = 1,
                                 maxy = 1,
                                 arrowsteps = 10,
@@ -1075,10 +1013,10 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                 UpdatePedVariation(PlayerPedId())
                             end)
                             MouthPlacement = mouthPage:RegisterElement('gridslider', {
-                                leftlabel = 'Mouth X Pos -',
-                                rightlabel = 'Mouth X Pos +',
-                                toplabel = 'Mouth Y Pos +',
-                                bottomlabel = 'Mouth Y Pos -',
+                                leftlabel = FeatherCore.Locale.translate(0, "mouthXPosMinus"),
+                                rightlabel = FeatherCore.Locale.translate(0, "mouthXPosPlus"),
+                                toplabel = FeatherCore.Locale.translate(0, "mouthYPosPlus"),
+                                bottomlabel = FeatherCore.Locale.translate(0, "mouthYPosMinus"),
                                 maxx = 1,
                                 maxy = 1,
                                 arrowsteps = 10,
@@ -1094,12 +1032,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                         if key == 'Nose' then
                             local nosePage = MyMenu:RegisterPage('feather-character:NosePage')
                             nosePage:RegisterElement('header', {
-                                value = 'My First Menu',
-                                slot = "header",
-                                style = {}
-                            })
-                            nosePage:RegisterElement('subheader', {
-                                value = "First Page",
+                                value = FeatherCore.Locale.translate(0, "nosePage"),
                                 slot = "header",
                                 style = {}
                             })
@@ -1108,7 +1041,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                 style = {}
                             })
                             nosePage:RegisterElement('button', {
-                                label = "Go Back",
+                                label = FeatherCore.Locale.translate(0, "goBack"),
                                 slot = 'footer',
                                 style = {}
                             }, function()
@@ -1117,8 +1050,8 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                             end)
                             nosePage:RegisterElement('pagearrows', {
                                 slot = 'footer',
-                                total = ' Move Cam Up',
-                                current = 'Move Cam Down ',
+                                total = FeatherCore.Locale.translate(0, "moveCamUp"),
+                                current = FeatherCore.Locale.translate(0, "moveCamDown"),
                                 style = {}
                             }, function(data)
                                 if data.value == 'forward' then
@@ -1131,8 +1064,8 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                             end)
                             nosePage:RegisterElement('pagearrows', {
                                 slot = 'footer',
-                                total = ' Rotate Right ',
-                                current = 'Rotate Left ',
+                                total = FeatherCore.Locale.translate(0, "rotateRight"),
+                                current = FeatherCore.Locale.translate(0, "rotateLeft"),
                                 style = {}
                             }, function(data)
                                 if data.value == 'forward' then
@@ -1144,10 +1077,10 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                 end
                             end)
                             NoseGrid1 = nosePage:RegisterElement('gridslider', {
-                                leftlabel = 'Nose Width -',
-                                rightlabel = 'Nose Width +',
-                                toplabel = 'Nose Height +',
-                                bottomlabel = 'Nose Height -',
+                                leftlabel = FeatherCore.Locale.translate(0, "noseWidthMinus"),
+                                rightlabel = FeatherCore.Locale.translate(0, "noseWidthPlus"),
+                                toplabel = FeatherCore.Locale.translate(0, "noseHeightPlus"),
+                                bottomlabel = FeatherCore.Locale.translate(0, "noseHeightMinus"),
                                 maxx = 1,
                                 maxy = 1,
                                 arrowsteps = 10,
@@ -1160,10 +1093,10 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                 UpdatePedVariation(PlayerPedId())
                             end)
                             NoseGrid2 = nosePage:RegisterElement('gridslider', {
-                                leftlabel = 'Nose Curve -',
-                                rightlabel = 'Nose Curve +',
-                                toplabel = 'Nose Angle +',
-                                bottomlabel = 'Nose Angle -',
+                                leftlabel = FeatherCore.Locale.translate(0, "noseCurveMinus"),
+                                rightlabel = FeatherCore.Locale.translate(0, "noseCurvePlus"),
+                                toplabel = FeatherCore.Locale.translate(0, "noseAnglePlus"),
+                                bottomlabel = FeatherCore.Locale.translate(0, "noseAngleMinus"),
                                 maxx = 1,
                                 maxy = 1,
                                 arrowsteps = 10,
@@ -1176,10 +1109,10 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                 UpdatePedVariation(PlayerPedId())
                             end)
                             NoseGrid3 = nosePage:RegisterElement('gridslider', {
-                                leftlabel = 'Nose Size -',
-                                rightlabel = 'Nose Size +',
-                                toplabel = 'Nostril Distance +',
-                                bottomlabel = 'Nostril Distance -',
+                                leftlabel = FeatherCore.Locale.translate(0, "noseSizeMinus"),
+                                rightlabel = FeatherCore.Locale.translate(0, "noseSizePlus"),
+                                toplabel = FeatherCore.Locale.translate(0, "nostrilDistPlus"),
+                                bottomlabel = FeatherCore.Locale.translate(0, "nostrilDistMinus"),
                                 maxx = 1,
                                 maxy = 1,
                                 arrowsteps = 10,
@@ -1198,7 +1131,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                     style = {}
                 })
                 faceAdjMenu:RegisterElement('button', {
-                    label = "Go Back",
+                    label = FeatherCore.Locale.translate(0, "goBack"),
                     slot = 'footer',
                     style = {}
                 }, function()
@@ -1209,17 +1142,12 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                 faceAdjMenu:RouteTo()
             end)
             mainAppearanceMenu:RegisterElement('button', {
-                label = 'Facial Features',
+                label = FeatherCore.Locale.translate(0, "facialFeatures"),
                 style = {}
             }, function()
                 local facialFeaturesPage = MyMenu:RegisterPage('feather-character:FacialFeaturesPage')
                 facialFeaturesPage:RegisterElement('header', {
-                    value = 'Facial Features',
-                    slot = "header",
-                    style = {}
-                })
-                facialFeaturesPage:RegisterElement('subheader', {
-                    value = "First Page",
+                    value = FeatherCore.Locale.translate(0, "facialFeatures"),
                     slot = "header",
                     style = {}
                 })
@@ -1241,12 +1169,12 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                         end
                         SetDefaultValues(v)
                         featuresSubPage:RegisterElement('header', {
-                            value = 'My First Menu',
+                            value = FeatherCore.Locale.translate(0, "facialFeaturesSubPage"),
                             slot = "header",
                             style = {}
                         })
                         featuresSubPage:RegisterElement('subheader', {
-                            value = "Choose your " .. v .. " Options",
+                            value = FeatherCore.Locale.translate(0, "chooseYour") .. v .. FeatherCore.Locale.translate(0, "options"),
                             slot = "header",
                             style = {}
                         })
@@ -1255,8 +1183,8 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                             style = {}
                         })
                         featuresSubPage:RegisterElement('pagearrows', {
-                            total = ' Move Cam Up',
-                            current = 'Move Cam Down ',
+                            total = FeatherCore.Locale.translate(0, "moveCamUp"),
+                            current = FeatherCore.Locale.translate(0, "moveCamDown"),
                             style = {}
                         }, function(data)
                             if data.value == 'forward' then
@@ -1268,8 +1196,8 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                             end
                         end)
                         featuresSubPage:RegisterElement('pagearrows', {
-                            total = ' Rotate Right ',
-                            current = 'Rotate Left ',
+                            total = FeatherCore.Locale.translate(0, "rotateRight"),
+                            current = FeatherCore.Locale.translate(0, "rotateLeft"),
                             style = {}
                         }, function(data)
                             if data.value == 'forward' then
@@ -1281,7 +1209,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                             end
                         end)
                         featuresSubPage:RegisterElement('slider', {
-                            label = v .. ' Opacity',
+                            label = v .. ' ' .. FeatherCore.Locale.translate(0, "opacity"),
                             start = 0,
                             min = 0,
                             max = 1,
@@ -1299,7 +1227,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                             SelectedOverlayElements[v]["opacity"] = ActiveOpacity[v]
                         end)
                         featuresSubPage:RegisterElement('slider', {
-                            label = v .. ' Texture',
+                            label = v .. ' ' .. FeatherCore.Locale.translate(0, "texture"),
                             start = 0,
                             min = 0,
                             max = #OverlayInfo[v],
@@ -1322,7 +1250,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                             style = {}
                         })
                         featuresSubPage:RegisterElement('button', {
-                            label = "Go Back",
+                            label = FeatherCore.Locale.translate(0, "goBack"),
                             slot = 'footer',
                             style = {}
                         }, function()
@@ -1336,7 +1264,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                     style = {}
                 })
                 facialFeaturesPage:RegisterElement('button', {
-                    label = "Go Back",
+                    label = FeatherCore.Locale.translate(0, "goBack"),
                     slot = 'footer',
                     style = {}
                 }, function()
@@ -1349,23 +1277,18 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
             mainAppearanceMenu:RouteTo()
         end)
         categoriesPage:RegisterElement('button', {
-            label = 'Body',
+            label = FeatherCore.Locale.translate(0, "body"),
             style = {}
         }, function()
             local bodyPage = MyMenu:RegisterPage('feather-character:BodyPage')
             local bodySlidersMade = nil
             bodyPage:RegisterElement('header', {
-                value = 'My First Menu',
-                slot = "header",
-                style = {}
-            })
-            bodyPage:RegisterElement('subheader', {
-                value = "",
+                value = FeatherCore.Locale.translate(0, "bodyPage"),
                 slot = "header",
                 style = {}
             })
             bodyPage:RegisterElement('button', {
-                label = "Go Back",
+                label = FeatherCore.Locale.translate(0, "goBack"),
                 slot = 'footer',
                 style = {}
             }, function()
@@ -1377,8 +1300,8 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                 bodySlidersMade = true
                 bodyPage:RegisterElement('pagearrows', {
                     slot = 'footer',
-                    total = ' Zoom Cam In',
-                    current = 'Zoom Cam Out ',
+                    total = FeatherCore.Locale.translate(0, "zoomCamIn"),
+                    current = FeatherCore.Locale.translate(0, "zoomCamOut"),
                     style = {}
                 }, function(data)
                     if data.value == 'forward' then
@@ -1391,8 +1314,8 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                 end)
                 bodyPage:RegisterElement('pagearrows', {
                     slot = 'footer',
-                    total = ' Move Cam Up',
-                    current = 'Move Cam Down ',
+                    total = FeatherCore.Locale.translate(0, "moveCamUp"),
+                    current = FeatherCore.Locale.translate(0, "moveCamDown"),
                     style = {}
                 }, function(data)
                     if data.value == 'forward' then
@@ -1405,8 +1328,8 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                 end)
                 bodyPage:RegisterElement('pagearrows', {
                     slot = 'footer',
-                    total = ' Rotate Right ',
-                    current = 'Rotate Left ',
+                    total = FeatherCore.Locale.translate(0, "rotateRight"),
+                    current = FeatherCore.Locale.translate(0, "rotateLeft"),
                     style = {}
                 }, function(data)
                     if data.value == 'forward' then
@@ -1418,7 +1341,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                     end
                 end)
                 HeightSlider = bodyPage:RegisterElement('arrows', {
-                    label = "Height",
+                    label = FeatherCore.Locale.translate(0, "height"),
                     start = 5,
                     options = Config.Heights
                 }, function(data)
@@ -1429,7 +1352,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                     SelectedAttributeElements['Height'] = { value = data.value }
                 end)
                 BodySlider   = bodyPage:RegisterElement('slider', {
-                    label = "Body Type",
+                    label = FeatherCore.Locale.translate(0, "bodyType"),
                     start = 0,
                     min = 1,
                     max = #BodyTypes,
@@ -1440,7 +1363,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                     EquipMetaPedOutfit(PlayerPedId(), BodyTypes[size])
                 end)
                 ChestSlider  = bodyPage:RegisterElement('slider', {
-                    label = "Chest Size",
+                    label = FeatherCore.Locale.translate(0, "chestSize"),
                     start = 0,
                     min = 1,
                     max = #ChestType,
@@ -1451,7 +1374,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                     EquipMetaPedOutfit(PlayerPedId(), ChestType[size])
                 end)
                 WaistSlider  = bodyPage:RegisterElement('slider', {
-                    label = "Waist Size",
+                    label = FeatherCore.Locale.translate(0, "waistSize"),
                     start = 0,
                     min = 1,
                     max = #WaistTypes,
@@ -1462,10 +1385,10 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                     EquipMetaPedOutfit(PlayerPedId(), WaistTypes[size])
                 end)
                 ForearmGrid1 = bodyPage:RegisterElement('gridslider', {
-                    leftlabel = 'Forearm Size -',
-                    rightlabel = 'Forearm Size +',
-                    toplabel = 'Upper Arm Size +',
-                    bottomlabel = 'Upper Arm Size -',
+                    leftlabel = FeatherCore.Locale.translate(0, "foreArmSizeMinus"),
+                    rightlabel = FeatherCore.Locale.translate(0, "foreArmSizePlus"),
+                    toplabel = FeatherCore.Locale.translate(0, "upperArmSizePlus"),
+                    bottomlabel = FeatherCore.Locale.translate(0, "upperArmSizeMinus"),
                     maxx = 1,
                     maxy = 1,
                     arrowsteps = 10,
@@ -1478,10 +1401,10 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                     UpdatePedVariation(PlayerPedId())
                 end)
                 LegGrid = bodyPage:RegisterElement('gridslider', {
-                    leftlabel = 'Calves Size -',
-                    rightlabel = 'Calves Size +',
-                    toplabel = 'Thighs Size +',
-                    bottomlabel = 'Thighs Size -',
+                    leftlabel = FeatherCore.Locale.translate(0, "calvesSizeMinus"),
+                    rightlabel = FeatherCore.Locale.translate(0, "calvesSizePlus"),
+                    toplabel = FeatherCore.Locale.translate(0, "thighSizePlus"),
+                    bottomlabel = FeatherCore.Locale.translate(0, "thighSizeMinus"),
                     maxx = 1,
                     maxy = 1,
                     arrowsteps = 10,
@@ -1494,10 +1417,10 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                     UpdatePedVariation(PlayerPedId())
                 end)
                 WaistGrid = bodyPage:RegisterElement('gridslider', {
-                    leftlabel = 'Waist Width -',
-                    rightlabel = 'Waist Width +',
-                    toplabel = 'Hip Width +',
-                    bottomlabel = 'Hip Width -',
+                    leftlabel = FeatherCore.Locale.translate(0, "waistWidthMinus"),
+                    rightlabel = FeatherCore.Locale.translate(0, "waistWidthPlus"),
+                    toplabel = FeatherCore.Locale.translate(0, "hipWidthPlus"),
+                    bottomlabel = FeatherCore.Locale.translate(0, "hipWidthMinus"),
                     maxx = 1,
                     maxy = 1,
                     arrowsteps = 10,
@@ -1513,13 +1436,13 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
             bodyPage:RouteTo()
         end)
         categoriesPage:RegisterElement('button', {
-            label = 'Clothing',
+            label = FeatherCore.Locale.translate(0, "clothing"),
             style = {
             }
         }, function()
             local clothingCategoriesPage = MyMenu:RegisterPage('feather-character:ClothingCategoriesPage')
             clothingCategoriesPage:RegisterElement('header', {
-                value = 'Clothing Selection',
+                value = FeatherCore.Locale.translate(0, "clothingSelection"),
                 slot = "header",
                 style = {}
             })
@@ -1528,7 +1451,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                 style = {}
             })
             clothingCategoriesPage:RegisterElement('button', {
-                label = "Go Back",
+                label = FeatherCore.Locale.translate(0, "goBack"),
                 slot = 'footer',
                 style = {}
             }, function()
@@ -1537,35 +1460,33 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
             for k, v in pairs(CharacterConfig.Clothing.Clothes[gender]) do
                 clothingCategoriesPage:RegisterElement('button', {
                     label = k,
-                    style = {
-                    },
+                    style = {}
                 }, function()
                     local activePage = MyMenu:RegisterPage('feather-character:ActiveClothingPage')
                     if k == "Upper" then
                         activePage:RegisterElement('header', {
-                            value = 'Clothing Selection',
+                            value = FeatherCore.Locale.translate(0, "clothingSelection"),
                             slot = "header",
                             style = {}
                         })
                         activePage:RegisterElement('subheader', {
-                            value = "These are the items and the variants",
+                            value = FeatherCore.Locale.translate(0, "clothingSelectionVarDesc"),
                             slot = "header",
                             style = {}
                         })
                         activePage:RegisterElement('button', {
-                            label = "Go Back",
+                            label = FeatherCore.Locale.translate(0, "goBack"),
                             slot = 'footer',
-                            style = {},
+                            style = {}
                         }, function()
-                            SwitchCam(Config.CameraCoords.creation.x, Config.CameraCoords.creation.y, Config.CameraCoords.creation.z,
-                                Config.CameraCoords.creation.h, Config.CameraCoords.creation.zoom)
-                                clothingCategoriesPage:RouteTo()
+                            SwitchCam(Config.CameraCoords.creation.x, Config.CameraCoords.creation.y, Config.CameraCoords.creation.z, Config.CameraCoords.creation.h, Config.CameraCoords.creation.zoom)
+                            clothingCategoriesPage:RouteTo()
                         end)
                         activePage:RegisterElement('pagearrows', {
                             slot = 'footer',
-                            total = ' Zoom Cam In',
-                            current = 'Zoom Cam Out ',
-                            style = {},
+                            total = FeatherCore.Locale.translate(0, "zoomCamIn"),
+                            current = FeatherCore.Locale.translate(0, "zoomCamOut"),
+                            style = {}
                         }, function(data)
                             if data.value == 'forward' then
                                 Fov = Fov - 1.0
@@ -1577,8 +1498,8 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                         end)
                         activePage:RegisterElement('pagearrows', {
                             slot = 'footer',
-                            total = ' Move Cam Up',
-                            current = 'Move Cam Down ',
+                            total = FeatherCore.Locale.translate(0, "moveCamUp"),
+                            current = FeatherCore.Locale.translate(0, "moveCamDown"),
                             style = {},
                         }, function(data)
                             if data.value == 'forward' then
@@ -1591,8 +1512,8 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                         end)
                         activePage:RegisterElement('pagearrows', {
                             slot = 'footer',
-                            total = ' Rotate Right ',
-                            current = 'Rotate Left ',
+                            total = FeatherCore.Locale.translate(0, "rotateRight"),
+                            current = FeatherCore.Locale.translate(0, "rotateLeft"),
                             style = {},
                         }, function(data)
                             if data.value == 'forward' then
@@ -1608,17 +1529,17 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                         CamZ = Config.CameraCoords.creation.z + 0.5
                     elseif k == "Lower" then
                         activePage:RegisterElement('header', {
-                            value = 'Clothing Selection',
+                            value = FeatherCore.Locale.translate(0, "clothingSelection"),
                             slot = "header",
                             style = {}
                         })
                         activePage:RegisterElement('subheader', {
-                            value = "These are the items and the variants",
+                            value = FeatherCore.Locale.translate(0, "clothingSelectionVarDesc"),
                             slot = "header",
                             style = {}
                         })
                         activePage:RegisterElement('button', {
-                            label = "Go Back",
+                            label = FeatherCore.Locale.translate(0, "goBack"),
                             slot = 'footer',
                             style = {}
                         }, function()
@@ -1627,8 +1548,8 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                         end)
                         activePage:RegisterElement('pagearrows', {
                             slot = 'footer',
-                            total = ' Zoom Cam In',
-                            current = 'Zoom Cam Out ',
+                            total = FeatherCore.Locale.translate(0, "zoomCamIn"),
+                            current = FeatherCore.Locale.translate(0, "zoomCamOut"),
                             style = {},
                         }, function(data)
                             if data.value == 'forward' then
@@ -1641,8 +1562,8 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                         end)
                         activePage:RegisterElement('pagearrows', {
                             slot = 'footer',
-                            total = ' Move Cam Up',
-                            current = 'Move Cam Down ',
+                            total = FeatherCore.Locale.translate(0, "moveCamUp"),
+                            current = FeatherCore.Locale.translate(0, "moveCamDown"),
                             style = {}
                         }, function(data)
                             if data.value == 'forward' then
@@ -1655,8 +1576,8 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                         end)
                         activePage:RegisterElement('pagearrows', {
                             slot = 'footer',
-                            total = ' Rotate Right ',
-                            current = 'Rotate Left ',
+                            total = FeatherCore.Locale.translate(0, "rotateRight"),
+                            current = FeatherCore.Locale.translate(0, "rotateLeft"),
                             style = {},
                         }, function(data)
                             if data.value == 'forward' then
@@ -1672,17 +1593,17 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                         CamZ = Config.CameraCoords.creation.z - 0.2
                     elseif k == "Accessories" then
                         activePage:RegisterElement('header', {
-                            value = 'Clothing Selection',
+                            value = FeatherCore.Locale.translate(0, "clothingSelection"),
                             slot = "header",
                             style = {}
                         })
                         activePage:RegisterElement('subheader', {
-                            value = "These are the items and the variants",
+                            value = FeatherCore.Locale.translate(0, "clothingSelectionVarDesc"),
                             slot = "header",
                             style = {}
                         })
                         activePage:RegisterElement('button', {
-                            label = "Go Back",
+                            label = FeatherCore.Locale.translate(0, "goBack"),
                             slot = 'footer',
                             style = {}
                         }, function()
@@ -1691,8 +1612,8 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                         end)
                         activePage:RegisterElement('pagearrows', {
                             slot = 'footer',
-                            total = ' Zoom Cam In',
-                            current = 'Zoom Cam Out ',
+                            total = FeatherCore.Locale.translate(0, "zoomCamIn"),
+                            current = FeatherCore.Locale.translate(0, "zoomCamOut"),
                             style = {}
                         }, function(data)
                             if data.value == 'forward' then
@@ -1705,8 +1626,8 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                         end)
                         activePage:RegisterElement('pagearrows', {
                             slot = 'footer',
-                            total = ' Move Cam Up',
-                            current = 'Move Cam Down ',
+                            total = FeatherCore.Locale.translate(0, "moveCamUp"),
+                            current = FeatherCore.Locale.translate(0, "moveCamDown"),
                             style = {},
                         }, function(data)
                             if data.value == 'forward' then
@@ -1719,8 +1640,8 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                         end)
                         activePage:RegisterElement('pagearrows', {
                             slot = 'footer',
-                            total = ' Rotate Right ',
-                            current = 'Rotate Left ',
+                            total = FeatherCore.Locale.translate(0, "rotateRight"),
+                            current = FeatherCore.Locale.translate(0, "rotateLeft"),
                             style = {}
                         }, function(data)
                             if data.value == 'forward' then
@@ -1747,14 +1668,13 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                 MainComponent = data.value
                                 if MainComponent > 0 then
                                     selectedClothing[index .. 'Variant'] = selectedClothing[index .. 'Variant']:update({
-                                        label = index .. ' variant',
+                                        label = index .. " " .. FeatherCore.Locale.translate(0, "variant"),
                                         value = 1,
-                                        max = #key.CategoryData[MainComponent], 
+                                        max = #key.CategoryData[MainComponent]
                                     })
                                     AddComponent(PlayerPedId(), key.CategoryData[MainComponent][1].hash, index)
                                     local type = Citizen.InvokeNative(0xEC9A1261BF0CE510, PlayerPedId())
-                                    ActiveCatagory = Citizen.InvokeNative(0x5FF9A878C3D115B8,
-                                        key.CategoryData[MainComponent][1].hash, type, true)
+                                    ActiveCatagory = Citizen.InvokeNative(0x5FF9A878C3D115B8, key.CategoryData[MainComponent][1].hash, type, true)
                                     selectedClothingElements[index] = key.CategoryData[MainComponent][1].hash
                                 else
                                     Citizen.InvokeNative(0x0D7FFA1B2F69ED82, PlayerPedId(), selectedClothingElements[index], 0, 0)
@@ -1763,16 +1683,16 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                 end
                             end)
                             VariantElement = activePage:RegisterElement('slider', {
-                                label = index .. ' variant',
+                                label = index .. " " .. FeatherCore.Locale.translate(0, "variant"),
                                 start = 1,
                                 min = 1,
-                                max = 5, 
+                                max = 5,
                                 steps = 1
                             }, function(data)
                                 VariantComponent = data.value
                                 if VariantComponent > 0 then
                                     selectedClothing[index .. 'Variant'] = selectedClothing[index .. 'Variant']:update({
-                                        label = index .. ' variant',
+                                        label = index .. " " .. FeatherCore.Locale.translate(0, "variant"),
                                         max = #key.CategoryData[MainComponent], 
                                     })
                                     AddComponent(PlayerPedId(), key.CategoryData[MainComponent][VariantComponent].hash, index)
@@ -1784,23 +1704,18 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                             end)
                             if Config.DyeClothes then
                                 local Button = activePage:RegisterElement('button', {
-                                    label = "Dye your " .. index,
+                                    label = FeatherCore.Locale.translate(0, "dyeYour") .. index,
                                     style = {
                                     },
                                 }, function()
                                     local colorPage = MyMenu:RegisterPage('feather-character:ColorClothingPage')
                                     colorPage:RegisterElement('header', {
-                                        value = 'My First Menu',
-                                        slot = "header",
-                                        style = {}
-                                    })
-                                    colorPage:RegisterElement('subheader', {
-                                        value = "First Page",
+                                        value = FeatherCore.Locale.translate(0, "colorPage"),
                                         slot = "header",
                                         style = {}
                                     })
                                     colorPage:RegisterElement('button', {
-                                        label = "Go Back",
+                                        label = FeatherCore.Locale.translate(0, "goBack"),
                                         slot = 'footer',
                                         style = {}
                                     }, function()
@@ -1824,7 +1739,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                     Wait(250)
                                     if selectedColoring == nil then
                                         local colorElement1 = colorPage:RegisterElement('slider', {
-                                            label = 'Color 1',
+                                            label = FeatherCore.Locale.translate(0, "color1"),
                                             start = 1,
                                             min = 1,
                                             max = 254, 
@@ -1839,7 +1754,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                             end
                                         end)
                                         local colorElement2 = colorPage:RegisterElement('slider', {
-                                            label = 'Color 2',
+                                            label = FeatherCore.Locale.translate(0, "color2"),
                                             start = 1,
                                             min = 1,
                                             max = 254, 
@@ -1854,7 +1769,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                             end
                                         end)
                                         local colorElement3 = colorPage:RegisterElement('slider', {
-                                            label = 'Color 3',
+                                            label = FeatherCore.Locale.translate(0, "color3"),
                                             start = 1,
                                             min = 1,
                                             max = 254, 
@@ -1869,13 +1784,13 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                                             end
                                         end)
                                         colorElement1 = colorElement1:update({
-                                            label = "Color 1",
+                                            label = FeatherCore.Locale.translate(0, "color1"),
                                         })
                                         colorElement2 = colorElement2:update({
-                                            label = "Color 2",
+                                            label = FeatherCore.Locale.translate(0, "color2"),
                                         })
                                         colorElement3 = colorElement3:update({
-                                            label = "Color 3",
+                                            label = FeatherCore.Locale.translate(0, "color3"),
                                         })
                                     end
                                     selectedColoring = true
@@ -1893,11 +1808,11 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                             selectedClothing[index .. 'Variant'] = VariantElement
                             CategoryElement = CategoryElement:update({
                                 label = index,
-                                max = #key.CategoryData, 
+                                max = #key.CategoryData
                             })
                             VariantElement = VariantElement:update({
-                                label = index .. ' variant',
-                                max = #key.CategoryData, 
+                                label = index .. " " .. FeatherCore.Locale.translate(0, "variant"),
+                                max = #key.CategoryData
                             })
                             Line = activePage:RegisterElement('line', {
                                 slot = "content",
@@ -1911,17 +1826,12 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
             clothingCategoriesPage:RouteTo()
         end)
         categoriesPage:RegisterElement('button', {
-            label = 'Makeup',
+            label = FeatherCore.Locale.translate(0, "makeup"),
             style = {}
         }, function()
             local makeupPage = MyMenu:RegisterPage('feather-character:MakeupPage')
             makeupPage:RegisterElement('header', {
-                value = 'My First Menu',
-                slot = "header",
-                style = {}
-            })
-            makeupPage:RegisterElement('subheader', {
-                value = "First Page",
+                value = FeatherCore.Locale.translate(0, "makeupPage"),
                 slot = "header",
                 style = {}
             })
@@ -1947,12 +1857,12 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                     end
                     SetDefaultValues(v)
                     activeMakeupPage:RegisterElement('header', {
-                        value = 'My First Menu',
+                        value = k,
                         slot = "header",
                         style = {}
                     })
                     activeMakeupPage:RegisterElement('subheader', {
-                        value = "Choose your " .. v .. " Options",
+                        value = FeatherCore.Locale.translate(0, "chooseYour") .. v .. FeatherCore.Locale.translate(0, "options"),
                         slot = "header",
                         style = {}
                     })
@@ -1961,8 +1871,8 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                         style = {}
                     })
                     activeMakeupPage:RegisterElement('pagearrows', {
-                        total = ' Move Cam Up',
-                        current = 'Move Cam Down ',
+                        total = FeatherCore.Locale.translate(0, "moveCamUp"),
+                        current = FeatherCore.Locale.translate(0, "moveCamDown"),
                         style = {}
                     }, function(data)
                         if data.value == 'forward' then
@@ -1974,8 +1884,8 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                         end
                     end)
                     activeMakeupPage:RegisterElement('pagearrows', {
-                        total = ' Rotate Right ',
-                        current = 'Rotate Left ',
+                        total = FeatherCore.Locale.translate(0, "rotateRight"),
+                        current = FeatherCore.Locale.translate(0, "rotateLeft"),
                         style = {}
                     }, function(data)
                         if data.value == 'forward' then
@@ -1987,7 +1897,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                         end
                     end)
                     activeMakeupPage:RegisterElement('slider', {
-                        label = v .. ' Opacity',
+                        label = v .. " " .. FeatherCore.Locale.translate(0, "opacity"),
                         start = 1,
                         min = 0,
                         max = 1,
@@ -2027,7 +1937,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                     end
                     if v == 'eyeliners' or v == 'shadows' or v == 'lipsticks' then
                         activeMakeupPage:RegisterElement('slider', {
-                            label = v .. ' Variant',
+                            label = v .. " " .. FeatherCore.Locale.translate(0, "variant"),
                             start = 0,
                             min = 0,
                             max = VarMax,
@@ -2047,7 +1957,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                         style = {}
                     })
                     activeMakeupPage:RegisterElement('slider', {
-                        label = v .. ' Color 1',
+                        label = v .. ' ' .. FeatherCore.Locale.translate(0, "color1"),
                         start = 1,
                         min = 1,
                         max = 254,
@@ -2063,7 +1973,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                     end)
                     if v ~= { 'lipsticks', 'foundation' } then
                         activeMakeupPage:RegisterElement('slider', {
-                            label = v .. ' Color 2',
+                            label = v .. " " .. FeatherCore.Locale.translate(0, "color2"),
                             start = 1,
                             min = 1,
                             max = 254,
@@ -2080,7 +1990,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                     end
                     if v ~= { 'lipsticks', 'foundation' } then
                         activeMakeupPage:RegisterElement('slider', {
-                            label = v .. ' Color 3',
+                            label = v .. " " .. FeatherCore.Locale.translate(0, "color3"),
                             start = 1,
                             min = 1,
                             max = 254,
@@ -2100,7 +2010,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                         style = {}
                     })
                     activeMakeupPage:RegisterElement('button', {
-                        label = "Go Back",
+                        label = FeatherCore.Locale.translate(0, "goBack"),
                         slot = 'footer',
                         style = {}
                     }, function()
@@ -2110,7 +2020,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                 end)
             end
             makeupPage:RegisterElement('button', {
-                label = "Go Back",
+                label = FeatherCore.Locale.translate(0, "goBack"),
                 slot = 'footer',
                 style = {}
             }, function()
@@ -2120,7 +2030,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
             makeupPage:RouteTo()
         end)
         categoriesPage:RegisterElement('header', {
-            value = 'Clothing Selection',
+            value = FeatherCore.Locale.translate(0, "clothingSelection"),
             slot = "header",
             style = {}
         })
@@ -2129,7 +2039,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
             style = {}
         })
         categoriesPage:RegisterElement('button', {
-            label = "Go Back",
+            label = FeatherCore.Locale.translate(0, "goBack"),
             slot = 'footer',
             style = {}
         }, function()
@@ -2138,44 +2048,39 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
         categoriesPage:RouteTo()
     end)
     mainCreationPage:RegisterElement('input', {
-        label = "First Name",
-        placeholder = "Enter First Name",
-        style = {
-        }
+        label = FeatherCore.Locale.translate(0, "firstName"),
+        placeholder = FeatherCore.Locale.translate(0, "enterFirstName"),
+        style = {}
     }, function(data)
         firstName = data.value
     end)
     mainCreationPage:RegisterElement('input', {
-        label = "Last Name",
-        placeholder = "Enter Last Name",
-        style = {
-        }
+        label = FeatherCore.Locale.translate(0, "lastName"),
+        placeholder = FeatherCore.Locale.translate(0, "enterLastName"),
+        style = {}
     }, function(data)
         lastName = data.value
     end)
     mainCreationPage:RegisterElement('input', {
-        label = "Birthday",
-        placeholder = "Birthday",
-        style = {
-        }
+        label = FeatherCore.Locale.translate(0, "dob"),
+        placeholder = FeatherCore.Locale.translate(0, "enterDOB"),
+        style = {}
     }, function(data)
         dob = data.value
     end)
     mainCreationPage:RegisterElement('textarea', {
-        label = "Character Description",
-        placeholder = "Enter text",
+        label = FeatherCore.Locale.translate(0, "charDesc"),
+        placeholder = FeatherCore.Locale.translate(0, "enterCharDesc"),
         rows = "5",
         resize = false,
-        style = {
-        }
+        style = {}
     }, function(data)
         charDesc = data.value
     end)
     mainCreationPage:RegisterElement('input', {
-        label = "Image Link",
-        placeholder = "Link",
-        style = {
-        }
+        label = FeatherCore.Locale.translate(0, "imgLink"),
+        placeholder = FeatherCore.Locale.translate(0, "enterImgLink"),
+        style = {}
     }, function(data)
         imgLink = data.value
     end)
@@ -2183,11 +2088,11 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
         imgLink = 'None'
     end
     mainCreationPage:RegisterElement('arrows', {
-        label = "Gender",
+        label = FeatherCore.Locale.translate(0, "gender"),
         start = 1,
         options = {
-            "Male",
-            "Female"
+            FeatherCore.Locale.translate(0, "male"),
+            FeatherCore.Locale.translate(0, "female")
         },
     }, function(data)
         if data.value == "Male" then
@@ -2198,7 +2103,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
         LoadPlayer(Model)
     end)
     mainCreationPage:RegisterElement('button', {
-        label = "Save Character",
+        label = FeatherCore.Locale.translate(0, "saveChar"),
         style = {
         }
     }, function()

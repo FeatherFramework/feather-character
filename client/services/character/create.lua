@@ -57,8 +57,7 @@ RegisterNetEvent('feather-character:CreateNewCharacter', function()
     DoScreenFadeOut(500)
 
     Wait(2000)
-    SetEntityCoords(PlayerPedId(), Config.SpawnCoords.creation.x, Config.SpawnCoords.creation.y,
-        Config.SpawnCoords.creation.z)
+    SetEntityCoords(PlayerPedId(), Config.SpawnCoords.creation.x, Config.SpawnCoords.creation.y, Config.SpawnCoords.creation.z)
     SetEntityVisible(PlayerPedId(), true)
     FreezeEntityPosition(PlayerPedId(), false)
     createNewCharacter()

@@ -1,0 +1,1 @@
+FeatherCore = exports['feather-core'].initiate()

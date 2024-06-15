@@ -6,21 +6,23 @@ lua54 'yes'
 description 'The Character service for the Feather Framework'
 author 'Feather @Jannings'
 name 'feather-character'
-version '0.0.3'
+version '0.0.4'
 
-github_version_check 'false'
+github_version_check 'true'
 github_version_type 'release'
 github_ui_check 'false'
 github_link 'https://github.com/FeatherFramework/feather-character'
 
 shared_scripts {
     'config.lua',
+    'shared/imports.lua',
+    'locale/*.lua',
     'shared/data/setup.lua',
     'shared/data/general.lua',
     'shared/data/clothing.lua',
     'shared/data/attributes.lua',
     'shared/data/features.lua',
-    'shared/data/hair.lua',
+    'shared/data/hair.lua'
 }
 
 server_scripts {
@@ -36,7 +38,7 @@ client_scripts {
     'client/helpers/*.lua',
     'client/services/*.lua',
     'client/main.lua',
-    'client/services/character/*.lua',
+    'client/services/character/*.lua'
 }
 
 dependencies {
