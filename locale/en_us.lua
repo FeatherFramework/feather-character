@@ -8,7 +8,7 @@ FeatherCore.Locale.register("en_us", {
     appearance = "Appearance",
     appearanceMenu = "Appearance Menu",
     heritage = "Heritage",
-    europian = "Europian",
+    european = "European",
     headVars = "Head Variations",
     bodyVars = "Body Variations",
     legVars = "Leg Variations",
