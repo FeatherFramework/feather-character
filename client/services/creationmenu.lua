@@ -62,7 +62,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
                 end
             end)
             heritageDisplay = mainAppearanceMenu:RegisterElement('textdisplay', {
-                value = FeatherCore.Locale.translate(0, "europian"),
+                value = FeatherCore.Locale.translate(0, "european"),
                 style = {}
             })
             headVariantSlider = mainAppearanceMenu:RegisterElement('slider', {
