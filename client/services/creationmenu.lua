@@ -173,7 +173,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
             }, function()
                 SwitchCam(Config.CameraCoords.creation.x, Config.CameraCoords.creation.y, Config.CameraCoords.creation.z,
                     Config.CameraCoords.creation.h, Config.CameraCoords.creation.zoom)
-                categoriesPage:RouteTo()
+                Pages.categoriesPage:RouteTo()
             end)
 
             mainAppearanceMenu:RegisterElement('bottomline', {

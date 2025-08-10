@@ -177,7 +177,7 @@ function OpenMakeupMenu(categoriesPage, gender)
         slot = 'footer',
         style = {}
     }, function()
-        categoriesPage:RouteTo()
+        Pages.categoriesPage:RouteTo()
     end)
 
     makeupPage:RegisterElement('bottomline', {
