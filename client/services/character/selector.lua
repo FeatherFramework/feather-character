@@ -1,5 +1,5 @@
 local obj1, obj2, obj3, obj4
-local clothing, attributes, makeup, spawnedPeds = {}, {}, {}, {}
+clothing, attributes, makeup, spawnedPeds = {}, {}, {}, {}
 SentClothing, SentAttributes, SentOverlays = {}, {}, {}
 RegisterNetEvent('feather-character:SendCharactersData', function(id, recClothing, recAttributes, recMakeup)
     SentClothing[id] = json.decode(recClothing)
@@ -18,8 +18,7 @@ function CleanupCharacterSelect()
         v:Remove()
     end
     spawnedPeds = {}
-    MyMenu:Close()
-    MyMenu:Close()
+    CharacterMenu:Close()
 end
 
 --------- Net Events ------

@@ -16,7 +16,7 @@ end)
 FeatherCore.RPC.Register("SaveCharacterData", function(params, res, player)
     local src = player
     local activeuser = FeatherCore.User.GetUserBySrc(src)
-    FeatherCore.Character.CreateCharacter(activeuser.id, 1, params[1].firstname, params[1].lastname, params[1].model, params[1].dob, json.encode(params[1].img), Config.defaults.money, Config.defaults.gold, Config.defaults.tokens, Config.defaults.xp, Config.SpawnCoords.towns[1].startcoords.x, Config.SpawnCoords.towns[1].startcoords.y, Config.SpawnCoords.towns[1].startcoords.z, "en_us", params[1].desc)
+    FeatherCore.Character.CreateCharacter(activeuser.id, 1, params[1].firstname, params[1].lastname, params[1].model, params[1].dob, json.encode(params[1].img), Config.defaults.money, Config.defaults.gold, Config.defaults.tokens, Config.defaults.xp, Config.SpawnCoords.towns[1].startcoords.x, Config.SpawnCoords.towns[1].startcoords.y, Config.SpawnCoords.towns[1].startcoords.z, Config.defaults.lang, params[1].desc)
     local charId = CharControllers.GetCharIdFromUserId(activeuser.id)
 
     return res(charId)

@@ -1,16 +1,16 @@
-local spawnSelectPage = MyMenu:RegisterPage('spawnselect:page')
-
 RegisterNetEvent("feather-character:SpawnSelect", function(CharInfo)
+    local spawnSelectPage = CharacterMenu:RegisterPage('spawnselect:page')
+
     spawnSelectPage:RegisterElement('header', {
         value = FeatherCore.Locale.translate(0, "spawnSelect"),
         slot = "header",
         style = {}
     })
-    spawnSelectPage:RegisterElement('textdisplay', {
+    spawnSelectPage:RegisterElement('subheader', {
         value = FeatherCore.Locale.translate(0, "chooseCity"),
         style = {}
     })
-    spawnSelectPage:RegisterElement('bottomline', {
+    spawnSelectPage:RegisterElement('line', {
         slot = "content",
     })
     local cityTextDisplay2 = spawnSelectPage:RegisterElement('textdisplay', {
@@ -35,9 +35,12 @@ RegisterNetEvent("feather-character:SpawnSelect", function(CharInfo)
             StartCam(v.cameracoords.x, v.cameracoords.y, v.cameracoords.z, v.cameracoords.h, v.cameracoords.zoom)
         end)
     end
-
+    spawnSelectPage:RegisterElement('line', {
+        slot = "footer",
+    })
     spawnSelectPage:RegisterElement('button', {
         label = FeatherCore.Locale.translate(0, "spawn"),
+        slot = "footer",
         style = {}
     }, function()
         DoScreenFadeOut(250)
@@ -47,7 +50,11 @@ RegisterNetEvent("feather-character:SpawnSelect", function(CharInfo)
         SpawnMethod(ArrivalMethod, CharSpawnCoords,GotoCoords)
     end)
 
-    MyMenu:Open({
+    spawnSelectPage:RegisterElement('bottomline', {
+        slot = "footer",
+    })
+    
+    CharacterMenu:Open({
         cursorFocus = true,
         menuFocus = true,
         startupPage = spawnSelectPage
@@ -119,7 +126,9 @@ function SpawnMethod(Method, CharSpawnCoords,GotoCoords)
             if GetDistanceBetweenCoords(pcoords,GotoCoords,true) <5.0 then
                 TaskDismountAnimal(PlayerPedId(),0,0,0,0,0)
                 Wait(5000)
-                TaskFleePed(Mount,PlayerPedId,4,-1,-1,-1,0)
+                TaskFleePed(Mount,PlayerPedId(),4,-1,-1,-1,0)
+                Wait(15000)
+                ArriveMethod:Remove()
             end
         end
     end

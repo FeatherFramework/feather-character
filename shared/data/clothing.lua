@@ -40,7 +40,7 @@ CharacterConfig.Clothing.Clothes = {
     ['Male'] = {
         Upper = {
             ClosedCoats = {
-                CategoryName = 'Closed Coats',
+                CategoryName = FeatherCore.Locale.translate(0, "closedCoats"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -981,7 +981,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             Coat = {
-                CategoryName = 'Opened Coat',
+                CategoryName = FeatherCore.Locale.translate(0, "openCoats"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -3226,7 +3226,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             Vest = {
-                CategoryName = 'Vest',
+                CategoryName = FeatherCore.Locale.translate(0, "vests"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -4445,7 +4445,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             Suspender = {
-                CategoryName = 'Suspenders',
+                CategoryName = FeatherCore.Locale.translate(0, "suspenders"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -4760,7 +4760,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             Hat = {
-                CategoryName = 'Hats',
+                CategoryName = FeatherCore.Locale.translate(0, "hats"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -8944,7 +8944,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             Shirt = {
-                CategoryName = 'Shirts',
+                CategoryName = FeatherCore.Locale.translate(0, "shirt"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -10977,7 +10977,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             Satchels = {
-                CategoryName = 'Satchels',
+                CategoryName = FeatherCore.Locale.translate(0, "satchels"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -10996,7 +10996,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             Armor = {
-                CategoryName = 'Armor',
+                CategoryName = FeatherCore.Locale.translate(0, "armor"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -11043,7 +11043,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             Poncho = {
-                CategoryName = 'Poncho',
+                CategoryName = FeatherCore.Locale.translate(0, "poncho"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -11486,7 +11486,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             Cloak = {
-                CategoryName = 'Cloak',
+                CategoryName = FeatherCore.Locale.translate(0, "cloak"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -11567,7 +11567,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             Loadouts = {
-                CategoryName = 'Loadouts',
+                CategoryName = FeatherCore.Locale.translate(0, "loadouts"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -12237,7 +12237,7 @@ CharacterConfig.Clothing.Clothes = {
         Lower = {
 
             Pant = {
-                CategoryName = 'Pants',
+                CategoryName = FeatherCore.Locale.translate(0, "pants"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -14342,7 +14342,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             Buckle = {
-                CategoryName = 'Belt Buckle',
+                CategoryName = FeatherCore.Locale.translate(0, "beltBuckle"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -15391,7 +15391,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             Chap = {
-                CategoryName = 'Chaps',
+                CategoryName = FeatherCore.Locale.translate(0, "chaps"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -15680,7 +15680,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             Spats = {
-                CategoryName = 'Spats',
+                CategoryName = FeatherCore.Locale.translate(0, "spats"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -16303,7 +16303,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             Gunbelt = {
-                CategoryName = 'Gunbelt',
+                CategoryName = FeatherCore.Locale.translate(0, "gunbelt"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -16734,7 +16734,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             Belt = {
-                CategoryName = 'Belt',
+                CategoryName = FeatherCore.Locale.translate(0, "belt"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -17169,7 +17169,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             Holster = {
-                CategoryName = 'Holster',
+                CategoryName = FeatherCore.Locale.translate(0, "holster"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -17588,7 +17588,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             Dress = {
-                CategoryName = 'Dress',
+                CategoryName = FeatherCore.Locale.translate(0, "dress"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -17603,7 +17603,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             Boots = {
-                CategoryName = 'Boots',
+                CategoryName = FeatherCore.Locale.translate(0, "boots"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -20270,7 +20270,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             Spurs = {
-                CategoryName = 'Spurs',
+                CategoryName = FeatherCore.Locale.translate(0, "spurs"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -20826,7 +20826,7 @@ CharacterConfig.Clothing.Clothes = {
         Accessories = {
 
             RingLh = {
-                CategoryName = 'Left Hand Ring',
+                CategoryName = FeatherCore.Locale.translate(0, "leftHandRing"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -20895,7 +20895,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             Glove = {
-                CategoryName = 'Gloves',
+                CategoryName = FeatherCore.Locale.translate(0, "gloves"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -21808,7 +21808,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             EyeWear = {
-                CategoryName = 'Eyewear',
+                CategoryName = FeatherCore.Locale.translate(0, "eyeWear"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -22179,7 +22179,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             NeckTies = {
-                CategoryName = 'Ties',
+                CategoryName = FeatherCore.Locale.translate(0, "neckTies"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -22682,7 +22682,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             RingRh = {
-                CategoryName = 'Right Hand Rings',
+                CategoryName = FeatherCore.Locale.translate(0, "rightHandRing"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -22725,7 +22725,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             Mask = {
-                CategoryName = 'Masks',
+                CategoryName = FeatherCore.Locale.translate(0, "masks"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -23176,7 +23176,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             Accessories = {
-                CategoryName = 'Accessories',
+                CategoryName = FeatherCore.Locale.translate(0, "accessories"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -23459,7 +23459,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             Gauntlets = {
-                CategoryName = 'Gauntlets',
+                CategoryName = FeatherCore.Locale.translate(0, "gauntlets"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -23538,7 +23538,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             GunbeltAccs = {
-                CategoryName = 'Gunbelt Accs',
+                CategoryName = FeatherCore.Locale.translate(0, "gunbeltAccessories"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -23653,7 +23653,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             Bracelet = {
-                CategoryName = 'Bracelet',
+                CategoryName = FeatherCore.Locale.translate(0, "bracelet"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -23684,7 +23684,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             NeckWear = {
-                CategoryName = 'Neckwear/Bandana',
+                CategoryName = FeatherCore.Locale.translate(0, "neckWearBandana"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -25004,7 +25004,7 @@ CharacterConfig.Clothing.Clothes = {
         Accessories = {
 
             RingLh = {
-                CategoryName = 'Left Hand Ring',
+                CategoryName = FeatherCore.Locale.translate(0, "leftHandRing"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -25073,7 +25073,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             Glove = {
-                CategoryName = 'Glove',
+                CategoryName = FeatherCore.Locale.translate(0, "glove"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -25960,7 +25960,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             EyeWear = {
-                CategoryName = 'Eyewear',
+                CategoryName = FeatherCore.Locale.translate(0, "eyeWear"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -26325,7 +26325,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             RingRh = {
-                CategoryName = 'Right Hand Rings',
+                CategoryName = FeatherCore.Locale.translate(0, "rightHandRing"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -26368,7 +26368,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             NeckTies = {
-                CategoryName = 'Ties',
+                CategoryName = FeatherCore.Locale.translate(0, "neckTies"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -26891,7 +26891,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             Mask = {
-                CategoryName = 'Masks',
+                CategoryName = FeatherCore.Locale.translate(0, "masks"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -27318,7 +27318,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             Accessories = {
-                CategoryName = 'Accessories',
+                CategoryName = FeatherCore.Locale.translate(0, "accessories"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -27619,7 +27619,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             GunbeltAccs = {
-                CategoryName = 'GunbeltAccs',
+                CategoryName = FeatherCore.Locale.translate(0, "gunbeltAccessories"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -27708,7 +27708,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             Loadouts = {
-                CategoryName = 'Loadouts',
+                CategoryName = FeatherCore.Locale.translate(0, "loadouts"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -28367,7 +28367,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             NeckWear = {
-                CategoryName = 'Neckwear/Bandanas',
+                CategoryName = FeatherCore.Locale.translate(0, "neckWearBandana"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -29635,7 +29635,7 @@ CharacterConfig.Clothing.Clothes = {
             },
 
             Gauntlets = {
-                CategoryName = 'Gauntlets',
+                CategoryName = FeatherCore.Locale.translate(0, "gauntlets"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -29714,7 +29714,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             HairAccesories = {
-                CategoryName = 'Hair Accesories',
+                CategoryName = FeatherCore.Locale.translate(0, "hairAccessories"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -29848,7 +29848,7 @@ CharacterConfig.Clothing.Clothes = {
         Upper = {
 
             ClosedCoats = {
-                CategoryName = 'Closed Coats',
+                CategoryName = FeatherCore.Locale.translate(0, "closedCoats"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -30811,7 +30811,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             Vest = {
-                CategoryName = 'Vest',
+                CategoryName = FeatherCore.Locale.translate(0, "vests"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -32104,7 +32104,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             Suspender = {
-                CategoryName = 'Suspender',
+                CategoryName = FeatherCore.Locale.translate(0, "suspenders"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -32419,7 +32419,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             Coat = {
-                CategoryName = 'Opened Coat',
+                CategoryName = FeatherCore.Locale.translate(0, "openedCoats"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -34672,7 +34672,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             Satchels = {
-                CategoryName = 'Satchels',
+                CategoryName = FeatherCore.Locale.translate(0, "satchels"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -34691,7 +34691,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             Hat = {
-                CategoryName = 'Hats',
+                CategoryName = FeatherCore.Locale.translate(0, "hats"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -38776,7 +38776,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             Armor = {
-                CategoryName = 'Armor',
+                CategoryName = FeatherCore.Locale.translate(0, "armor"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -38823,7 +38823,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             Poncho = {
-                CategoryName = 'Poncho',
+                CategoryName = FeatherCore.Locale.translate(0, "poncho"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -39254,7 +39254,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             Cloak = {
-                CategoryName = 'Cloak',
+                CategoryName = FeatherCore.Locale.translate(0, "cloak"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -39317,7 +39317,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             Shirt = {
-                CategoryName = 'Shirt',
+                CategoryName = FeatherCore.Locale.translate(0, "shirts"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -41355,7 +41355,7 @@ CharacterConfig.Clothing.Clothes = {
         Lower = {
 
             Belt = {
-                CategoryName = 'Belt',
+                CategoryName = FeatherCore.Locale.translate(0, "belt"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -41792,7 +41792,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             Boots = {
-                CategoryName = 'Boots',
+                CategoryName = FeatherCore.Locale.translate(0, "boots"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -44522,7 +44522,7 @@ CharacterConfig.Clothing.Clothes = {
                     },
                 },
                 Bracelet = {
-                    CategoryName = 'Bracelet',
+                    CategoryName = FeatherCore.Locale.translate(0, "bracelet"),
                     [1] = {
                         [1] = {
                             hashname = "",
@@ -44552,7 +44552,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             Spurs = {
-                CategoryName = 'Spurs',
+                CategoryName = FeatherCore.Locale.translate(0, "spurs"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -45097,7 +45097,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             Pant = {
-                CategoryName = 'Pants',
+                CategoryName = FeatherCore.Locale.translate(0, "pants"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -46988,7 +46988,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             Buckle = {
-                CategoryName = 'Buckle',
+                CategoryName = FeatherCore.Locale.translate(0, "buckle"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -48007,7 +48007,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             Chap = {
-                CategoryName = 'Chaps',
+                CategoryName = FeatherCore.Locale.translate(0, "chaps"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -48290,7 +48290,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             Holster = {
-                CategoryName = 'Holster',
+                CategoryName = FeatherCore.Locale.translate(0, "holster"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -48709,7 +48709,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             Spats = {
-                CategoryName = 'Spats',
+                CategoryName = FeatherCore.Locale.translate(0, "spats"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -49280,7 +49280,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             Gunbelt = {
-                CategoryName = 'Gunbelt',
+                CategoryName = FeatherCore.Locale.translate(0, "gunbelt"),
                 CategoryData = {
                     [1] = {
                         [1] = {
@@ -49709,7 +49709,7 @@ CharacterConfig.Clothing.Clothes = {
                 }
             },
             Skirt = {
-                CategoryName = 'Skirt',
+                CategoryName = FeatherCore.Locale.translate(0, "skirt"),
                 CategoryData = {
                     [1] = {
                         [1] = {
