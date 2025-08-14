@@ -147,5 +147,5 @@ ChestType =
     2123392559, -- Upperbody size
     290229161,  -- Upperbody size
     870174923,  -- Upperbody size
-    465805723  -- Upperbody size -- biggest
+    465805723   -- Upperbody size -- biggest
 }

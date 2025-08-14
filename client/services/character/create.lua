@@ -1,12 +1,12 @@
 local function createNewCharacter()
+
     Albedo = (CharacterConfig.General.DefaultChar[GetGender()][1].HeadTexture[1])
-    local function setSex(sex) -- can likely remove this function in future just dont want to dig into how quite yet
+
+    local function setSex(sex)
         ChangeOverlay(PlayerPedId(),'eyebrows', 1, 1, 0, 0, 0, 1.0, 0, 1, 254, 254, 254, 0, 1.0, Albedo)
         local function loadModel(model)
             RequestModel(model)
-            while not HasModelLoaded(model) do
-                Wait(10)
-            end
+            while not HasModelLoaded(model) do Wait(10) end
         end
         if sex == 'male' then
             loadModel('mp_male')
@@ -20,39 +20,54 @@ local function createNewCharacter()
             DefaultPedSetup(PlayerPedId(), false)
         end
     end
+
     setSex('male')
     Wait(500)
-    local obj = FeatherCore.Object:Create('p_package09', Config.SpawnCoords.gotocoords.x, Config.SpawnCoords.gotocoords.y, Config.SpawnCoords.gotocoords.z-0.5, 0, true, 'standard')
-    local tobj = obj:GetObj()
-    SetFocusEntity(PlayerPedId())
-    SetEntityAlpha(tobj, 0, true)
-    TaskGoToEntity(PlayerPedId(), tobj, 10000, 0.2, 0.8, 1.0, 1)
+
+    local ped  = PlayerPedId()
+    local dest = Config.SpawnCoords.gotocoords
+    local speed, stopRange = 0.5, 0.1
+
+    SetBlockingOfNonTemporaryEvents(ped, true)
+    SetPedCanPlayAmbientAnims(ped, false)
+    SetPedCanPlayAmbientBaseAnims(ped, false)
+    TaskFollowNavMeshToCoord(ped, dest.x, dest.y, dest.z, speed, -1, stopRange, 0, 0)
+
     Wait(3000)
     DoScreenFadeIn(1000)
-    CharacterCamera = StartCam(Config.CameraCoords.creation.x, Config.CameraCoords.creation.y,
+
+    CharacterCamera = StartCam(
+        Config.CameraCoords.creation.x,
+        Config.CameraCoords.creation.y,
         Config.CameraCoords.creation.z,
-        Config.CameraCoords.creation.h, Config.CameraCoords.creation.zoom)
+        Config.CameraCoords.creation.h,
+        Config.CameraCoords.creation.zoom
+    )
+
     while true do
         Wait(5)
-        local pcoords = GetEntityCoords(PlayerPedId())
-        if GetDistanceBetweenCoords(pcoords.x, pcoords.y, pcoords.z, Config.SpawnCoords.gotocoords.x, Config.SpawnCoords.gotocoords.y,
-                Config.SpawnCoords.gotocoords.z, true) < 1.0 then
+        local p = GetEntityCoords(ped)
+        if GetDistanceBetweenCoords(p.x, p.y, p.z, dest.x, dest.y, dest.z, true) < 1.0 then
+            ClearPedTasks(ped)
+            TaskStandStill(ped, -1)
+            TaskLookAtCoord(ped, Config.CameraCoords.creation.x, Config.CameraCoords.creation.y, Config.CameraCoords.creation.z, 1500, 0, 2, false)
+            local faceHeading = (Config.CameraCoords.creation.h + 180.0) % 360.0
+            SetEntityHeading(ped, faceHeading)
+
             TriggerEvent('feather-character:CreateCharacterMenu')
             CreatingCharacter = true
             while CreatingCharacter do
                 Wait(5)
-                DrawLightWithRange(Config.SpawnCoords.gotocoords.x, Config.SpawnCoords.gotocoords.y-0.5,
-                    Config.SpawnCoords.gotocoords.z+1.5, 250, 250, 250, 7.0, 50.0)
+                DrawLightWithRange(dest.x, dest.y - 0.5, dest.z + 1.5, 250, 250, 250, 7.0, 50.0)
             end
             break
         end
     end
 end
 
---------- Net Events ------
 RegisterNetEvent('feather-character:CreateNewCharacter', function()
     Spawned = false
-    MyMenu:Close()
+    CharacterMenu:Close()
     DisplayRadar(false)
     DoScreenFadeOut(500)
 
