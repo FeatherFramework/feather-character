@@ -6,7 +6,7 @@ lua54 'yes'
 description 'The Character service for the Feather Framework'
 author 'Feather @Jannings'
 name 'feather-character'
-version '0.0.4'
+version '0.1.0'
 
 github_version_check 'true'
 github_version_type 'release'
@@ -38,11 +38,23 @@ client_scripts {
     'client/helpers/*.lua',
     'client/services/*.lua',
     'client/main.lua',
-    'client/services/character/*.lua'
+    'client/services/character/*.lua',
+    'client/services/creationmenu/*.lua',
+    'client/services/creationmenu/faceadjustments/*.lua',
+    'client/services/creationmenu/hair/*.lua',
+    'client/services/creationmenu/clothing/*.lua',
+    'client/services/creationmenu/makeup/*.lua',
 }
 
 dependencies {
     'oxmysql',
     'feather-menu',
     'feather-core'
+}
+
+files {
+  'html/img/money.png',
+  'html/img/gold.png',
+  'html/img/shield.png',
+  'html/img/token.png'
 }

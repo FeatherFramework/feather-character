@@ -2,10 +2,10 @@ Config = {
     DevMode = true,
     DyeClothes = true,
     Heights = {
-    0.8, 0.85, 0.9, 0.95, 1.0, 1.05, 1.1, 1.15, 1.2
+        0.8, 0.85, 0.9, 0.95, 1.0, 1.05, 1.1, 1.15, 1.2
     },
     defaults = {
-        lang = 'en_us',
+        lang = 'ro',
         dob = {
             start = '1826-01-01',
             min = '1806-01-01',
@@ -16,7 +16,7 @@ Config = {
         tokens = 0,
         xp = 0
     },
-
+    Notify = "feather-menu", ----or use feather-core
     MaxAllowedChars = 4,
 
     SpawnProps = {
@@ -94,38 +94,37 @@ Config = {
         towns = {
             {
                 --set to train coords still
-                name = 'Saint Denis',                                                           --Name of Area
-                arrival = 'Wagon',                                                              --Method of arriving (Train,Wagon,Horse,Boat)
+                name = 'Saint Denis',                                                            --Name of Area
+                arrival = 'Wagon',                                                               --Method of arriving (Train,Wagon,Horse,Boat)
                 --tip = " " --Info to give to the player, don't include if not wanting
                 cameracoords = { x = 2849.20, y = -1619.75, z = 97.54, h = 33.30, zoom = 80.0 }, --Coords character will spawn at
-                startcoords = { x = 2774.99, y = -1351.91, z = 46.45,h =143.0 },                              --Coords character will spawn at
-                gotocoords = { x = 2714.99, y = -1424.91, z = 46.45,h = 143.0 },
+                startcoords = { x = 2774.99, y = -1351.91, z = 46.45, h = 143.0 },               --Coords character will spawn at
+                gotocoords = { x = 2714.99, y = -1424.91, z = 46.45, h = 143.0 },
             },
 
             {
-                --set wagon coords still
-                name = 'Rhodes',                                                                --Name of Area
-                arrival = 'Wagon',                                                              --Method of arriving (Train,Wagon,Horse,Boat)
-                --tip = " " --Info to give to the player, don't include if not wanting
-                cameracoords = { x = 2813.99, y = -1437.91, z = 43.54, h = 90.0, zoom = 60.0 }, --Coords character will spawn at
-                startcoords = { x = 2774.99, y = -1351.91, z = 46.45,h =143.0 },                              --Coords character will spawn at
-                gotocoords = { x = 2714.99, y = -1424.91, z = 46.45,h = 143.0 },
+                name = 'Rhodes',
+                arrival = 'Wagon',
+                --tip = " "
+                cameracoords = { x = 1302.3477783203, y = -1285.8200683594, z = 75.749298095703, h = 242.23068237305, zoom = 60.0 },
+                startcoords = { x = 1335.205078125, y = -1210.04296875, z = 80.691871643066, h = 148.88484191895 },
+                gotocoords = { x = 1300.1214599609, y = -1285.8166503906, z = 75.653411865234, h = 52.365936279297 },
             },
             {
-                name = 'Valentine',                                                            --Name of Area
-                arrival = 'Horse',                                                             --Method of arriving (Train,Wagon,Horse,Boat)
-                --tip = " " --Info to give to the player, don't include if not wanting
-                cameracoords = { x = -165.59, y = 632.28, z = 114.03, h = 90.0, zoom = 60.0 }, --Coords character will spawn at
-                startcoords = { x = 2774.99, y = -1351.91, z = 46.45,h =143.0 },                              --Coords character will spawn at
-                gotocoords = { x = 2714.99, y = -1424.91, z = 46.45,h = 143.0 },
+                name = 'Valentine',
+                arrival = 'Horse',
+                --tip = " "
+                cameracoords = { x = -248.94729614258, y = 798.03393554688, z = 166.78594970703, h = 94.020202636719, zoom = 60.0 },
+                startcoords = { x = -244.72610473633, y = 839.16955566406, z = 122.93338012695, h = 131.92630004883 },
+                gotocoords = { x = -273.9114074707, y = 794.712890625, z = 118.66342163086, h = 158.85372924805 },
             },
             {
-                name = 'Blackwater',                                                            --Name of Area
-                arrival = 'Boat',                                                               --Method of arriving (Train,Wagon,Horse,Boat)
-                --tip = " " --Info to give to the player, don't include if not wanting
-                cameracoords = { x = -720.31, y = -1278.59, z = 42.23, h = 90.0, zoom = 60.0 }, --Coords character will spawn at
-                startcoords = { x = 2774.99, y = -1351.91, z = 46.45,h =143.0 },                              --Coords character will spawn at
-                gotocoords = { x = 2714.99, y = -1424.91, z = 46.45,h = 143.0 },
+                name = 'Blackwater',
+                arrival = 'Boat',
+                --tip = " "
+                cameracoords = { x = -720.31, y = -1278.59, z = 42.23, h = 90.0, zoom = 60.0 },
+                startcoords = { x = -644.51879882812, y = -1275.9403076172, z = 40.128196716309, h = 267.40234375 },
+                gotocoords = { x = -686.24639892578, y = -1244.5211181641, z = 43.102550506592, h = 83.719284057617 },
 
             },
         }
