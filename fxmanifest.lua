@@ -6,7 +6,7 @@ lua54 'yes'
 description 'The Character service for the Feather Framework'
 author 'Feather @Jannings'
 name 'feather-character'
-version '0.1.0'
+version '0.2.0'
 
 github_version_check 'true'
 github_version_type 'release'
