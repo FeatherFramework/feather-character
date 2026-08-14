@@ -1,3 +1,6 @@
+-- Base head/body/leg model hash pools per gender+heritage, used to build a
+-- brand-new character's starting appearance (see client/services/
+-- character/create.lua and client/helpers/character.lua's DefaultPedSetup).
 CharacterConfig.General.DefaultChar = {
     ["Male"] = {
         {

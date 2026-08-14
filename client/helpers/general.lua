@@ -1,5 +1,10 @@
 local gender = GetGender()
 
+-- Default facial/body attribute state the creation menu starts from --
+-- every slider/option in creationmenu/faceadjustments starts here and
+-- mutates this same table in place as the player adjusts sliders. `hash`
+-- identifies which attribute native to call; `value` is its current
+-- slider position (0.0 is "default/unchanged" for most sliders).
 SelectedAttributeElements = {
     ['Albedo'] = { hash = tonumber(CharacterConfig.General.DefaultChar[gender][1].HeadTexture[1]) },
     ['Body'] = { hash = tonumber("0x" .. CharacterConfig.General.DefaultChar[gender][1].Body[1]) },

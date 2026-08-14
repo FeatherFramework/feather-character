@@ -57,60 +57,66 @@ end)
 -- Commands
 --========================================================--
 
-RegisterCommand('rc', function(source, args, raw)
-    if not CharModel or not Characterid then
-        print("[feather-character] No character loaded to refresh.")
-        return
-    end
-
-    LoadPlayer(CharModel)
-
-    -- Clothing
-    for category, hash in pairs(SentClothing[Characterid] or {}) do
-        AddComponent(PlayerPedId(), hash, category)
-    end
-
-    -- Attributes
-    for category, attribute in pairs(SentAttributes[Characterid] or {}) do
-        if category == 'Albedo' then
-            AlbedoHash = attribute.hash
-        end
-
-        if attribute.value then
-            SetCharExpression(PlayerPedId(), attribute.hash, attribute.value)
-        else
-            AddComponent(PlayerPedId(), attribute.hash, category)
-        end
-    end
-
-    -- Overlays
-    for category, overlays in pairs(SentOverlays[Characterid] or {}) do
-        ChangeOverlay(
-            PlayerPedId(),
-            category,
-            1,
-            overlays.textureId,
-            0, 0, 0,
-            1.0,
-            0,
-            1,
-            overlays.color1,
-            overlays.color2,
-            overlays.color3,
-            overlays.variant,
-            overlays.opacity,
-            SelectedAttributeElements['Albedo'] and SelectedAttributeElements['Albedo'].hash or 0
-        )
-    end
-end, false)
-
 --========================================================--
 -- Dev Mode Commands
 --========================================================--
+-- (CHAR audit: leftover dev/test commands) Gated on Config.DevMode (default
+-- false) AND registered as ACE-restricted ("true" below), so a server that
+-- flips DevMode back on for testing doesn't hand these to every player --
+-- only principals granted `command.<name>` can actually run them. `rc` was
+-- previously always registered regardless of DevMode; moved in here since
+-- it's a testing aid (re-applies cached appearance), not player-facing.
 if Config.DevMode then
+    RegisterCommand('rc', function(source, args, raw)
+        if not CharModel or not Characterid then
+            print("[feather-character] No character loaded to refresh.")
+            return
+        end
+
+        LoadPlayer(CharModel)
+
+        -- Clothing
+        for category, hash in pairs(SentClothing[Characterid] or {}) do
+            AddComponent(PlayerPedId(), hash, category)
+        end
+
+        -- Attributes
+        for category, attribute in pairs(SentAttributes[Characterid] or {}) do
+            if category == 'Albedo' then
+                AlbedoHash = attribute.hash
+            end
+
+            if attribute.value then
+                SetCharExpression(PlayerPedId(), attribute.hash, attribute.value)
+            else
+                AddComponent(PlayerPedId(), attribute.hash, category)
+            end
+        end
+
+        -- Overlays
+        for category, overlays in pairs(SentOverlays[Characterid] or {}) do
+            ChangeOverlay(
+                PlayerPedId(),
+                category,
+                1,
+                overlays.textureId,
+                0, 0, 0,
+                1.0,
+                0,
+                1,
+                overlays.color1,
+                overlays.color2,
+                overlays.color3,
+                overlays.variant,
+                overlays.opacity,
+                SelectedAttributeElements['Albedo'] and SelectedAttributeElements['Albedo'].hash or 0
+            )
+        end
+    end, true)
+
     RegisterCommand('new', function(source, args, raw)
         TriggerEvent('feather-character:CreateNewCharacter')
-    end, false)
+    end, true)
 
     RegisterCommand('teeth', function(source, args, raw)
         local dict = "FACE_HUMAN@GEN_MALE@BASE"
@@ -118,21 +124,21 @@ if Config.DevMode then
         while not HasAnimDictLoaded(dict) do Wait(5) end
         TaskPlayAnim(PlayerPedId(), dict, "Face_Dentistry_Loop",
             1090519040, -4, -1, 17, 0, 0, 0, 0)
-    end, false)
+    end, true)
 
     RegisterCommand('check', function(source, args, raw)
         TriggerServerEvent('feather-character:CheckForUsers')
-    end, false)
+    end, true)
 
     RegisterCommand('spawn', function(source, args, raw)
         TriggerEvent('feather-character:SpawnSelect', 1)
-    end, false)
+    end, true)
 
     RegisterCommand('endcam', function(source, args, raw)
         EndCam()
-    end, false)
+    end, true)
 
     RegisterCommand('endscript', function(source, args, raw)
         CleanupScript()
-    end, false)
+    end, true)
 end

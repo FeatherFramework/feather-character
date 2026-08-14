@@ -1,3 +1,6 @@
+-- Scripted camera helper used throughout character select/creation/spawn
+-- (there's exactly one active `camera` at a time -- switching screens calls
+-- StartCam again rather than juggling multiple cams).
 local camera
 
 function StartCam(x, y, z, heading, zoom)

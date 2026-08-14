@@ -1,3 +1,6 @@
+-- Catalog of selectable hair/beard styles per gender, with the clothing-item
+-- hash + display color used to apply and label each option in the hair
+-- creation-menu page.
 HairandBeards = {
     ['Female'] = {
         ['hair'] = {

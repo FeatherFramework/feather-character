@@ -1,3 +1,14 @@
+-- Builds the full character-creation menu tree: main page (name/dob/desc/
+-- gender/model) -> Customization -> Appearance/Clothing/Makeup/Hair
+-- sub-pages, each registered as a nested CharacterMenu page the same way
+-- (RegisterElement per option, live-applying via the client/helpers/
+-- character.lua AddComponent/SetCharExpression helpers as the player
+-- adjusts sliders/pickers). `SelectedAttributeElements` (client/helpers/
+-- general.lua) and `selectedClothingElements`/`SelectedOverlayElements`
+-- (this file) accumulate the in-progress character's state as the player
+-- moves through these pages; the final "Create" button (near the bottom of
+-- this file) packages all of it into the SaveCharacterData RPC + the
+-- UpdateAttributeDB event.
 local firstName, lastName, gender, charDesc, textureId, tx_color_type = '', '', GetGender(), "", -1, 0
 selectedClothingElements = {}
 ActiveTexture, ActiveColor1, ActiveColor2, ActiveColor3, ActiveOpacity, ActiveVariant, CamZ, SelectedOverlayElements = {}, {}, {}, {}, {}, {}, Config.CameraCoords.creation.z + 0.5, {}
@@ -7,6 +18,8 @@ Fov = 20.0
 Model = 'mp_male'
 local dob, imgLink
 
+-- Server-pushed once the player has walked to the creation camera spot
+-- (client/services/character/create.lua).
 RegisterNetEvent('feather-character:CreateCharacterMenu', function()
     PageOpened = true
     local mainCreationPage = CharacterMenu:RegisterPage('feather-character:MainCreationPage')
@@ -273,6 +286,12 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
         style = {}
     })
 
+    -- Commits the new character: validates required fields, then saves the
+    -- base record via the SaveCharacterData RPC (server-derives the owning
+    -- user from `source`, see server/services/character.lua) and the
+    -- appearance separately via UpdateAttributeDB, before moving on to
+    -- SpawnSelect (client/services/character/spawner.lua) with the new
+    -- character's id.
     mainCreationPage:RegisterElement('button', {
         label = FeatherCore.Locale.translate(0, "saveChar"),
         slot = 'footer',

@@ -1,5 +1,10 @@
 local name, money, birthday, desc, ID, img = {}, {}, {}, {}, {}, {}
 
+-- Builds the actual character-select UI page (name/money/gold/xp/tokens
+-- display, portrait, and next/prev paging) for whichever character is
+-- currently "on camera" (cameraSpot, an index into the arrays built here
+-- from `info`). Re-invoked every time the player pages to a different
+-- character (see the pagearrows element near the bottom).
 RegisterNetEvent('feather-character:CharacterSelectMenu',
     function(info, cameraSpot, charAmount, clothing, attributes, overlays)
         for k, v in ipairs(info) do
@@ -89,6 +94,12 @@ RegisterNetEvent('feather-character:CharacterSelectMenu',
             slot = "footer",
             style = {}
         })
+        -- Confirms the currently-displayed character. The id sent here is
+        -- one this client already received in the server-verified `info`
+        -- list above, but the server re-validates ownership independently
+        -- on InitiateCharacter regardless (see CHAR-01 in feather-character's
+        -- audit notes) -- this button can't be trusted as the security
+        -- boundary since a client could always call the event directly.
         characterSelectPage:RegisterElement('button', {
             label = FeatherCore.Locale.translate(0, "select"),
             slot = "footer",

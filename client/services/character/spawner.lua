@@ -1,3 +1,8 @@
+-- Final step before spawning: lets the player pick which town/city to
+-- arrive in (Config.SpawnCoords.towns) and how (SpawnMethod below --
+-- train/wagon/horse, per town), then actually calls InitiateCharacter with
+-- `CharInfo` (either a freshly-created character's id from creationmenu.lua,
+-- or the id chosen in the character-select screen).
 RegisterNetEvent("feather-character:SpawnSelect", function(CharInfo)
     local spawnSelectPage = CharacterMenu:RegisterPage('spawnselect:page')
 
@@ -61,6 +66,10 @@ RegisterNetEvent("feather-character:SpawnSelect", function(CharInfo)
     })
 end)
 
+-- Plays out the chosen town's arrival cinematic: 'Train' spawns/boards a
+-- train and rides it to GotoCoords, 'Wagon' drives a spawned coach there,
+-- 'Horse' mounts a spawned horse and rides there. Each branch cleans up its
+-- spawned vehicle/mount once the player arrives.
 function SpawnMethod(Method, CharSpawnCoords,GotoCoords)
     if Method == 'Train' then
         local cars = Citizen.InvokeNative(0x635423d55ca84fc8, 1495948496)             -- GetNumCarsFromTrainConfig

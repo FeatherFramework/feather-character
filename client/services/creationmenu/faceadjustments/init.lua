@@ -1,3 +1,10 @@
+-- Router to the individual facial-feature sub-pages (cheeks.lua, chin.lua,
+-- ears.lua, eyes_brows.lua, jaw.lua, mouth.lua, nose.lua in this folder) --
+-- each is a flat list of slider elements that write into
+-- SelectedAttributeElements (see client/helpers/general.lua), following the
+-- same pattern documented at the top of creationmenu.lua. The
+-- hair/makeup/clothing sibling folders follow this same
+-- router-plus-flat-sliders structure.
 function OpenFaceAdjustmentsMenu(mainAppearanceMenu, gender)
     local faceAdjMenu = CharacterMenu:RegisterPage('feather-character:FaceAdjMenu')
 

@@ -1,3 +1,9 @@
+-- Low-level ped appearance helpers shared by both character creation
+-- (creationmenu/*) and the "rc" refresh command. AddComponent/
+-- RemoveTagFromMetaPed handle a RedM quirk where certain clothing
+-- categories conflict (e.g. open vs. closed coat, pants vs. skirt) and must
+-- be explicitly cleared before applying the new one, or the old piece
+-- lingers visually.
 function GetGender()
     if not IsPedMale(PlayerPedId()) then
         return "Female"

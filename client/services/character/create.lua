@@ -1,3 +1,7 @@
+-- Plays the "new character" intro: sets a default appearance, walks the ped
+-- from the spawn point to the creation camera spot (TaskFollowNavMeshToCoord),
+-- then opens the creation menu once they arrive. CreatingCharacter gates a
+-- small lighting-effect loop for as long as the creation menu stays open.
 local function createNewCharacter()
 
     Albedo = (CharacterConfig.General.DefaultChar[GetGender()][1].HeadTexture[1])
@@ -65,6 +69,9 @@ local function createNewCharacter()
     end
 end
 
+-- Entry point into character creation, fired when a user has no existing
+-- characters (feather-character:CheckForUsers) or clicks "create new" from
+-- the character-select screen.
 RegisterNetEvent('feather-character:CreateNewCharacter', function()
     Spawned = false
     CharacterMenu:Close()

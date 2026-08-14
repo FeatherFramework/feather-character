@@ -1,6 +1,10 @@
 FeatherCore = exports['feather-core'].initiate()
 FeatherMenu = exports['feather-menu'].initiate()
 
+-- The single shared menu instance every screen in this resource routes
+-- pages through (character select, creation, spawn-city select). `canclose
+-- = false` -- there's no legitimate reason to let a player ESC out of
+-- character selection/creation before a character is actually spawned.
 CharacterMenu = FeatherMenu:RegisterMenu('feather:character:menu', {
     top = '1%',
     left = '1%',

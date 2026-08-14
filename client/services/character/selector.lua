@@ -1,3 +1,10 @@
+-- Character-select screen: for every character the server says this user
+-- owns, spawns a display ped dressed in that character's saved appearance
+-- at a fixed camera spot, then lets the player page through them
+-- (pagearrows below) and pick one. SentClothing/SentAttributes/SentOverlays
+-- are keyed by character id and get filled in as each
+-- feather-character:SendCharactersData response arrives (fired once per
+-- character in SelectCharacterScreen below).
 local obj1, obj2, obj3, obj4
 clothing, attributes, makeup, spawnedPeds = {}, {}, {}, {}
 SentClothing, SentAttributes, SentOverlays = {}, {}, {}
@@ -22,7 +29,18 @@ function CleanupCharacterSelect()
 end
 
 --------- Net Events ------
+-- `data` is the server-verified list of characters this user owns (see
+-- feather-character:CheckForUsers -> FeatherCore.Character.
+-- GetAvailableCharactersFromDB). Spawns the selection-room props, requests
+-- each character's saved appearance (SendCharactersData above), then poses
+-- a display ped per character (capped to Config.MaxAllowedChars) and opens
+-- the paged character-select menu.
 RegisterNetEvent('feather-character:SelectCharacterScreen', function(data)
+    -- (CHAR-05) Instance 123 is now allow-listed server-side
+    -- (feather-core Config.PublicInstanceIds) specifically for this shared
+    -- character-select room -- requesting any other id here would no
+    -- longer be honored, closing the "any client can join any bucket by
+    -- number" hole this hardcoded id used to ride on (CORE-03).
     FeatherCore.RPC.CallAsync("CreateInstance", { id = 123 })
     -- Spawning Props
     obj1 = FeatherCore.Object:Create(Config.SpawnProps.obj1.name, Config.SpawnProps.obj1.x, Config.SpawnProps.obj1.y, Config.SpawnProps.obj1.z, Config.SpawnProps.obj1.h, false, 'standard')

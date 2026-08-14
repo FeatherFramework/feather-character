@@ -1,5 +1,10 @@
 Config = {
-    DevMode = true,
+    -- Gates the dev/test commands in client/services/character/main.lua
+    -- (new/teeth/check/spawn/endcam/endscript/rc). Those commands are also
+    -- now registered as ACE-restricted (command.<name>), so flipping this
+    -- back on for testing doesn't hand them to every player -- only
+    -- principals explicitly granted the ACE can run them.
+    DevMode = false,
     DyeClothes = true,
     Heights = {
         0.8, 0.85, 0.9, 0.95, 1.0, 1.05, 1.1, 1.15, 1.2

@@ -1,3 +1,6 @@
+-- Catalog of selectable overlay assets (eyebrows, makeup, etc.) -- id is the
+-- overlay's selector hash, albedo/normal/ma are its texture map hashes.
+-- Used by the makeup/hair creation-menu pages to populate their pickers.
 OverlayInfo = {
     ["eyebrows"] = {
         { id = 0x07844317, albedo = 0xF81B2E66, normal = 0x7BC4288B, ma = 0x202674A1 }, --   {albedo="mp_u_faov_eyebrow_m_012_ab",normal="mp_u_faov_eyebrow_m_012_nm",ma="mp_u_faov_eyebrow_m_012_ma",},

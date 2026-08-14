@@ -1,3 +1,5 @@
+-- Selectable eye-color hash options per gender, used by the appearance
+-- creation-menu page's eye color picker.
 FeaturesEyes = {
     ['Male'] = {
         612262189,

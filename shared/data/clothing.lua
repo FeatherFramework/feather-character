@@ -1,3 +1,8 @@
+-- Clothing component-slot hashes (used by RemoveTagFromMetaPed in
+-- client/helpers/character.lua to clear a conflicting slot before applying
+-- a new piece), followed below by the full catalog of selectable clothing
+-- items per category/gender used to populate the clothing creation-menu
+-- pages.
 CharacterConfig.Clothing.ClothingCategories = {
     Gunbelt        = 0x9B2C8B89,
     Mask           = 0x7505EF42,
