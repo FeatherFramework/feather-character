@@ -83,6 +83,7 @@ Config = {
         creation = {
             x = 2553.15283203125, y = -1161.277587890625, z = 53.6835250854492
         },
+
         gotocoords = { x = 2551.22, y = -1167.70, z = 53.68 },
 
         charspots = {
@@ -93,7 +94,6 @@ Config = {
             [5] = { x = 122.08714294433594, y = -4.90044069290161, z = 103.03951263427735 },
             [6] = { x = 122.08714294433594, y = -6.90044069290161, z = 103.03951263427735 },
             [7] = { x = 120.08714294433594, y = -2.90044069290161, z = 103.03951263427735 },
-
         },
 
         towns = {
@@ -101,10 +101,10 @@ Config = {
                 --set to train coords still
                 name = 'Saint Denis',                                                            --Name of Area
                 arrival = 'Wagon',                                                               --Method of arriving (Train,Wagon,Horse,Boat)
-                --tip = " " --Info to give to the player, don't include if not wanting
-                cameracoords = { x = 2849.20, y = -1619.75, z = 97.54, h = 33.30, zoom = 80.0 }, --Coords character will spawn at
-                startcoords = { x = 2774.99, y = -1351.91, z = 46.45, h = 143.0 },               --Coords character will spawn at
-                gotocoords = { x = 2714.99, y = -1424.91, z = 46.45, h = 143.0 },
+                --tip = " " --Info to give to the player, optional
+                cameracoords = { x = 2849.20, y = -1619.75, z = 97.54, h = 33.30, zoom = 80.0 }, -- Camera Coords for the cinematic scene
+                startcoords = { x = 2774.99, y = -1351.91, z = 46.45, h = 143.0 },               -- Cinimatic Scene Start Coords
+                gotocoords = { x = 2714.99, y = -1424.91, z = 46.45, h = 143.0 },                -- Cinimatic Scene Destination Coords
             },
 
             {
