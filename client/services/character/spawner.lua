@@ -1,69 +1,28 @@
--- Final step before spawning: lets the player pick which town/city to
--- arrive in (Config.SpawnCoords.towns) and how (SpawnMethod below --
--- train/wagon/horse, per town), then actually calls InitiateCharacter with
--- `CharInfo` (either a freshly-created character's id from creationmenu.lua,
--- or the id chosen in the character-select screen).
-RegisterNetEvent("feather-character:SpawnSelect", function(CharInfo)
-    local spawnSelectPage = CharacterMenu:RegisterPage('spawnselect:page')
+-- Final step before spawning a freshly-created character: plays the
+-- arrival cinematic for the town chosen back in creationmenu.lua (no second
+-- choice screen here anymore -- `townIndex` is already known and already
+-- persisted to the DB by SaveCharacterData, so this just has to agree with
+-- it) and calls InitiateCharacter with `CharInfo` (the id SaveCharacterData
+-- just returned). The character-select screen (selector.lua) spawns
+-- directly via InitiateCharacter and never goes through this event.
+RegisterNetEvent("feather-character:SpawnSelect", function(CharInfo, townIndex)
+    CharacterMenu:Close()
 
-    spawnSelectPage:RegisterElement('header', {
-        value = FeatherCore.Locale.translate(0, "spawnSelect"),
-        slot = "header",
-        style = {}
-    })
-    spawnSelectPage:RegisterElement('subheader', {
-        value = FeatherCore.Locale.translate(0, "chooseCity"),
-        style = {}
-    })
-    spawnSelectPage:RegisterElement('line', {
-        slot = "content",
-    })
-    local cityTextDisplay2 = spawnSelectPage:RegisterElement('textdisplay', {
-        value = " ",
-        style = {}
-    })
-    for k, v in pairs(Config.SpawnCoords.towns) do
-        spawnSelectPage:RegisterElement('button', {
-            label = v.name,
-            style = {}
-        }, function()
-            cityTextDisplay2:update({
-                value = FeatherCore.Locale.translate(0, "arriveBy") .. v.arrival
-            })
-            CharSpawnCoords = vector4(v.startcoords.x, v.startcoords.y, v.startcoords.z,v.startcoords.h)
-            GotoCoords = vector4(v.gotocoords.x,v.gotocoords.y,v.gotocoords.z,v.gotocoords.h)
-            ArrivalMethod = v.arrival
-            SetFocusPosAndVel(v.cameracoords.x, v.cameracoords.y, v.cameracoords.z, 0, 0, 0)
-            DoScreenFadeOut(250)
-            Wait(750)
-            DoScreenFadeIn(250)
-            StartCam(v.cameracoords.x, v.cameracoords.y, v.cameracoords.z, v.cameracoords.h, v.cameracoords.zoom)
-        end)
-    end
-    spawnSelectPage:RegisterElement('line', {
-        slot = "footer",
-    })
-    spawnSelectPage:RegisterElement('button', {
-        label = FeatherCore.Locale.translate(0, "spawn"),
-        slot = "footer",
-        style = {}
-    }, function()
-        DoScreenFadeOut(250)
-        TriggerServerEvent('feather-character:InitiateCharacter', CharInfo)
-        SetEntityCoords(PlayerPedId(), CharSpawnCoords.x+5.0, CharSpawnCoords.y, CharSpawnCoords.z, true, false, false, false)
-        CleanupScript()
-        SpawnMethod(ArrivalMethod, CharSpawnCoords,GotoCoords)
-    end)
+    local town = Config.SpawnCoords.towns[townIndex] or Config.SpawnCoords.towns[1]
 
-    spawnSelectPage:RegisterElement('bottomline', {
-        slot = "footer",
-    })
-    
-    CharacterMenu:Open({
-        cursorFocus = true,
-        menuFocus = true,
-        startupPage = spawnSelectPage
-    })
+    CharSpawnCoords = vector4(town.startcoords.x, town.startcoords.y, town.startcoords.z, town.startcoords.h)
+    GotoCoords = vector4(town.gotocoords.x, town.gotocoords.y, town.gotocoords.z, town.gotocoords.h)
+    ArrivalMethod = town.arrival
+
+    SetFocusPosAndVel(town.cameracoords.x, town.cameracoords.y, town.cameracoords.z, 0, 0, 0)
+    DoScreenFadeOut(250)
+    Wait(750)
+    StartCam(town.cameracoords.x, town.cameracoords.y, town.cameracoords.z, town.cameracoords.h, town.cameracoords.zoom)
+
+    TriggerServerEvent('feather-character:InitiateCharacter', CharInfo)
+    SetEntityCoords(PlayerPedId(), CharSpawnCoords.x + 5.0, CharSpawnCoords.y, CharSpawnCoords.z, true, false, false, false)
+    CleanupScript()
+    SpawnMethod(ArrivalMethod, CharSpawnCoords, GotoCoords)
 end)
 
 -- Plays out the chosen town's arrival cinematic: 'Train' spawns/boards a
