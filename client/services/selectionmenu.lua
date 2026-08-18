@@ -1,5 +1,21 @@
 local name, money, birthday, desc, ID, img = {}, {}, {}, {}, {}, {}
 
+-- (CHAR-10) `img` is a client-controlled character field (see CHAR-09 --
+-- unvalidated at creation) concatenated directly into an <img src="..."> in
+-- the html element below. A value containing `"` closes the attribute
+-- early, letting anything after it become real markup in the NUI page.
+-- Escapes it before it goes anywhere near a raw HTML string.
+local function EscapeHtmlAttribute(value)
+    if type(value) ~= 'string' then return '' end
+    return (value:gsub('[&<>"\']', {
+        ['&'] = '&amp;',
+        ['<'] = '&lt;',
+        ['>'] = '&gt;',
+        ['"'] = '&quot;',
+        ["'"] = '&#39;',
+    }))
+end
+
 -- Builds the actual character-select UI page (name/money/gold/xp/tokens
 -- display, portrait, and next/prev paging) for whichever character is
 -- currently "on camera" (cameraSpot, an index into the arrays built here
@@ -85,7 +101,7 @@ RegisterNetEvent('feather-character:CharacterSelectMenu',
                 value = {
                     [[
                 <img width="200px" height="100px" style="display: block; margin:10px auto;" src="]] ..
-                    img[cameraSpot] .. [[ " />
+                    EscapeHtmlAttribute(img[cameraSpot]) .. [[ " />
             ]]
                 }
             })
