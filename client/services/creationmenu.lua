@@ -41,10 +41,20 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
         start = 1,
         options = { maleLabel, femaleLabel },
     }, function(data)
+        -- (CHAR-11) `gender` was captured once from GetGender() at file
+        -- load (module scope, line 12) and never updated -- picking a
+        -- different gender here correctly changed `Model`, but every
+        -- CharacterConfig.General.DefaultChar[gender] lookup in the
+        -- appearance/heritage pages below kept indexing with whatever
+        -- gender the player happened to already be at menu load, handing a
+        -- player who picked Female the Male heritage/head/body/leg pools
+        -- (or vice versa).
         if data.value == maleLabel then
             Model = 'mp_male'
+            gender = 'Male'
         else
             Model = 'mp_female'
+            gender = 'Female'
         end
         LoadPlayer(Model)
     end)

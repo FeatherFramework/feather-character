@@ -108,7 +108,16 @@ RegisterNetEvent('feather-character:CharacterSelectMenu',
             if cameraSpot ~= nil then
                 Spawned = false
                 CleanupScript()
-                LoadPlayer(CharModel)
+                -- (CHAR-12) Was `LoadPlayer(CharModel)` -- `CharModel` is a
+                -- global overwritten on every iteration of the spawn loop in
+                -- character/selector.lua (SelectCharacterScreen), so by the
+                -- time this button handler runs it always holds whichever
+                -- character was *last* iterated there, not the one actually
+                -- on camera/selected. Selecting character #1 could spawn
+                -- character #3's model. `info[cameraSpot].model` is the
+                -- server-verified model for the character actually being
+                -- selected right now.
+                LoadPlayer(info[cameraSpot].model)
                 TriggerServerEvent('feather-character:InitiateCharacter', ID[cameraSpot])
                 Characterid = ID[cameraSpot]
                 for category, hash in pairs(clothing[cameraSpot]) do
@@ -161,12 +170,16 @@ RegisterNetEvent('feather-character:CharacterSelectMenu',
                     Config.CameraCoords.charcamera[cameraSpot].zoom)
                 TriggerEvent('feather-character:CharacterSelectMenu', info, cameraSpot, charAmount, clothing, attributes,overlays)
             else
-                if cameraSpot < charAmount then
-                    cameraSpot = cameraSpot - 1
-                end
-                if cameraSpot >= charAmount then
-                    cameraSpot = 1
-                end
+                -- (CHAR-14) Was three separate conditionals
+                -- (`if cameraSpot < charAmount then -1 end`,
+                -- `if cameraSpot >= charAmount then =1 end`, ...) -- paging
+                -- backward from the *last* character hit the second branch
+                -- before ever decrementing (cameraSpot == charAmount makes
+                -- the first check false), jumping straight to character 1
+                -- and skipping character (charAmount - 1) entirely. Mirrors
+                -- the forward branch above: decrement unconditionally, then
+                -- wrap.
+                cameraSpot = cameraSpot - 1
                 if cameraSpot < 1 then
                     cameraSpot = charAmount
                 end
