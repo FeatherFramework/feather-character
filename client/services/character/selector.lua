@@ -1,18 +1,13 @@
 -- Character-select screen: for every character the server says this user
 -- owns, spawns a display ped dressed in that character's saved appearance
 -- at a fixed camera spot, then lets the player page through them
--- (pagearrows below) and pick one. SentClothing/SentAttributes/SentOverlays
--- are keyed by character id and get filled in as each
--- feather-character:SendCharactersData response arrives (fired once per
--- character in SelectCharacterScreen below).
+-- (pagearrows below) and pick one. FetchedClothing/FetchedAttributes/
+-- FetchedOverlays are keyed by character id and filled in by the
+-- GetCharactersData RPC call in SelectCharacterScreen below (CHAR-13 --
+-- a real per-call ack, not a fixed Wait).
 local obj1, obj2, obj3, obj4
 clothing, attributes, makeup, spawnedPeds = {}, {}, {}, {}
-SentClothing, SentAttributes, SentOverlays = {}, {}, {}
-RegisterNetEvent('feather-character:SendCharactersData', function(id, recClothing, recAttributes, recMakeup)
-    SentClothing[id] = json.decode(recClothing)
-    SentAttributes[id] = json.decode(recAttributes)
-    SentOverlays[id] = json.decode(recMakeup)
-end)
+FetchedClothing, FetchedAttributes, FetchedOverlays = {}, {}, {}
 
 function CleanupCharacterSelect()
     if obj1 then
@@ -53,8 +48,21 @@ RegisterNetEvent('feather-character:SelectCharacterScreen', function(data)
     SetEntityCoords(PlayerPedId(), Config.CameraCoords.selection.x, Config.CameraCoords.selection.y, Config.CameraCoords.selection.z)
     StartCam(Config.CameraCoords.selection.x, Config.CameraCoords.selection.y, Config.CameraCoords.selection.z, Config.CameraCoords.selection.h, Config.CameraCoords.selection.zoom)
     for k, v in pairs(data) do
-        TriggerServerEvent('feather-character:GetCharactersData', v.id)
-        Wait(250)
+        -- (CHAR-13) Blocks this coroutine on a real ack instead of a fixed
+        -- Wait -- a slow fetch no longer risks reading not-yet-arrived
+        -- appearance data, and a fast one no longer wastes load-screen time.
+        -- A failed/timed-out fetch (RPCAPI's own 10s timeout, see
+        -- Config.RPCRateLimit.timeoutMs) is logged and that character is
+        -- spawned with no appearance applied below, rather than hanging the
+        -- whole select screen on one bad fetch.
+        local ok, recClothing, recAttributes, recMakeup = FeatherCore.RPC.CallAsync("GetCharactersData", { id = v.id })
+        if ok then
+            FetchedClothing[v.id] = json.decode(recClothing)
+            FetchedAttributes[v.id] = json.decode(recAttributes)
+            FetchedOverlays[v.id] = json.decode(recMakeup)
+        else
+            print(("[feather-character] Failed to fetch appearance for character %s"):format(v.id))
+        end
     end
     -- Spawning The players chars
     Spawned = true
@@ -63,9 +71,9 @@ RegisterNetEvent('feather-character:SelectCharacterScreen', function(data)
     SetFocusEntity(PlayerPedId())
     for k, v in pairs(data) do
         if k > Maxchars then break end
-        clothing[k] = SentClothing[v.id]
-        attributes[k] = SentAttributes[v.id]
-        makeup[k] = SentOverlays[v.id]
+        clothing[k] = FetchedClothing[v.id]
+        attributes[k] = FetchedAttributes[v.id]
+        makeup[k] = FetchedOverlays[v.id]
         CharModel = v.model
         CharAmount = k
         local ped = FeatherCore.Ped:Create(v.model, Config.SpawnCoords.charspots[k].x, Config.SpawnCoords.charspots[k].y, Config.SpawnCoords.charspots[k].z, 0, 'world', false, false)
@@ -81,8 +89,9 @@ RegisterNetEvent('feather-character:SelectCharacterScreen', function(data)
         ped:Freeze(true)
         table.insert(spawnedPeds, ped)
         if clothing[k] ~= nil then
-            for category, hash in pairs(clothing[k]) do
-                AddComponent(RawPed, hash, category)
+            local elements, tints = SplitClothingBlob(clothing[k])
+            for category, hash in pairs(elements) do
+                AddComponent(RawPed, hash, category, tints[category])
             end
         end
         if attributes[k] ~= nil then

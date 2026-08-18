@@ -24,6 +24,21 @@ Config = {
     Notify = "feather-menu", ----or use feather-core
     MaxAllowedChars = 4,
 
+    -- (CHAR-09) SaveCharacterData used to persist model/dob/desc/img/
+    -- firstname/lastname straight from the client with no whitelist, type
+    -- check, or length cap -- `model` in particular is a permanent
+    -- arbitrary-ped-model grant once saved, since it's re-applied on every
+    -- later character select. `model` is a closed set (creationmenu.lua's
+    -- gender arrows only ever produce these two), so a direct membership
+    -- check is enough -- no index scheme needed like SpawnCoords.towns.
+    Character = {
+        allowedModels = { mp_male = true, mp_female = true },
+        maxFirstNameLength = 24,
+        maxLastNameLength = 24,
+        maxDescLength = 512,
+        maxImgLength = 256,
+    },
+
     SpawnProps = {
         obj1 = {
             name = 'mp005_s_posse_tent_bountyhunter07x',

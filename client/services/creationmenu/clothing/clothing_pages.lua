@@ -101,6 +101,9 @@ function OpenClothingItemPage(clothingCategoriesPage, gender, categoryKey, index
 
     selectedClothing         = selectedClothing or {}
     selectedClothingElements = selectedClothingElements or {}
+    -- (CHAR-20) Carries the dye picked below into the saved clothing blob --
+    -- see client/helpers/character.lua's AddComponent tint param.
+    selectedClothingTints    = selectedClothingTints or {}
 
     local Color1El, Color2El, Color3El
     local colorState = { c1 = 1, c2 = 1, c3 = 1 }
@@ -180,6 +183,7 @@ function OpenClothingItemPage(clothingCategoriesPage, gender, categoryKey, index
             RemoveTagFromMetaPed(index)
             if selectedClothingElements[index] then AddComponent(PlayerPedId(), selectedClothingElements[index], nil) end
             Citizen.InvokeNative(0xBC6DF00D7A4A6819, PlayerPedId(), drawable, albedo, normal, material, palette, colorState.c1, colorState.c2, colorState.c3)
+            selectedClothingTints[index] = { colorState.c1, colorState.c2, colorState.c3 }
             UpdatePedVariation(PlayerPedId())
         end
     end)
@@ -236,6 +240,7 @@ function OpenClothingItemPage(clothingCategoriesPage, gender, categoryKey, index
                 colorState.c1 = tint0 or colorState.c1
                 colorState.c2 = tint1 or colorState.c2
                 colorState.c3 = tint2 or colorState.c3
+                selectedClothingTints[index] = { colorState.c1, colorState.c2, colorState.c3 }
             end
 
             -- dye UI create/update inline
@@ -256,6 +261,7 @@ function OpenClothingItemPage(clothingCategoriesPage, gender, categoryKey, index
                             RemoveTagFromMetaPed(index)
                             if selectedClothingElements[index] then AddComponent(PlayerPedId(), selectedClothingElements[index], nil) end
                             Citizen.InvokeNative(0xBC6DF00D7A4A6819, PlayerPedId(), drawable, albedo, normal, material, palette, colorState.c1, colorState.c2, colorState.c3)
+                            selectedClothingTints[index] = { colorState.c1, colorState.c2, colorState.c3 }
                             UpdatePedVariation(PlayerPedId())
                         end
                     end)
@@ -272,6 +278,7 @@ function OpenClothingItemPage(clothingCategoriesPage, gender, categoryKey, index
                             RemoveTagFromMetaPed(index)
                             if selectedClothingElements[index] then AddComponent(PlayerPedId(), selectedClothingElements[index], nil) end
                             Citizen.InvokeNative(0xBC6DF00D7A4A6819, PlayerPedId(), drawable, albedo, normal, material, palette, colorState.c1, colorState.c2, colorState.c3)
+                            selectedClothingTints[index] = { colorState.c1, colorState.c2, colorState.c3 }
                             UpdatePedVariation(PlayerPedId())
                         end
                     end)
@@ -288,6 +295,7 @@ function OpenClothingItemPage(clothingCategoriesPage, gender, categoryKey, index
                             RemoveTagFromMetaPed(index)
                             if selectedClothingElements[index] then AddComponent(PlayerPedId(), selectedClothingElements[index], nil) end
                             Citizen.InvokeNative(0xBC6DF00D7A4A6819, PlayerPedId(), drawable, albedo, normal, material, palette, colorState.c1, colorState.c2, colorState.c3)
+                            selectedClothingTints[index] = { colorState.c1, colorState.c2, colorState.c3 }
                             UpdatePedVariation(PlayerPedId())
                         end
                     end)
@@ -304,6 +312,7 @@ function OpenClothingItemPage(clothingCategoriesPage, gender, categoryKey, index
             -- remove component
             Citizen.InvokeNative(0x0D7FFA1B2F69ED82, PlayerPedId(), selectedClothingElements[index], 0, 0)
             selectedClothingElements[index] = nil
+            selectedClothingTints[index] = nil
             Citizen.InvokeNative(0xCC8CA3E88256E58F, PlayerPedId(), 0, 1, 1, 1, 0)
             varOpts = { { display = "-", idx = 0 } }
             if VariantArrows then VariantArrows = VariantArrows:update({ options = varOpts, start = 1 }) end

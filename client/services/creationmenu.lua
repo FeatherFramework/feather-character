@@ -16,6 +16,7 @@ local firstName, lastName, gender, charDesc, textureId, tx_color_type = '', '', 
 -- somewhere valid.
 local SelectedTownIndex = 1
 selectedClothingElements = {}
+selectedClothingTints = {} -- (CHAR-20) index -> {c1,c2,c3}, see clothing/clothing_pages.lua
 ActiveTexture, ActiveColor1, ActiveColor2, ActiveColor3, ActiveOpacity, ActiveVariant, CamZ, SelectedOverlayElements = {}, {}, {}, {}, {}, {}, Config.CameraCoords.creation.z + 0.5, {}
 
 Pages = Pages or {}
@@ -365,7 +366,14 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
         end
 
         -- pack data
-        local clothingJSON   = json.encode(selectedClothingElements or {})
+        -- (CHAR-20) `tints` rides alongside `elements` in the same blob so
+        -- dyes survive a save/relog instead of resetting to the drawable's
+        -- base color -- see AddComponent's tint param (client/helpers/
+        -- character.lua) and its readers (selector.lua, selectionmenu.lua,
+        -- character/main.lua's `rc` command), all of which fall back to
+        -- treating the whole blob as the old flat elements-only shape for
+        -- characters saved before this change.
+        local clothingJSON   = json.encode({ elements = selectedClothingElements or {}, tints = selectedClothingTints or {} })
         local attributesJSON = json.encode(SelectedAttributeElements or {})
         local overlaysJSON   = json.encode(SelectedOverlayElements or {})
 

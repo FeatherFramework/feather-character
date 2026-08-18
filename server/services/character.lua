@@ -17,19 +17,27 @@ end)
 -- character's appearance data by id (IDOR read). Re-validated against the
 -- caller's own owned-character list, same helper feather-core's
 -- InitiateCharacter fix (CHAR-01) uses.
-RegisterServerEvent('feather-character:GetCharactersData', function(id)
-    local _source = source
+-- (CHAR-13) Was a raw TriggerServerEvent/TriggerClientEvent pair with no
+-- ack -- the caller (selector.lua) had no way to know when the response
+-- actually landed and instead blocked on a fixed Wait(250) per character,
+-- reading whatever was in the SentClothing/SentAttributes/SentOverlays
+-- globals at that point regardless of whether the fetch had actually
+-- finished. Registered as an RPC instead so the client gets a real
+-- per-call ack (RPCAPI's existing request/response/timeout machinery),
+-- with no protocol change beyond swapping the transport.
+FeatherCore.RPC.Register("GetCharactersData", function(params, res, player)
+    local id = params.id
 
-    if not FeatherCore.Character.IsCharacterOwnedByUser(_source, id) then
-        print(("[feather-character] Rejected GetCharactersData: src %s does not own character %s"):format(_source, tostring(id)))
-        return
+    if not FeatherCore.Character.IsCharacterOwnedByUser(player, id) then
+        print(("[feather-character] Rejected GetCharactersData: src %s does not own character %s"):format(player, tostring(id)))
+        return res(false)
     end
 
     local charApperanceData = CharControllers.GetCharApperanceData(id)
     if not charApperanceData then
-        return
+        return res(false)
     end
-    TriggerClientEvent('feather-character:SendCharactersData', _source, id, charApperanceData.clothing, charApperanceData.attributes, charApperanceData.overlays)
+    return res(true, charApperanceData.clothing, charApperanceData.attributes, charApperanceData.overlays)
 end)
 
 -- (CHAR-02) `charId` was trusted at face value -- any client could write
@@ -65,27 +73,102 @@ end)
 -- was chosen -- the DB-saved position (which Feather:Character:Spawn later
 -- places the player at, authoritatively) never matched the cinematic's
 -- destination. Town choice now happens once, here, at creation time.
+-- (CHAR-09) `model`/`dob`/`desc`/`img`/`firstname`/`lastname` used to go
+-- straight from params[1] to the DB with no whitelist, type check, or
+-- length cap. `model` in particular is re-applied on every later character
+-- select, so an unvalidated value was a permanent arbitrary-ped-model grant.
+-- Rejects the same way the townindex check just above it does: print +
+-- res(false), no partial/best-effort save.
+local function ValidateCreationFields(fields)
+    if type(fields.model) ~= "string" or not Config.Character.allowedModels[fields.model] then
+        return false, ("invalid model %s"):format(tostring(fields.model))
+    end
+    if type(fields.firstname) ~= "string" or #fields.firstname < 1 or #fields.firstname > Config.Character.maxFirstNameLength then
+        return false, ("invalid firstname length %s"):format(tostring(fields.firstname and #fields.firstname))
+    end
+    if type(fields.lastname) ~= "string" or #fields.lastname < 1 or #fields.lastname > Config.Character.maxLastNameLength then
+        return false, ("invalid lastname length %s"):format(tostring(fields.lastname and #fields.lastname))
+    end
+    if type(fields.desc) ~= "string" or #fields.desc > Config.Character.maxDescLength then
+        return false, ("invalid desc length %s"):format(tostring(fields.desc and #fields.desc))
+    end
+    if type(fields.img) ~= "string" or #fields.img > Config.Character.maxImgLength then
+        return false, ("invalid img length %s"):format(tostring(fields.img and #fields.img))
+    end
+    -- "None" is creationmenu.lua's own placeholder for "no image supplied" --
+    -- accept it alongside real http(s) URLs rather than forcing every
+    -- creation to have one.
+    if fields.img ~= "None" and not fields.img:match("^https?://") then
+        return false, ("invalid img url %s"):format(fields.img)
+    end
+
+    local validDate = fields.dob and fields.dob:match("^%d%d%d%d%-%d%d%-%d%d$")
+    if not validDate then
+        return false, ("invalid dob format %s"):format(tostring(fields.dob))
+    end
+    if fields.dob < Config.defaults.dob.min or fields.dob > Config.defaults.dob.max then
+        return false, ("dob out of range %s"):format(fields.dob)
+    end
+
+    return true
+end
+
+-- (TOCTOU) Two concurrent SaveCharacterData calls from the same src (double
+-- click, no client debounce) used to interleave across the MySQL.query.await
+-- yields below: both could read the same pre-insert existingChars count and
+-- both pass the cap check, and both used to re-derive "the character I just
+-- created" via a SELECT ... ORDER BY id DESC LIMIT 1 that could just as
+-- easily return the *other* call's row (CHAR-07 reborn via genuine
+-- concurrency, not just missing ORDER BY). This guard makes a second call
+-- for the same src fail closed instead of racing; cleared on every exit path.
+local CreationInFlight = {}
+
 FeatherCore.RPC.Register("SaveCharacterData", function(params, res, player)
     local src = player
 
+    if CreationInFlight[src] then
+        print(("[feather-character] Rejected SaveCharacterData: src %s already has a creation in flight"):format(src))
+        return res(false)
+    end
+    CreationInFlight[src] = true
+
+    local function reject(reason)
+        print(("[feather-character] Rejected SaveCharacterData: src %s %s"):format(src, reason))
+        CreationInFlight[src] = nil
+        return res(false)
+    end
+
     local existingChars = FeatherCore.Character.GetAvailableCharactersFromDB(src)
     if #existingChars >= Config.MaxAllowedChars then
-        print(("[feather-character] Rejected SaveCharacterData: src %s already has %s/%s characters"):format(src, #existingChars, Config.MaxAllowedChars))
-        return res(false)
+        return reject(("already has %s/%s characters"):format(#existingChars, Config.MaxAllowedChars))
     end
 
     local townindex = tonumber(params[1].townindex)
     if not townindex or townindex ~= math.floor(townindex) or townindex < 1 or townindex > #Config.SpawnCoords.towns then
-        print(("[feather-character] Rejected SaveCharacterData: src %s sent invalid townindex %s"):format(src, tostring(params[1].townindex)))
-        return res(false)
+        return reject(("sent invalid townindex %s"):format(tostring(params[1].townindex)))
     end
     local town = Config.SpawnCoords.towns[townindex]
 
-    local activeuser = FeatherCore.User.GetUserBySrc(src)
-    FeatherCore.Character.CreateCharacter(activeuser.id, 1, params[1].firstname, params[1].lastname, params[1].model, params[1].dob, json.encode(params[1].img), Config.defaults.money, Config.defaults.gold, Config.defaults.tokens, Config.defaults.xp, town.startcoords.x, town.startcoords.y, town.startcoords.z, Config.defaults.lang, params[1].desc)
-    local charId = CharControllers.GetCharIdFromUserId(activeuser.id)
+    local validFields, reason = ValidateCreationFields(params[1])
+    if not validFields then
+        return reject("sent " .. reason)
+    end
 
+    local activeuser = FeatherCore.User.GetUserBySrc(src)
+    -- charId now comes straight back from the INSERT (MySQL.insert.await's
+    -- real insertId, see feather-core's CharacterController.CreateCharacter)
+    -- instead of being re-derived with a second, racy SELECT.
+    local charId = FeatherCore.Character.CreateCharacter(activeuser.id, 1, params[1].firstname, params[1].lastname, params[1].model, params[1].dob, json.encode(params[1].img), Config.defaults.money, Config.defaults.gold, Config.defaults.tokens, Config.defaults.xp, town.startcoords.x, town.startcoords.y, town.startcoords.z, Config.defaults.lang, params[1].desc)
+
+    CreationInFlight[src] = nil
     return res(charId)
+end)
+
+-- A disconnect mid-creation (the INSERT is still in flight) would otherwise
+-- leave that src's CreationInFlight entry set forever, permanently locking
+-- out any future connection that reuses the same src id.
+AddEventHandler('playerDropped', function()
+    CreationInFlight[source] = nil
 end)
 
 RegisterServerEvent('feather-character:CheckForUsers', function()
