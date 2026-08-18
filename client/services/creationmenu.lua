@@ -366,14 +366,13 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
         end
 
         -- pack data
-        -- (CHAR-20) `tints` rides alongside `elements` in the same blob so
-        -- dyes survive a save/relog instead of resetting to the drawable's
-        -- base color -- see AddComponent's tint param (client/helpers/
-        -- character.lua) and its readers (selector.lua, selectionmenu.lua,
-        -- character/main.lua's `rc` command), all of which fall back to
-        -- treating the whole blob as the old flat elements-only shape for
-        -- characters saved before this change.
-        local clothingJSON   = json.encode({ elements = selectedClothingElements or {}, tints = selectedClothingTints or {} })
+        -- (CHAR-20) `character_appearance.clothingtints` (feather-recipe's
+        -- migration.sql) already exists as its own column for exactly this
+        -- -- it was just never written to. Sent alongside clothingJSON
+        -- rather than nested inside it, so the `clothing` blob's shape
+        -- doesn't change for anything already reading it.
+        local clothingJSON   = json.encode(selectedClothingElements or {})
+        local tintsJSON      = json.encode(selectedClothingTints or {})
         local attributesJSON = json.encode(SelectedAttributeElements or {})
         local overlaysJSON   = json.encode(SelectedOverlayElements or {})
 
@@ -394,7 +393,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
             end
 
             TriggerEvent('feather-character:SpawnSelect', charId, SelectedTownIndex)
-            TriggerServerEvent('feather-character:UpdateAttributeDB', charId, attributesJSON, clothingJSON, overlaysJSON)
+            TriggerServerEvent('feather-character:UpdateAttributeDB', charId, attributesJSON, clothingJSON, overlaysJSON, tintsJSON)
 
             Notify(FeatherCore.Locale.translate(0, "characterSaved"), "success", 4000)
         end)

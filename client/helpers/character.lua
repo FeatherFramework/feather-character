@@ -4,22 +4,6 @@
 -- categories conflict (e.g. open vs. closed coat, pants vs. skirt) and must
 -- be explicitly cleared before applying the new one, or the old piece
 -- lingers visually.
--- (CHAR-20) The saved `clothing` blob changed shape from a flat
--- {category = hash} map to {elements = {category = hash}, tints = {category
--- = {c1,c2,c3}}}. Characters saved before this change still have the old
--- flat shape in the DB -- detected here by the absence of the reserved
--- `elements` key -- and are treated as elements-only with no tints, rather
--- than failing to dress at all.
-function SplitClothingBlob(decoded)
-    if type(decoded) ~= "table" then
-        return {}, {}
-    end
-    if decoded.elements ~= nil then
-        return decoded.elements, decoded.tints or {}
-    end
-    return decoded, {}
-end
-
 function GetGender()
     if not IsPedMale(PlayerPedId()) then
         return "Female"

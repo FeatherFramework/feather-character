@@ -2,12 +2,12 @@
 -- owns, spawns a display ped dressed in that character's saved appearance
 -- at a fixed camera spot, then lets the player page through them
 -- (pagearrows below) and pick one. FetchedClothing/FetchedAttributes/
--- FetchedOverlays are keyed by character id and filled in by the
--- GetCharactersData RPC call in SelectCharacterScreen below (CHAR-13 --
+-- FetchedOverlays/FetchedTints are keyed by character id and filled in by
+-- the GetCharactersData RPC call in SelectCharacterScreen below (CHAR-13 --
 -- a real per-call ack, not a fixed Wait).
 local obj1, obj2, obj3, obj4
-clothing, attributes, makeup, spawnedPeds = {}, {}, {}, {}
-FetchedClothing, FetchedAttributes, FetchedOverlays = {}, {}, {}
+clothing, attributes, makeup, tints, spawnedPeds = {}, {}, {}, {}, {}
+FetchedClothing, FetchedAttributes, FetchedOverlays, FetchedTints = {}, {}, {}, {}
 
 function CleanupCharacterSelect()
     if obj1 then
@@ -55,11 +55,12 @@ RegisterNetEvent('feather-character:SelectCharacterScreen', function(data)
         -- Config.RPCRateLimit.timeoutMs) is logged and that character is
         -- spawned with no appearance applied below, rather than hanging the
         -- whole select screen on one bad fetch.
-        local ok, recClothing, recAttributes, recMakeup = FeatherCore.RPC.CallAsync("GetCharactersData", { id = v.id })
+        local ok, recClothing, recAttributes, recMakeup, recTints = FeatherCore.RPC.CallAsync("GetCharactersData", { id = v.id })
         if ok then
             FetchedClothing[v.id] = json.decode(recClothing)
             FetchedAttributes[v.id] = json.decode(recAttributes)
             FetchedOverlays[v.id] = json.decode(recMakeup)
+            FetchedTints[v.id] = json.decode(recTints or '{}')
         else
             print(("[feather-character] Failed to fetch appearance for character %s"):format(v.id))
         end
@@ -74,6 +75,7 @@ RegisterNetEvent('feather-character:SelectCharacterScreen', function(data)
         clothing[k] = FetchedClothing[v.id]
         attributes[k] = FetchedAttributes[v.id]
         makeup[k] = FetchedOverlays[v.id]
+        tints[k] = FetchedTints[v.id] or {}
         CharModel = v.model
         CharAmount = k
         local ped = FeatherCore.Ped:Create(v.model, Config.SpawnCoords.charspots[k].x, Config.SpawnCoords.charspots[k].y, Config.SpawnCoords.charspots[k].z, 0, 'world', false, false)
@@ -89,9 +91,8 @@ RegisterNetEvent('feather-character:SelectCharacterScreen', function(data)
         ped:Freeze(true)
         table.insert(spawnedPeds, ped)
         if clothing[k] ~= nil then
-            local elements, tints = SplitClothingBlob(clothing[k])
-            for category, hash in pairs(elements) do
-                AddComponent(RawPed, hash, category, tints[category])
+            for category, hash in pairs(clothing[k]) do
+                AddComponent(RawPed, hash, category, tints[k][category])
             end
         end
         if attributes[k] ~= nil then
@@ -107,7 +108,7 @@ RegisterNetEvent('feather-character:SelectCharacterScreen', function(data)
             end
         end
     end
-    TriggerEvent('feather-character:CharacterSelectMenu', data, 1, CharAmount, clothing, attributes, makeup)
+    TriggerEvent('feather-character:CharacterSelectMenu', data, 1, CharAmount, clothing, attributes, makeup, tints)
     SwitchCam(Config.CameraCoords.charcamera[1].x, Config.CameraCoords.charcamera[1].y, Config.CameraCoords.charcamera[1].z, Config.CameraCoords.charcamera[1].h, Config.CameraCoords.charcamera[1].zoom)
     while Spawned do
         Wait(5)

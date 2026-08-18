@@ -37,7 +37,7 @@ FeatherCore.RPC.Register("GetCharactersData", function(params, res, player)
     if not charApperanceData then
         return res(false)
     end
-    return res(true, charApperanceData.clothing, charApperanceData.attributes, charApperanceData.overlays)
+    return res(true, charApperanceData.clothing, charApperanceData.attributes, charApperanceData.overlays, charApperanceData.clothingtints)
 end)
 
 -- (CHAR-02) `charId` was trusted at face value -- any client could write
@@ -45,7 +45,7 @@ end)
 -- callers (creationmenu.lua, right after SaveCharacterData) pass a charId
 -- that already belongs to the caller's just-created character, so this
 -- doesn't change the intended flow.
-RegisterServerEvent('feather-character:UpdateAttributeDB', function(charId, attributes, clothing, overlays)
+RegisterServerEvent('feather-character:UpdateAttributeDB', function(charId, attributes, clothing, overlays, tints)
     local _source = source
 
     if not FeatherCore.Character.IsCharacterOwnedByUser(_source, charId) then
@@ -53,7 +53,7 @@ RegisterServerEvent('feather-character:UpdateAttributeDB', function(charId, attr
         return
     end
 
-    CharControllers.UpdateCharApperanceData(charId, attributes, clothing, overlays)
+    CharControllers.UpdateCharApperanceData(charId, attributes, clothing, overlays, tints)
 end)
 
 -- (CHAR-04) No cap existed here -- a client could call this RPC repeatedly

@@ -22,7 +22,7 @@ end
 -- from `info`). Re-invoked every time the player pages to a different
 -- character (see the pagearrows element near the bottom).
 RegisterNetEvent('feather-character:CharacterSelectMenu',
-    function(info, cameraSpot, charAmount, clothing, attributes, overlays)
+    function(info, cameraSpot, charAmount, clothing, attributes, overlays, tints)
         for k, v in ipairs(info) do
             name[k] = v.first_name .. " " .. v.last_name
             money[k] = v.dollars
@@ -136,9 +136,9 @@ RegisterNetEvent('feather-character:CharacterSelectMenu',
                 LoadPlayer(info[cameraSpot].model)
                 TriggerServerEvent('feather-character:InitiateCharacter', ID[cameraSpot])
                 Characterid = ID[cameraSpot]
-                local elements, tints = SplitClothingBlob(clothing[cameraSpot])
-                for category, hash in pairs(elements) do
-                    AddComponent(PlayerPedId(), hash, category, tints[category])
+                local charTints = (tints and tints[cameraSpot]) or {}
+                for category, hash in pairs(clothing[cameraSpot]) do
+                    AddComponent(PlayerPedId(), hash, category, charTints[category])
                 end
                 for category, attribute in pairs(attributes[cameraSpot]) do
                     if category == 'Albedo' then

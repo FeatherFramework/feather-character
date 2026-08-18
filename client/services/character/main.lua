@@ -76,9 +76,9 @@ if Config.DevMode then
         LoadPlayer(CharModel)
 
         -- Clothing
-        local elements, tints = SplitClothingBlob(FetchedClothing[Characterid])
-        for category, hash in pairs(elements) do
-            AddComponent(PlayerPedId(), hash, category, tints[category])
+        local charTints = FetchedTints[Characterid] or {}
+        for category, hash in pairs(FetchedClothing[Characterid] or {}) do
+            AddComponent(PlayerPedId(), hash, category, charTints[category])
         end
 
         -- Attributes
