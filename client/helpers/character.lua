@@ -25,7 +25,7 @@ end
 -- takes "this component, this tint" directly).
 function AddComponent(ped, comp, category, tint)
     if category ~= nil then
-        RemoveTagFromMetaPed(category)
+        RemoveTagFromMetaPed(category, ped, comp)
     end
     Citizen.InvokeNative(0xD3A7B003ED343FD9, ped, comp, true, true, false)
     Citizen.InvokeNative(0x66b957aac2eaaeab, ped, comp, 0, 0, 1, 1) -- _UPDATE_SHOP_ITEM_WEARABLE_STATE
@@ -60,24 +60,32 @@ function AddComponent(ped, comp, category, tint)
     end
 end
 
-function RemoveTagFromMetaPed(category)
+function RemoveTagFromMetaPed(category, ped, component)
+    ped = ped or PlayerPedId()
     if category == "Coat" then
-        Citizen.InvokeNative(0xD710A5007C2AC539, PlayerPedId(), CharacterConfig.Clothing.ClothingCategories.CoatClosed, 0)
+        Citizen.InvokeNative(0xD710A5007C2AC539, ped, CharacterConfig.Clothing.ClothingCategories.CoatClosed, 0)
     end
     if category == "CoatClosed" then
-        Citizen.InvokeNative(0xD710A5007C2AC539, PlayerPedId(), CharacterConfig.Clothing.ClothingCategories.Coat, 0)
+        Citizen.InvokeNative(0xD710A5007C2AC539, ped, CharacterConfig.Clothing.ClothingCategories.Coat, 0)
     end
     if category == "Pant" then
-        if not IsPedMale(PlayerPedId()) then
-            Citizen.InvokeNative(0xD710A5007C2AC539, PlayerPedId(), CharacterConfig.Clothing.ClothingCategories.Skirt, 0)
+        if not IsPedMale(ped) then
+            Citizen.InvokeNative(0xD710A5007C2AC539, ped, CharacterConfig.Clothing.ClothingCategories.Skirt, 0)
         end
     end
-    if category == "Skirt" and not IsPedMale(PlayerPedId()) then
-        Citizen.InvokeNative(0xD710A5007C2AC539, PlayerPedId(), CharacterConfig.Clothing.ClothingCategories.Pant, 0)
+    if category == "Skirt" and not IsPedMale(ped) then
+        Citizen.InvokeNative(0xD710A5007C2AC539, ped, CharacterConfig.Clothing.ClothingCategories.Pant, 0)
     end
 
-    Citizen.InvokeNative(0xD710A5007C2AC539, PlayerPedId(), CharacterConfig.Clothing.ClothingCategories[category], 0)
-    UpdatePedVariation(PlayerPedId())
+    local categoryHash = CharacterConfig.Clothing.ClothingCategories[category]
+    if not categoryHash and component and (category == 'hair' or category == 'beard') then
+        local pedType = Citizen.InvokeNative(0xEC9A1261BF0CE510, ped)
+        categoryHash = Citizen.InvokeNative(0x5FF9A878C3D115B8, component, pedType, true)
+    end
+    if categoryHash then
+        Citizen.InvokeNative(0xD710A5007C2AC539, ped, categoryHash, 0)
+        UpdatePedVariation(ped)
+    end
 end
 
 function EquipMetaPedOutfit(ped, hash)
@@ -105,14 +113,23 @@ function DefaultPedSetup(ped, male)
         compHead = tonumber("0x" .. CharacterConfig.General.DefaultChar.Female[1].Heads[1])
         compLegs = tonumber("0x" .. CharacterConfig.General.DefaultChar.Female[1].Legs[1])
     end
-    Citizen.InvokeNative(0xA0BC8FAED8CFEB3C, PlayerPedId()) -- IsPedReadyToRender
-    while not Citizen.InvokeNative(0xA0BC8FAED8CFEB3C, PlayerPedId()) do
-        Citizen.InvokeNative(0xA0BC8FAED8CFEB3C, PlayerPedId())
+    -- A freshly streamed metaped can report ready for one frame before its
+    -- base components are available. Give the renderer a short guaranteed
+    -- initialization window; the bounded readiness loop below handles the
+    -- remaining slow-load case without hanging character selection.
+    Wait(100)
+    Citizen.InvokeNative(0xA0BC8FAED8CFEB3C, ped) -- IsPedReadyToRender
+    local renderDeadline = GetGameTimer() + 5000
+    while not Citizen.InvokeNative(0xA0BC8FAED8CFEB3C, ped) and GetGameTimer() < renderDeadline do
+        Citizen.InvokeNative(0xA0BC8FAED8CFEB3C, ped)
         Wait(5)
     end
-    UpdatePedVariation(PlayerPedId())
+    UpdatePedVariation(ped)
     AddComponent(ped, compBody)
     AddComponent(ped, compLegs)
     AddComponent(ped, compHead)
     AddComponent(ped, compEyes)
+    UpdatePedVariation(ped)
+    SetEntityVisible(ped, true)
+    SetEntityAlpha(ped, 255, false)
 end

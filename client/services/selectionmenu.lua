@@ -110,51 +110,17 @@ RegisterNetEvent('feather-character:CharacterSelectMenu',
             slot = "footer",
             style = {}
         })
-        -- Confirms the currently-displayed character. The id sent here is
-        -- one this client already received in the server-verified `info`
-        -- list above, but the server re-validates ownership independently
-        -- on InitiateCharacter regardless (see CHAR-01 in feather-character's
-        -- audit notes) -- this button can't be trusted as the security
-        -- boundary since a client could always call the event directly.
+        -- The activation route independently verifies that this UUID profile
+        -- belongs to the connected account; the menu selection is never the
+        -- authority boundary.
         characterSelectPage:RegisterElement('button', {
             label = FeatherCore.Locale.translate(0, "select"),
             slot = "footer",
             style = {}
         }, function()
             if cameraSpot ~= nil then
-                Spawned = false
-                CleanupScript()
-                -- (CHAR-12) Was `LoadPlayer(CharModel)` -- `CharModel` is a
-                -- global overwritten on every iteration of the spawn loop in
-                -- character/selector.lua (SelectCharacterScreen), so by the
-                -- time this button handler runs it always holds whichever
-                -- character was *last* iterated there, not the one actually
-                -- on camera/selected. Selecting character #1 could spawn
-                -- character #3's model. `info[cameraSpot].model` is the
-                -- server-verified model for the character actually being
-                -- selected right now.
-                LoadPlayer(info[cameraSpot].model)
-                TriggerServerEvent('feather-character:InitiateCharacter', ID[cameraSpot])
-                Characterid = ID[cameraSpot]
-                local charTints = (tints and tints[cameraSpot]) or {}
-                for category, hash in pairs(clothing[cameraSpot]) do
-                    AddComponent(PlayerPedId(), hash, category, charTints[category])
-                end
-                for category, attribute in pairs(attributes[cameraSpot]) do
-                    if category == 'Albedo' then
-                        AlbedoHash = attribute.hash
-                    end
-                    if attribute.value then
-                        SetCharExpression(PlayerPedId(), attribute.hash, attribute.value)
-                    else
-                        AddComponent(PlayerPedId(), attribute.hash, category)
-                    end
-                end
-                for category, overlays in pairs(overlays[cameraSpot]) do
-                    ChangeOverlay(PlayerPedId(), category, 1, overlays['textureId'], 0, 0, 0, 1.0, 0, 1,
-                        overlays['color1'], overlays['color2'], overlays['color3'], overlays['variant'],
-                        overlays['opacity'], SelectedAttributeElements['Albedo'].hash)
-                end
+                CharacterContract1.Activate(info[cameraSpot])
+                return
             end
         end)
         characterSelectPage:RegisterElement('button', {
@@ -163,6 +129,40 @@ RegisterNetEvent('feather-character:CharacterSelectMenu',
             style = {}
         }, function()
             TriggerEvent('feather-character:CreateNewCharacter')
+        end)
+        characterSelectPage:RegisterElement('button', {
+            label = FeatherCore.Locale.translate(0, 'deleteCharacter'),
+            slot = 'footer',
+            style = {}
+        }, function()
+            local selectedProfile = info[cameraSpot]
+            local selectedName = name[cameraSpot]
+            local confirmationPage = CharacterMenu:RegisterPage('characterSelect:deleteConfirmation')
+            confirmationPage:RegisterElement('header', {
+                value = FeatherCore.Locale.translate(0, 'deleteCharacterConfirmTitle'),
+                slot = 'header',
+                style = {}
+            })
+            confirmationPage:RegisterElement('textdisplay', {
+                value = FeatherCore.Locale.translate(0, 'deleteCharacterConfirmMessage') .. '\n' .. selectedName,
+                style = {}
+            })
+            confirmationPage:RegisterElement('button', {
+                label = FeatherCore.Locale.translate(0, 'deleteCharacterConfirm'),
+                slot = 'footer',
+                style = {}
+            }, function()
+                CharacterContract1.Delete(selectedProfile, true)
+            end)
+            confirmationPage:RegisterElement('button', {
+                label = FeatherCore.Locale.translate(0, 'deleteCharacterCancel'),
+                slot = 'footer',
+                style = {}
+            }, function()
+                characterSelectPage:RouteTo()
+            end)
+            confirmationPage:RegisterElement('bottomline', { slot = 'footer' })
+            confirmationPage:RouteTo()
         end)
         characterSelectPage:RegisterElement('textdisplay', {
             value = desc[cameraSpot],
@@ -173,6 +173,8 @@ RegisterNetEvent('feather-character:CharacterSelectMenu',
         })
         characterSelectPage:RegisterElement('pagearrows', {
             slot = "footer",
+            current = cameraSpot,
+            total = charAmount,
             style = {}
         }, function(data)
             if data.value == 'forward' then
@@ -185,7 +187,8 @@ RegisterNetEvent('feather-character:CharacterSelectMenu',
                 SwitchCam(Config.CameraCoords.charcamera[cameraSpot].x, Config.CameraCoords.charcamera[cameraSpot].y,
                     Config.CameraCoords.charcamera[cameraSpot].z, Config.CameraCoords.charcamera[cameraSpot].h,
                     Config.CameraCoords.charcamera[cameraSpot].zoom)
-                TriggerEvent('feather-character:CharacterSelectMenu', info, cameraSpot, charAmount, clothing, attributes,overlays)
+                TriggerEvent('feather-character:CharacterSelectMenu', info, cameraSpot, charAmount,
+                    clothing, attributes, overlays, tints)
             else
                 -- (CHAR-14) Was three separate conditionals
                 -- (`if cameraSpot < charAmount then -1 end`,
@@ -203,7 +206,8 @@ RegisterNetEvent('feather-character:CharacterSelectMenu',
                 SwitchCam(Config.CameraCoords.charcamera[cameraSpot].x, Config.CameraCoords.charcamera[cameraSpot].y,
                     Config.CameraCoords.charcamera[cameraSpot].z, Config.CameraCoords.charcamera[cameraSpot].h,
                     Config.CameraCoords.charcamera[cameraSpot].zoom)
-                TriggerEvent('feather-character:CharacterSelectMenu', info, cameraSpot, charAmount, clothing, attributes,overlays)
+                TriggerEvent('feather-character:CharacterSelectMenu', info, cameraSpot, charAmount,
+                    clothing, attributes, overlays, tints)
             end
         end)
         CharacterMenu:Open({

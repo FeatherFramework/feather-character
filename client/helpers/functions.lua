@@ -30,13 +30,3 @@ function Notify(message, typeOrDuration, maybeDuration)
         print("^1[Notify] Invalid Config.Notify: " .. tostring(Config.Notify))
     end
 end
-
--- (CHAR-06) Was colon-called on `RPCAPI.Register`, which is dot-defined --
--- the RPC table itself landed in the `name` param, which fails
--- `RPCAPI.Register`'s `type(name) ~= 'string'` check and rejects the
--- registration outright. This handler never actually registered, so even a
--- correctly-called server-side Notify (see server/imports.lua) had nothing
--- to dispatch to client-side.
-FeatherCore.RPC.Register("feather-character:NotifyClient", function(data)
-    Notify(data.message, data.type, data.duration)
-end)

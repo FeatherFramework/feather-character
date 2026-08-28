@@ -15,6 +15,7 @@ github_link 'https://github.com/FeatherFramework/feather-character'
 
 shared_scripts {
     'config.lua',
+    'shared/contracts/*.lua',
     'shared/imports.lua',
     'locale/*.lua',
     'shared/data/setup.lua',
@@ -28,12 +29,17 @@ shared_scripts {
 server_scripts {
     '@oxmysql/lib/MySQL.lua',
     'server/imports.lua',
+    'server/migrations/*.lua',
+    'server/contract/*.lua',
+    'server/persistence/*.lua',
+    'server/repositories/*.lua',
+    'server/transport/*.lua',
     'server/controllers/*.lua',
-    'server/services/*.lua'
+    'server/services/*.lua',
+    'server/main.lua'
 }
 
 client_scripts {
-    '@feather-core/shared/services/dataview.lua',
     'client/imports.lua',
     'client/helpers/*.lua',
     'client/services/*.lua',

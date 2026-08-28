@@ -70,7 +70,7 @@ local function createNewCharacter()
 end
 
 -- Entry point into character creation, fired when a user has no existing
--- characters (feather-character:CheckForUsers) or clicks "create new" from
+-- Contract 1 profiles or clicks "create new" from
 -- the character-select screen.
 RegisterNetEvent('feather-character:CreateNewCharacter', function()
     Spawned = false

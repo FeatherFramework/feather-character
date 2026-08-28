@@ -7,8 +7,7 @@
 -- general.lua) and `selectedClothingElements`/`SelectedOverlayElements`
 -- (this file) accumulate the in-progress character's state as the player
 -- moves through these pages; the final "Create" button (near the bottom of
--- this file) packages all of it into the SaveCharacterData RPC + the
--- UpdateAttributeDB event.
+-- this file) submits all of it through the atomic Contract 1 creation route.
 local firstName, lastName, gender, charDesc, textureId, tx_color_type = '', '', GetGender(), "", -1, 0
 -- Town choice now happens here at creation time instead of a second picker
 -- after spawn.lua's SpawnSelect (see spawner.lua) -- defaults to the first
@@ -24,10 +23,23 @@ Fov = 20.0
 Model = 'mp_male'
 local dob, imgLink
 
+local function ApplyDefaultHair(selectedGender)
+    local catalog = HairandBeards[selectedGender]
+    local default = catalog and catalog.hair and catalog.hair[1] and catalog.hair[1][1]
+    if not default or not default.hash then return false end
+    SelectedAttributeElements.hairCategory = { hash = default.hash }
+    SelectedAttributeElements.hairVariant = { hash = default.hash }
+    AddComponent(PlayerPedId(), default.hash, 'hair')
+    return true
+end
+
 -- Server-pushed once the player has walked to the creation camera spot
 -- (client/services/character/create.lua).
 RegisterNetEvent('feather-character:CreateCharacterMenu', function()
     PageOpened = true
+    gender = GetGender()
+    Model = gender == 'Female' and 'mp_female' or 'mp_male'
+    ApplyDefaultHair(gender)
     local mainCreationPage = CharacterMenu:RegisterPage('feather-character:MainCreationPage')
     mainCreationPage:RegisterElement('header', {
         value = FeatherCore.Locale.translate(0, "charCreation"),
@@ -58,6 +70,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
             gender = 'Female'
         end
         LoadPlayer(Model)
+        ApplyDefaultHair(gender)
     end)
 
 
@@ -297,10 +310,8 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
         imgLink = 'None'
     end
 
-    -- Starting town/arrival is chosen here, once, at creation time -- this
-    -- is what gets persisted by SaveCharacterData and later consumed by
-    -- spawner.lua's SpawnSelect to play the matching cinematic. There is no
-    -- second town choice after this.
+    -- Starting town/arrival is chosen here and persisted as a trusted
+    -- Contract 1 spawn-point ID. There is no second town choice after this.
     local townOptions = {}
     for _, town in ipairs(Config.SpawnCoords.towns) do
         table.insert(townOptions, town.name .. " (" .. town.arrival .. ")")
@@ -321,12 +332,9 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
         style = {}
     })
 
-    -- Commits the new character: validates required fields, then saves the
-    -- base record via the SaveCharacterData RPC (server-derives the owning
-    -- user from `source`, see server/services/character.lua) and the
-    -- appearance separately via UpdateAttributeDB, before moving on to
-    -- SpawnSelect (client/services/character/spawner.lua) with the new
-    -- character's id.
+    -- Commits profile, initial appearance, and spawn state atomically through
+    -- Contract 1. A successful create immediately activates the new UUID
+    -- character and plays the selected city's first-arrival journey.
     mainCreationPage:RegisterElement('button', {
         label = FeatherCore.Locale.translate(0, "saveChar"),
         slot = 'footer',
@@ -355,26 +363,12 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
             return
         end
 
-        -- UX guard only -- SelectedTownIndex defaults to 1 and can only ever
-        -- be set to a valid options index by the arrows callback above, so
-        -- this should never actually fire. The real boundary is server-side
-        -- (SaveCharacterData re-validates townindex against
-        -- Config.SpawnCoords.towns independently).
+        -- UX guard only. The Contract 1 server independently validates the
+        -- mapped spawn-point ID against its configured registry.
         if not SelectedTownIndex or not Config.SpawnCoords.towns[SelectedTownIndex] then
             Notify(FeatherCore.Locale.translate(0, "chooseCity"), "error", 5000)
             return
         end
-
-        -- pack data
-        -- (CHAR-20) `character_appearance.clothingtints` (feather-recipe's
-        -- migration.sql) already exists as its own column for exactly this
-        -- -- it was just never written to. Sent alongside clothingJSON
-        -- rather than nested inside it, so the `clothing` blob's shape
-        -- doesn't change for anything already reading it.
-        local clothingJSON   = json.encode(selectedClothingElements or {})
-        local tintsJSON      = json.encode(selectedClothingTints or {})
-        local attributesJSON = json.encode(SelectedAttributeElements or {})
-        local overlaysJSON   = json.encode(SelectedOverlayElements or {})
 
         local data           = {
             firstname = fName,
@@ -386,17 +380,15 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
             townindex = SelectedTownIndex,
         }
 
-        FeatherCore.RPC.Call("SaveCharacterData", { data }, function(charId)
-            if type(charId) ~= "number" or charId <= 0 then
-                Notify(FeatherCore.Locale.translate(0, "characterNotSaved"), "error", 4000)
-                return
-            end
-
-            TriggerEvent('feather-character:SpawnSelect', charId, SelectedTownIndex)
-            TriggerServerEvent('feather-character:UpdateAttributeDB', charId, attributesJSON, clothingJSON, overlaysJSON, tintsJSON)
-
+        local created = CharacterContract1.Create(data, {
+            clothing = selectedClothingElements or {},
+            tints = selectedClothingTints or {},
+            attributes = SelectedAttributeElements or {},
+            overlays = SelectedOverlayElements or {}
+        })
+        if created then
             Notify(FeatherCore.Locale.translate(0, "characterSaved"), "success", 4000)
-        end)
+        end
     end)
 
     mainCreationPage:RegisterElement('bottomline', {

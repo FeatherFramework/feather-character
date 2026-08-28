@@ -10,7 +10,7 @@ function CleanupScript()
 
     -- Reset character state
     Citizen.InvokeNative(0xD0AFAFF5A51D72F7, PlayerPedId()) -- NetworkEndTutorialSession
-    FeatherCore.RPC.CallAsync("LeaveInstance", { id = 123 })
+    FeatherCore.RPC.CallAsync('core.instance.leave.v1', {})
     FreezeEntityPosition(PlayerPedId(), false)
     SetEntityVisible(PlayerPedId(), true)
 end
@@ -37,10 +37,17 @@ end
 -- Event Handlers
 --========================================================--
 
---- When the player spawns, check for available characters.
+--- Open selection only for the initial network spawn. RedM can emit
+--- playerSpawned again after death; an active Contract 1 character must stay
+--- bound to its session so death/respawn systems and staff revive can act on it.
 AddEventHandler('playerSpawned', function()
-    TriggerServerEvent('feather-character:CheckForUsers')
+    if Characterid then return end
+    CreateThread(function() CharacterContract1.OpenSelector() end)
 end)
+
+RegisterCommand('logout', function()
+    CreateThread(function() CharacterContract1.Logout() end)
+end, false)
 
 --- On resource stop, clean up spawned entities and reset state.
 AddEventHandler("onResourceStop", function(resourceName)
@@ -128,11 +135,7 @@ if Config.DevMode then
     end, true)
 
     RegisterCommand('check', function(source, args, raw)
-        TriggerServerEvent('feather-character:CheckForUsers')
-    end, true)
-
-    RegisterCommand('spawn', function(source, args, raw)
-        TriggerEvent('feather-character:SpawnSelect', 1)
+        CreateThread(function() CharacterContract1.OpenSelector() end)
     end, true)
 
     RegisterCommand('endcam', function(source, args, raw)

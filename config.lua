@@ -1,4 +1,42 @@
 Config = {
+    Contract1 = {
+        enabled = true,
+        contract = 1,
+        logging = {
+            level = 'info'
+        },
+        appearance = {
+            maxDocumentBytes = 65536
+        },
+        positionSyncMs = 30000,
+        death = {
+            respawnDelaySeconds = 60,
+            promptKey = 0x760A9C6F, -- G (kept separate from weapon reload on R)
+            cameraEnabled = true,
+            cameraOrbitSpeed = 4.0,
+            respawnHealth = 600,
+            doctors = {
+                {
+                    id = 'valentine', label = 'Valentine Medical',
+                    x = -288.882172, y = 811.387634, z = 119.385941, heading = 236.87
+                },
+                {
+                    id = 'saint_denis', label = 'Saint Denis Medical',
+                    x = 2732.895752, y = -1231.804321, z = 50.370411, heading = 69.18
+                },
+                {
+                    id = 'strawberry', label = 'Strawberry Medical',
+                    x = -1803.796997, y = -430.861938, z = 158.830292, heading = 72.78
+                }
+            }
+        },
+        spawnPoints = {
+            saint_denis = { label = 'Saint Denis', x = 2714.99, y = -1424.91, z = 46.45, heading = 143.0 },
+            rhodes = { label = 'Rhodes', x = 1300.1214599609, y = -1285.8166503906, z = 75.653411865234, heading = 52.365936279297 },
+            valentine = { label = 'Valentine', x = -273.9114074707, y = 794.712890625, z = 118.66342163086, heading = 158.85372924805 },
+            blackwater = { label = 'Blackwater', x = -686.24639892578, y = -1244.5211181641, z = 43.102550506592, heading = 83.719284057617 }
+        }
+    },
     -- Gates the dev/test commands in client/services/character/main.lua
     -- (new/teeth/check/spawn/endcam/endscript/rc). Those commands are also
     -- now registered as ACE-restricted (command.<name>), so flipping this
@@ -24,19 +62,19 @@ Config = {
     Notify = "feather-menu", ----or use feather-core
     MaxAllowedChars = 4,
 
-    -- (CHAR-09) SaveCharacterData used to persist model/dob/desc/img/
-    -- firstname/lastname straight from the client with no whitelist, type
-    -- check, or length cap -- `model` in particular is a permanent
-    -- arbitrary-ped-model grant once saved, since it's re-applied on every
-    -- later character select. `model` is a closed set (creationmenu.lua's
-    -- gender arrows only ever produce these two), so a direct membership
-    -- check is enough -- no index scheme needed like SpawnCoords.towns.
+    -- Closed profile-input limits shared with the Contract 1 creation
+    -- validator. Model is deliberately a small allowlist.
     Character = {
         allowedModels = { mp_male = true, mp_female = true },
         maxFirstNameLength = 24,
         maxLastNameLength = 24,
         maxDescLength = 512,
         maxImgLength = 256,
+        deletion = {
+            requireConfirmation = true,
+            minimumAgeHours = 0,
+            recoveryDays = 30
+        }
     },
 
     SpawnProps = {

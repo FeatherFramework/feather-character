@@ -1,10 +1,8 @@
--- Character-select screen: for every character the server says this user
--- owns, spawns a display ped dressed in that character's saved appearance
+-- Character-select screen: for every UUID profile returned by Contract 1,
+-- spawns a display ped dressed from its versioned appearance document
 -- at a fixed camera spot, then lets the player page through them
 -- (pagearrows below) and pick one. FetchedClothing/FetchedAttributes/
--- FetchedOverlays/FetchedTints are keyed by character id and filled in by
--- the GetCharactersData RPC call in SelectCharacterScreen below (CHAR-13 --
--- a real per-call ack, not a fixed Wait).
+-- FetchedOverlays/FetchedTints are keyed by UUID character id.
 local obj1, obj2, obj3, obj4
 clothing, attributes, makeup, tints, spawnedPeds = {}, {}, {}, {}, {}
 FetchedClothing, FetchedAttributes, FetchedOverlays, FetchedTints = {}, {}, {}, {}
@@ -20,28 +18,30 @@ function CleanupCharacterSelect()
         v:Remove()
     end
     spawnedPeds = {}
+    obj1, obj2, obj3, obj4 = nil, nil, nil, nil
     CharacterMenu:Close()
 end
 
 --------- Net Events ------
--- `data` is the server-verified list of characters this user owns (see
--- feather-character:CheckForUsers -> FeatherCore.Character.
--- GetAvailableCharactersFromDB). Spawns the selection-room props, requests
+-- `data` is the account-scoped list returned by character.list.v1. Spawns
+-- the selection-room props, requests
 -- each character's saved appearance (SendCharactersData above), then poses
 -- a display ped per character (capped to Config.MaxAllowedChars) and opens
 -- the paged character-select menu.
 RegisterNetEvent('feather-character:SelectCharacterScreen', function(data)
+    clothing, attributes, makeup, tints, spawnedPeds = {}, {}, {}, {}, {}
+    FetchedClothing, FetchedAttributes, FetchedOverlays, FetchedTints = {}, {}, {}, {}
     -- (CHAR-05) Instance 123 is now allow-listed server-side
     -- (feather-core Config.PublicInstanceIds) specifically for this shared
     -- character-select room -- requesting any other id here would no
     -- longer be honored, closing the "any client can join any bucket by
     -- number" hole this hardcoded id used to ride on (CORE-03).
-    FeatherCore.RPC.CallAsync("CreateInstance", { id = 123 })
+    FeatherCore.RPC.CallAsync('core.instance.enter.v1', { instanceId = 123 })
     -- Spawning Props
-    obj1 = FeatherCore.Object:Create(Config.SpawnProps.obj1.name, Config.SpawnProps.obj1.x, Config.SpawnProps.obj1.y, Config.SpawnProps.obj1.z, Config.SpawnProps.obj1.h, false, 'standard')
-    obj2 = FeatherCore.Object:Create(Config.SpawnProps.obj2.name, Config.SpawnProps.obj2.x, Config.SpawnProps.obj2.y, Config.SpawnProps.obj2.z, Config.SpawnProps.obj2.h, false, 'standard')
-    obj3 = FeatherCore.Object:Create(Config.SpawnProps.obj3.name, Config.SpawnProps.obj3.x, Config.SpawnProps.obj3.y, Config.SpawnProps.obj3.z, Config.SpawnProps.obj3.h, false, 'standard')
-    obj4 = FeatherCore.Object:Create(Config.SpawnProps.obj4.name, Config.SpawnProps.obj4.x, Config.SpawnProps.obj4.y, Config.SpawnProps.obj4.z, Config.SpawnProps.obj4.h, false, 'standard')
+    obj1 = CharacterRuntime.Object:Create(Config.SpawnProps.obj1.name, Config.SpawnProps.obj1.x, Config.SpawnProps.obj1.y, Config.SpawnProps.obj1.z, Config.SpawnProps.obj1.h, false)
+    obj2 = CharacterRuntime.Object:Create(Config.SpawnProps.obj2.name, Config.SpawnProps.obj2.x, Config.SpawnProps.obj2.y, Config.SpawnProps.obj2.z, Config.SpawnProps.obj2.h, false)
+    obj3 = CharacterRuntime.Object:Create(Config.SpawnProps.obj3.name, Config.SpawnProps.obj3.x, Config.SpawnProps.obj3.y, Config.SpawnProps.obj3.z, Config.SpawnProps.obj3.h, false)
+    obj4 = CharacterRuntime.Object:Create(Config.SpawnProps.obj4.name, Config.SpawnProps.obj4.x, Config.SpawnProps.obj4.y, Config.SpawnProps.obj4.z, Config.SpawnProps.obj4.h, false)
     -- Preparing To Spawn Player
     SetEntityVisible(PlayerPedId(), false)
     DisplayRadar(false)
@@ -55,15 +55,20 @@ RegisterNetEvent('feather-character:SelectCharacterScreen', function(data)
         -- Config.RPCRateLimit.timeoutMs) is logged and that character is
         -- spawned with no appearance applied below, rather than hanging the
         -- whole select screen on one bad fetch.
-        local ok, recClothing, recAttributes, recMakeup, recTints = FeatherCore.RPC.CallAsync("GetCharactersData", { id = v.id })
-        if ok then
-            FetchedClothing[v.id] = json.decode(recClothing)
-            FetchedAttributes[v.id] = json.decode(recAttributes)
-            FetchedOverlays[v.id] = json.decode(recMakeup)
-            FetchedTints[v.id] = json.decode(recTints or '{}')
+        local document, appearanceResult = CharacterContract1.GetAppearance(v.id)
+        if appearanceResult.ok then
+            FetchedClothing[v.id] = document.clothing or {}
+            FetchedAttributes[v.id] = document.attributes or {}
+            FetchedOverlays[v.id] = document.overlays or {}
+            FetchedTints[v.id] = document.tints or {}
         else
-            print(("[feather-character] Failed to fetch appearance for character %s"):format(v.id))
+            print(("[feather-character] Failed to fetch Contract 1 appearance for %s code=%s"):format(
+                tostring(v.id), tostring(appearanceResult.code)))
         end
+        FetchedClothing[v.id] = FetchedClothing[v.id] or {}
+        FetchedAttributes[v.id] = FetchedAttributes[v.id] or {}
+        FetchedOverlays[v.id] = FetchedOverlays[v.id] or {}
+        FetchedTints[v.id] = FetchedTints[v.id] or {}
     end
     -- Spawning The players chars
     Spawned = true
@@ -78,7 +83,8 @@ RegisterNetEvent('feather-character:SelectCharacterScreen', function(data)
         tints[k] = FetchedTints[v.id] or {}
         CharModel = v.model
         CharAmount = k
-        local ped = FeatherCore.Ped:Create(v.model, Config.SpawnCoords.charspots[k].x, Config.SpawnCoords.charspots[k].y, Config.SpawnCoords.charspots[k].z, 0, 'world', false, false)
+        local ped = CharacterRuntime.Ped:Create(v.model, Config.SpawnCoords.charspots[k].x,
+            Config.SpawnCoords.charspots[k].y, Config.SpawnCoords.charspots[k].z, 0)
         local RawPed = ped:GetPed()
 
         Citizen.InvokeNative(0x77FF8D35EEC6BBC4, RawPed, 4, 0) -- outfits
@@ -95,16 +101,32 @@ RegisterNetEvent('feather-character:SelectCharacterScreen', function(data)
                 AddComponent(RawPed, hash, category, tints[k][category])
             end
         end
+        local previewAlbedo = 0
         if attributes[k] ~= nil then
             for category, attribute in pairs(attributes[k]) do
                 if category == 'Albedo' then
-                    AlbedoHash = attribute.hash
+                    previewAlbedo = attribute.hash or 0
                 end
-                if attribute.value then
+                if category ~= 'hairCategory' and category ~= 'hairVariant'
+                    and category ~= 'beardCategory' and category ~= 'beardVariant'
+                    and type(attribute) == 'table' and attribute.value ~= nil then
                     SetCharExpression(RawPed, attribute.hash, attribute.value)
-                else
+                elseif category ~= 'hairCategory' and category ~= 'hairVariant'
+                    and category ~= 'beardCategory' and category ~= 'beardVariant'
+                    and type(attribute) == 'table' and attribute.hash then
                     AddComponent(RawPed, attribute.hash, category)
                 end
+            end
+            local hair = attributes[k].hairVariant or attributes[k].hairCategory
+            if type(hair) == 'table' and hair.hash then AddComponent(RawPed, hair.hash, 'hair') end
+            local beard = attributes[k].beardVariant or attributes[k].beardCategory
+            if type(beard) == 'table' and beard.hash then AddComponent(RawPed, beard.hash, 'beard') end
+        end
+        for category, overlay in pairs(makeup[k] or {}) do
+            if type(overlay) == 'table' then
+                ChangeOverlay(RawPed, category, 1, overlay.textureId, 0, 0, 0, 1.0, 0, 1,
+                    overlay.color1, overlay.color2, overlay.color3, overlay.variant,
+                    overlay.opacity, previewAlbedo)
             end
         end
     end

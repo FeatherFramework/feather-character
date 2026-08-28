@@ -1,20 +1,28 @@
-FeatherCore = exports['feather-core'].initiate()
+local ready = exports['feather-core']:AwaitReady(30000)
+if type(ready) ~= 'table' or ready.ok ~= true then
+    local code = type(ready) == 'table' and ready.code or 'dependency_unavailable'
+    local message = type(ready) == 'table' and ready.message or 'feather-core readiness is unavailable'
+    error(('[feather-character] feather-core startup failed: [%s] %s'):format(tostring(code), tostring(message)))
+end
 
-function NotifyClient(src, message, type, duration)
-    -- (CHAR-06) Was colon-called (`FeatherCore.RPC:Notify`) on `RPCAPI.Notify`,
-    -- which is dot-defined -- the colon call implicitly passes the RPC table
-    -- itself as the first arg, shifting everything over by one: `name`
-    -- received the RPC table (fails the `type(name) ~= 'string'` dispatch
-    -- check), `params` received the event name string, and the real `src`
-    -- never got passed at all. With `source` then nil, feather-core's
-    -- TriggerRemoteEvent does `TriggerClientEvent(eventName, source or -1, ...)`
-    -- -- `-1` broadcasts to every connected client, so every notification
-    -- meant for one player (e.g. the CHAR-01 rejection) went out to the
-    -- entire server instead, mangled, with a table as the event name so it
-    -- never dispatched at all client-side.
-    FeatherCore.RPC.Notify("feather-character:NotifyClient", {
-        message = message,
-        type = type or "info",
-        duration = duration or 6000
-    }, src)
+local capabilities = exports['feather-core']:GetCapabilities()
+if type(capabilities) ~= 'table' or capabilities.ok ~= true or type(capabilities.value) ~= 'table' then
+    error('[feather-character] feather-core capabilities are unavailable')
+end
+
+local coreContract = tonumber(capabilities.value.contract) or 0
+local features = type(capabilities.value.features) == 'table' and capabilities.value.features or {}
+local requiredFeatures = { 'lifecycle', 'accountContext', 'sessions', 'rpc' }
+if coreContract < 1 then
+    error(('[feather-character] feather-core contract %s is unsupported (requires 1)'):format(tostring(coreContract)))
+end
+for _, feature in ipairs(requiredFeatures) do
+    if (tonumber(features[feature]) or 0) < 1 then
+        error(('[feather-character] feather-core feature %s is unavailable'):format(feature))
+    end
+end
+
+FeatherCoreContract = capabilities.value
+if type(FeatherCore) ~= 'table' or type(FeatherCore.RPC) ~= 'table' then
+    error('[feather-character] named Core RPC adapter is unavailable')
 end

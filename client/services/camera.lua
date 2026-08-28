@@ -15,6 +15,17 @@ function SwitchCam(x, y, z, heading, zoom)
     SetCamParams(camera, x, y, z, -10.0, 0.0, heading, zoom, 1500, 1, 3, 1)
 end
 
+function FollowCam(entity, distance, height)
+    if not entity or entity == 0 or not DoesEntityExist(entity) then return false end
+    if camera then DestroyCam(camera, false) end
+    camera = CreateCam('DEFAULT_SCRIPTED_CAMERA', true)
+    AttachCamToEntity(camera, entity, 0.0, -(distance or 8.0), height or 4.0, true)
+    PointCamAtEntity(camera, entity, 0.0, 0.0, 1.0, true)
+    SetCamActive(camera, true)
+    RenderScriptCams(true, true, 750, true, true, 0)
+    return true
+end
+
 function EndCam()
     RenderScriptCams(false, true, 1000, true, false, 0)
     DestroyCam(camera, false)

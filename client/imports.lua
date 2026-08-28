@@ -1,4 +1,3 @@
-FeatherCore = exports['feather-core'].initiate()
 FeatherMenu = exports['feather-menu'].initiate()
 
 -- The single shared menu instance every screen in this resource routes
