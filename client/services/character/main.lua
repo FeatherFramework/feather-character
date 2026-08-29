@@ -2,15 +2,19 @@
 -- Core Character Actions
 --========================================================--
 
---- Cleans up character creation/selection state.
-function CleanupScript()
+--- Cleans up character creation/selection state. During this resource's own
+--- shutdown the server transport has already been removed, so routing cleanup
+--- is owned by feather-routing's owner-stop handler instead of an RPC.
+function CleanupScript(skipRoutingRequest)
     DisplayRadar(true)
     EndCam()
     CleanupCharacterSelect()
 
     -- Reset character state
     Citizen.InvokeNative(0xD0AFAFF5A51D72F7, PlayerPedId()) -- NetworkEndTutorialSession
-    FeatherCore.RPC.CallAsync('core.instance.leave.v1', {})
+    if skipRoutingRequest ~= true then
+        FeatherCore.RPC.CallAsync('character.selection.route.leave.v1', {})
+    end
     FreezeEntityPosition(PlayerPedId(), false)
     SetEntityVisible(PlayerPedId(), true)
 end
@@ -56,7 +60,7 @@ AddEventHandler("onResourceStop", function(resourceName)
         if DoesEntityExist(Mount) then
             DeleteEntity(Mount)
         end
-        CleanupScript()
+        CleanupScript(true)
     end
 end)
 

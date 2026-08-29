@@ -31,12 +31,16 @@ end
 RegisterNetEvent('feather-character:SelectCharacterScreen', function(data)
     clothing, attributes, makeup, tints, spawnedPeds = {}, {}, {}, {}, {}
     FetchedClothing, FetchedAttributes, FetchedOverlays, FetchedTints = {}, {}, {}, {}
-    -- (CHAR-05) Instance 123 is now allow-listed server-side
-    -- (feather-core Config.PublicInstanceIds) specifically for this shared
-    -- character-select room -- requesting any other id here would no
-    -- longer be honored, closing the "any client can join any bucket by
-    -- number" hole this hardcoded id used to ride on (CORE-03).
-    FeatherCore.RPC.CallAsync('core.instance.enter.v1', { instanceId = 123 })
+    -- The client submits only selection intent. Character validates the
+    -- connected account and asks feather-routing to join its server-owned,
+    -- opaque selection route; no native bucket id crosses this boundary.
+    local routingResult = FeatherCore.RPC.CallAsync('character.selection.route.enter.v1', {})
+    if type(routingResult) ~= 'table' or routingResult.ok ~= true then
+        print(('[feather-character] Character selection routing failed: %s'):format(
+            type(routingResult) == 'table' and (routingResult.message or routingResult.code)
+                or 'invalid response'))
+        return
+    end
     -- Spawning Props
     obj1 = CharacterRuntime.Object:Create(Config.SpawnProps.obj1.name, Config.SpawnProps.obj1.x, Config.SpawnProps.obj1.y, Config.SpawnProps.obj1.z, Config.SpawnProps.obj1.h, false)
     obj2 = CharacterRuntime.Object:Create(Config.SpawnProps.obj2.name, Config.SpawnProps.obj2.x, Config.SpawnProps.obj2.y, Config.SpawnProps.obj2.z, Config.SpawnProps.obj2.h, false)

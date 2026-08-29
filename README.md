@@ -12,6 +12,12 @@
 
 [https://featherframework.net/guide](https://featherframework.net/guide)
 
+Character requires `feather-core`, `feather-routing`, `feather-menu`, and
+`oxmysql`. Start `feather-routing` after Core and before Character. Routing is
+validated as a required runtime capability during Character startup instead of
+being a hard CFX manifest dependency; this allows Routing to restart and restore
+active selection routes without CFX stopping Character.
+
 ## API Documentation and Usage
 
 [https://featherframework.net/api](https://featherframework.net/api)
@@ -128,8 +134,10 @@ these Character lifecycle boundaries.
 
 Character no longer imports Core's legacy `initiate()` API, Character cache, or
 legacy activation/spawn services. It uses named Core readiness, RPC, locale,
-notification, account-session, provider, event, and instance contracts. Selection
-objects and preview peds are private Character presentation helpers.
+notification, account-session, provider, and event contracts. Character-selection
+intent is validated by the Character server, which calls `feather-routing` through
+its server-only opaque-route contract. Selection objects and preview peds are
+private Character presentation helpers.
 
 After a full server restart, run:
 
@@ -139,6 +147,10 @@ CharacterCoreCutoverSmokeTest
 
 All five checks should pass. Then verify selection, creation, activation, `/logout`,
 inventory, weapons, and Admin identity in one connected session.
+
+Run `RoutingContractSmokeTest` and `RoutingLiveSmokeTest <serverId>` before the
+Character cutover test. The routing tests verify opaque handles, ownership,
+membership, native bucket assignment, leave behavior, and cleanup.
 
 ## Troubleshooting
 

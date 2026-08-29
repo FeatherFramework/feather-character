@@ -8,6 +8,11 @@ local function RunCharacterContract1()
     if not migrations.ok then error(('[%s] %s'):format(migrations.code, migrations.message)) end
     CharacterFoundation.MarkMigrationsComplete(migrations.value)
 
+    local routingTransport = CharacterRoutingTransport.Install()
+    if not routingTransport.ok then
+        error(('[%s] %s'):format(routingTransport.code, routingTransport.message))
+    end
+
     local activationTransport = CharacterActivationTransport.Install()
     if not activationTransport.ok then
         error(('[%s] %s'):format(activationTransport.code, activationTransport.message))
@@ -416,7 +421,7 @@ RegisterCommand('CharacterCoreCutoverSmokeTest', function(source)
         for _, route in ipairs(routes.value or {}) do routeNames[route.route] = true end
     end
     local requiredRoutes = {
-        'core.instance.enter.v1', 'core.instance.leave.v1',
+        'character.selection.route.enter.v1', 'character.selection.route.leave.v1',
         'character.list.v1', 'character.get.v1', 'character.create.v1', 'character.delete.v1',
         'character.appearance.get.v1', 'character.appearance.update.v1',
         'character.activate.v1', 'character.spawn.complete.v1',

@@ -1,17 +1,12 @@
 fx_version 'cerulean'
-games { 'rdr3' }
+game 'rdr3'
 rdr3_warning 'I acknowledge that this is a prerelease build of RedM, and I am aware my resources *will* become incompatible once RedM ships.'
 lua54 'yes'
 
 description 'The Character service for the Feather Framework'
 author 'Feather @Jannings'
 name 'feather-character'
-version '0.3.0'
-
-github_version_check 'true'
-github_version_type 'release'
-github_ui_check 'false'
-github_link 'https://github.com/FeatherFramework/feather-character'
+version '0.4.0'
 
 shared_scripts {
     'config.lua',

@@ -19,14 +19,18 @@ FeatherCore = {
 if not IsDuplicityVersion() then
     FeatherCore.Notify = {
         Notify = function(message, duration)
-            return exports['feather-core']:ShowNotification({
-                style = 'right', message = message, duration = duration
-            })
+            local called, result = pcall(function()
+                return exports['feather-notify']:ShowNotification({
+                    style = 'right', message = message, duration = duration
+                })
+            end)
+            if called and type(result) == 'table' then return result end
+            return { ok = false, code = 'provider_unavailable', message = 'Notification presentation is unavailable.' }
         end
     }
     FeatherCore.Teleport = {
         ToCoords = function(coords, options)
-            return exports['feather-core']:TeleportToCoords(coords, options)
+            return CharacterTeleport:ToCoords(coords, options)
         end
     }
 end
