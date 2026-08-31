@@ -206,6 +206,12 @@ function CharacterContract1.Logout()
         Notify(FeatherCore.Locale.translate(0, 'noActiveCharacter'), 'error', 4000)
         return false
     end
+    local checkpoint = CharacterLogoutCheckpoints.Run({ characterId = Characterid, reason = 'logout' })
+    if not checkpoint.ok then
+        Notify(checkpoint.message or 'Character state could not be saved before logout.', 'error', 5000)
+        return false
+    end
+
     local loggedOut = Call('character.logout.v1', { position = CurrentPosition() })
     if not loggedOut.ok then
         Notify(FailureMessage(loggedOut), 'error', 5000)
