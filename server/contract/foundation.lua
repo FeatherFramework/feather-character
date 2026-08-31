@@ -117,7 +117,8 @@ function CharacterFoundation.GetCapabilities()
             appearance = 1,
             activation = 1,
             spawn = 1,
-            provider = 1
+            provider = 1,
+            identity = 1
         }
     })
 end
