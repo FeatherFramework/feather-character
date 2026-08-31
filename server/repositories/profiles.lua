@@ -59,6 +59,46 @@ function CharacterProfiles.Get(characterId)
     return CharacterResults.Ok(Snapshot(rows[1]))
 end
 
+function CharacterProfiles.GetIdentity(characterId)
+    local valid = ValidateId(characterId, 'characterId')
+    if not valid.ok then return valid end
+    local row = MySQL.single.await([[
+        SELECT `character_id`, `account_id`, `status`
+        FROM `character_profiles` WHERE `character_id` = ? LIMIT 1
+    ]], { characterId })
+    if not row then return CharacterResults.Err('not_found', 'Character was not found.') end
+    return CharacterResults.Ok({
+        characterId = row.character_id,
+        accountId = row.account_id,
+        status = row.status
+    })
+end
+
+function CharacterProfiles.Search(query, page, pageSize)
+    query = type(query) == 'string' and query:match('^%s*(.-)%s*$') or ''
+    if #query < 2 or #query > 100 then
+        return CharacterResults.Err('invalid_input', 'Search query must contain 2 to 100 characters.')
+    end
+    page = math.max(1, math.floor(tonumber(page) or 1))
+    pageSize = math.max(1, math.min(100, math.floor(tonumber(pageSize) or 20)))
+    local prefix = query .. '%'
+    local rows = MySQL.query.await(([=[
+        SELECT `character_id`, `account_id`, `first_name`, `last_name`, `status`
+        FROM `character_profiles`
+        WHERE `status` = 'active' AND (`character_id` = ? OR `first_name` LIKE ? OR `last_name` LIKE ?
+            OR CONCAT(`first_name`, ' ', `last_name`) LIKE ?)
+        ORDER BY `first_name`, `last_name`, `character_id` LIMIT %d OFFSET %d
+    ]=]):format(pageSize + 1, (page - 1) * pageSize), { query, prefix, prefix, prefix }) or {}
+    local hasNext = #rows > pageSize
+    if hasNext then rows[#rows] = nil end
+    local output = {}
+    for index, row in ipairs(rows) do
+        output[index] = { characterId = row.character_id, accountId = row.account_id,
+            firstName = row.first_name, lastName = row.last_name, status = row.status }
+    end
+    return CharacterResults.Ok({ profiles = output, page = page, hasNext = hasNext })
+end
+
 function CharacterProfiles.Owns(accountId, characterId)
     local account = ValidateId(accountId, 'accountId')
     if not account.ok then return account end
