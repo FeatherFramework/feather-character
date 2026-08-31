@@ -43,6 +43,12 @@ local provider = {
     GetProfile = function(characterId)
         return CharacterProfiles.Get(characterId)
     end,
+    GetIdentity = function(characterId)
+        return CharacterProfiles.GetIdentity(characterId)
+    end,
+    SearchProfiles = function(query, page, pageSize)
+        return CharacterProfiles.Search(query, page, pageSize)
+    end,
     ListProfiles = function(accountId)
         return CharacterProfiles.List(accountId)
     end,
@@ -143,7 +149,7 @@ function CharacterProfileTransport.Install()
 
     local providerResult = exports['feather-core']:RegisterProvider('character-profile', 'feather-character', provider, {
         contract = 1,
-        capabilities = { profiles = 1, ownership = 1, currentProfile = 1 },
+        capabilities = { profiles = 1, ownership = 1, currentProfile = 1, identity = 1, search = 1 },
         default = true,
         health = function()
             local health = CharacterFoundation.GetHealth()
