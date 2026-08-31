@@ -691,7 +691,8 @@ passed 5/5, `CharacterActivationContractSmokeTest` passed 8/8, and
 - [x] Inventory uses stable character UUID/session lifecycle.
 - [x] Weapons uses stable character UUID/session lifecycle.
 - [x] Admin uses Character identity/provider and Core policy actions.
-- [ ] Economy/roles providers own their state.
+- [ ] Economy provider owns its state.
+- [x] Feather Roles owns the role catalog, Character assignments, and account protection resolution.
 - [x] Core removes legacy Character domain implementation.
 
 ### Security
