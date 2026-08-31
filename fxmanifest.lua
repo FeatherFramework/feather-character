@@ -6,7 +6,7 @@ lua54 'yes'
 description 'The Character service for the Feather Framework'
 author 'Feather @Jannings'
 name 'feather-character'
-version '0.4.2'
+version '0.4.3'
 
 shared_scripts {
     'config.lua',
