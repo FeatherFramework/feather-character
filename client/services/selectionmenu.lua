@@ -215,4 +215,5 @@ RegisterNetEvent('feather-character:CharacterSelectMenu',
             menuFocus = true,
             startupPage = characterSelectPage
         })
+        CharacterRuntime.ReleaseLoadscreen()
     end)

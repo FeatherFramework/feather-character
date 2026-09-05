@@ -4,6 +4,18 @@
 CharacterRuntime = CharacterRuntime or {}
 CharacterRuntime.Prompt = {}
 
+local loadscreenReleased = false
+
+--- Signals that the first usable character UI has opened. This local event is
+--- intentionally optional so Feather Character does not depend on a specific
+--- load-screen resource being installed.
+function CharacterRuntime.ReleaseLoadscreen()
+    if loadscreenReleased then return false end
+    loadscreenReleased = true
+    TriggerEvent('feather-loadscreen:client:character-ready')
+    return true
+end
+
 function CharacterRuntime.Prompt:SetupPromptGroup(groupId)
     local group = { id = groupId or GetRandomIntInRange(0, 0xffffff) }
 

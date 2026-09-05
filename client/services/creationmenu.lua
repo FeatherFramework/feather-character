@@ -399,6 +399,7 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
     CharacterMenu:Open({
         startupPage = mainCreationPage
     })
+    CharacterRuntime.ReleaseLoadscreen()
 end)
 
 RegisterNetEvent('FeatherMenu:closed', function(data)
