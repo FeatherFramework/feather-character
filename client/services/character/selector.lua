@@ -134,8 +134,11 @@ RegisterNetEvent('feather-character:SelectCharacterScreen', function(data)
             end
         end
     end
-    TriggerEvent('feather-character:CharacterSelectMenu', data, 1, CharAmount, clothing, attributes, makeup, tints)
+    -- Finish the selection scene before constructing/opening its UI. The menu
+    -- releases the manual load screen, so opening it first could expose the
+    -- staging camera for a frame and make "character ready" fire too early.
     SwitchCam(Config.CameraCoords.charcamera[1].x, Config.CameraCoords.charcamera[1].y, Config.CameraCoords.charcamera[1].z, Config.CameraCoords.charcamera[1].h, Config.CameraCoords.charcamera[1].zoom)
+    TriggerEvent('feather-character:CharacterSelectMenu', data, 1, CharAmount, clothing, attributes, makeup, tints)
     while Spawned do
         Wait(5)
         SetEntityVisible(PlayerPedId(), false)

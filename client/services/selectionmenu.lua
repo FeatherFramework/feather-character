@@ -210,10 +210,14 @@ RegisterNetEvent('feather-character:CharacterSelectMenu',
                     clothing, attributes, overlays, tints)
             end
         end)
+        -- Manual load-screen shutdown can clear NUI focus. Release it before
+        -- opening the selector, then let Feather Menu own keyboard and cursor
+        -- focus on the following frame.
+        CharacterRuntime.ReleaseLoadscreen()
+        Wait(0)
         CharacterMenu:Open({
             cursorFocus = true,
             menuFocus = true,
             startupPage = characterSelectPage
         })
-        CharacterRuntime.ReleaseLoadscreen()
     end)
