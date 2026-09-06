@@ -396,10 +396,15 @@ RegisterNetEvent('feather-character:CreateCharacterMenu', function()
         style = {}
     })
 
+    -- Manual load-screen shutdown can clear NUI focus. Complete that handoff
+    -- before opening the creation menu so Feather Menu keeps the mouse cursor.
+    CharacterRuntime.ReleaseLoadscreen()
+    Wait(0)
     CharacterMenu:Open({
+        cursorFocus = true,
+        menuFocus = true,
         startupPage = mainCreationPage
     })
-    CharacterRuntime.ReleaseLoadscreen()
 end)
 
 RegisterNetEvent('FeatherMenu:closed', function(data)

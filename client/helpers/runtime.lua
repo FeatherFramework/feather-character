@@ -6,9 +6,10 @@ CharacterRuntime.Prompt = {}
 
 local loadscreenReleased = false
 
---- Signals that the first usable character UI has opened. This local event is
---- intentionally optional so Feather Character does not depend on a specific
---- load-screen resource being installed.
+--- Signals that the first character UI is fully prepared and about to open.
+--- This local event is intentionally optional so Feather Character does not
+--- depend on a specific load-screen resource being installed. Callers yield a
+--- frame afterward and then let Feather Menu take final NUI focus ownership.
 function CharacterRuntime.ReleaseLoadscreen()
     if loadscreenReleased then return false end
     loadscreenReleased = true
