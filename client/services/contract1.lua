@@ -9,6 +9,41 @@ local spawnPointIds = {
     [4] = 'blackwater'
 }
 
+local function NativeTrue(value)
+    return value == true or value == 1
+end
+
+-- Character owns the boundary at which the final network player ped is safe
+-- for dependent resources. This is deliberately based on native readiness and
+-- consecutive stable frames instead of an arbitrary post-spawn delay.
+local function AwaitPlayerRuntimeReady(timeoutMs)
+    local deadline = GetGameTimer() + math.max(1000, math.floor(tonumber(timeoutMs) or 5000))
+    local stableFrames = 0
+    local stablePed = 0
+    while GetGameTimer() < deadline do
+        local ped = PlayerPedId()
+        local ready = ped ~= 0
+            and DoesEntityExist(ped)
+            and NetworkIsPlayerActive(PlayerId())
+            and IsPlayerControlOn(PlayerId())
+            and HasCollisionLoadedAroundEntity(ped)
+            and IsScreenFadedIn()
+            and not IsScreenFadingIn()
+            and not IsScreenFadingOut()
+            and IsGameplayCamRendering()
+            and NativeTrue(Citizen.InvokeNative(0xA0BC8FAED8CFEB3C, ped)) -- IsPedReadyToRender
+        if ready and ped == stablePed then
+            stableFrames = stableFrames + 1
+        else
+            stablePed = ready and ped or 0
+            stableFrames = ready and 1 or 0
+        end
+        if stableFrames >= 8 then return true end
+        Wait(0)
+    end
+    return false
+end
+
 local function Call(route, payload)
     local result, transportError = FeatherCore.RPC.CallAsync(route, payload or {})
     if type(result) == 'table' and result.ok ~= nil then return result end
@@ -190,14 +225,23 @@ function CharacterContract1.Activate(profile, arrivalTownIndex)
         return false
     end
     if not IsScreenFadedIn() then DoScreenFadeIn(500) end
-    TriggerEvent('Feather:Character:Spawned', {
+    local lifecycle = {
         id = publicProfile.characterId,
         characterId = publicProfile.characterId,
         first_name = publicProfile.firstName,
         last_name = publicProfile.lastName,
         model = publicProfile.model
-    })
+    }
+    TriggerEvent('Feather:Character:Spawned', lifecycle)
     StartPositionSync(publicProfile.characterId)
+    if AwaitPlayerRuntimeReady(5000) then
+        print(('[feather-character] runtime-ready character=%s'):format(
+            tostring(publicProfile.characterId)))
+        TriggerEvent('feather-character:client:runtime-ready.v1', lifecycle)
+    else
+        print(('[feather-character] runtime-ready timed out character=%s'):format(
+            tostring(publicProfile.characterId)))
+    end
     return true
 end
 

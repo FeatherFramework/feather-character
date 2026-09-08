@@ -60,6 +60,12 @@ CharacterActivationContractSmokeTest
 
 This checks activation/spawn/logout routes, lifecycle events, configured spawn resolution, session-bound plans, ownership rejection, and Core session input validation.
 
+After `Feather:Character:Spawned`, Character waits for the final network player
+ped to remain render- and collision-ready across consecutive frames, then emits
+the local `feather-character:client:runtime-ready.v1` event. Client resources
+that operate on native ped inventories should use this boundary instead of a
+fixed post-spawn timer.
+
 ## Contract 1 character flow
 
 The selector and creator use Contract 1 exclusively. New characters are UUID
