@@ -21,10 +21,38 @@ function CharacterActivation.Activate(source, accountId, characterId)
     local appearance = CharacterAppearance.Get(characterId)
     if not appearance.ok then return appearance end
 
+    -- Wallet creation is idempotent and carries no starting-money policy.
+    -- Gate Character readiness on Economy rather than exposing a spawned
+    -- character whose authoritative wallets do not exist yet.
+    local readyCalled, economy = pcall(function() return exports['feather-economy']:AwaitReady(30000) end)
+    if not readyCalled or type(economy) ~= 'table' or not economy.ok then
+        return CharacterResults.Err('economy_unavailable', 'Economy is not ready for character activation.')
+    end
+    local account = exports['feather-core']:GetAccountContext(source)
+    if type(account) ~= 'table' or not account.ok or account.value.accountId ~= accountId then
+        return CharacterResults.Err('session_stale', 'Account changed during character activation.')
+    end
     local session = exports['feather-core']:ActivateSession(source, characterId)
     if type(session) ~= 'table' or session.ok ~= true then
         return type(session) == 'table' and session
             or CharacterResults.Err('dependency_unavailable', 'Core session activation is unavailable.')
+    end
+    local provisionCalled, wallets = pcall(function()
+        return exports['feather-economy']:EnsureCharacterWallets({ characterId = characterId })
+    end)
+    local current = exports['feather-core']:IsSessionCurrent(source, session.value.sessionId, characterId)
+    if current ~= true then
+        return CharacterResults.Err('session_stale', 'Character session changed during wallet provisioning.')
+    end
+    if not provisionCalled or type(wallets) ~= 'table' or not wallets.ok then
+        -- Tear down only the session we activated, never a newer/recycled source.
+        local leaving = exports['feather-core']:BeginSessionLeaving(source, 'wallet_provision_failed')
+        if type(leaving) == 'table' and leaving.ok and leaving.value.sessionId == session.value.sessionId then
+            exports['feather-core']:CompleteSessionLeaving(source, session.value.sessionId)
+        end
+        return CharacterResults.Err('wallet_provision_failed', 'Character wallets could not be provisioned.', {
+            code = type(wallets) == 'table' and wallets.code or 'dependency_unavailable'
+        })
     end
     local spawn = CharacterSpawn.BuildPlan(characterId, session.value.sessionId)
     if not spawn.ok then
@@ -35,6 +63,9 @@ function CharacterActivation.Activate(source, accountId, characterId)
         return spawn
     end
 
+    if not exports['feather-core']:IsSessionCurrent(source, session.value.sessionId, characterId) then
+        return CharacterResults.Err('session_stale', 'Character session changed before readiness.')
+    end
     local event = Publish('character.ready.v1', {
         source = source,
         accountId = accountId,
