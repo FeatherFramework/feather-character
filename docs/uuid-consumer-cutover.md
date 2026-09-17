@@ -102,3 +102,21 @@ cutover passed its live regression tests.
 - The live client selector/creator now creates UUID profiles and returns them to selection.
 - `CharacterLiveCutoverSmokeTest` verifies the first connected UUID character.
 - Inventory and Weapons are now UUID-only; numeric character identities are rejected.
+# Economy wallet activation prerequisite
+
+Character now requires feather-economy. Activation awaits bounded Economy
+readiness, rechecks the account, activates the Core session, and idempotently
+calls EnsureCharacterWallets with the canonical Character UUID before publishing
+character.ready.v1 or allowing spawn completion. Existing characters use the
+same activation path; wallet provisioning does not issue starting funds.
+After provisioning, the exact Core session must still be current. Provisioning
+failure tears down only the session created by that attempt and returns an error.
+No dollars/gold storage or balance mutation is added to Character.
+
+Carry this prerequisite into the rewrite's server activation coordinator.
+Core session readiness alone is not Character runtime readiness. Keep the
+existing client logout/spawn lifecycle events so consumers clear stale state.
+The manifest dependency changed: refresh before restarting Character.
+Acceptance: activate a character with no Economy wallets, confirm zero-balance
+wallets exist and HUD appears without manual provisioning; switch to a funded
+character and back, confirming isolated balances and no funds created on retry.
