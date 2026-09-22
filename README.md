@@ -170,6 +170,9 @@ Contributions to the any of our Feather scripts are welcome! If you have improve
 
 This inventory script is licensed under GPL3 License. Refer to the LICENSE file for more information.
 
+The streamed base multiplayer character body assets are credited to
+`mortimersays#8065/db-femped`.
+
 
 ## Current roadmap
 
