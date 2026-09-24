@@ -1,190 +1,65 @@
-Config = {
-    Contract1 = {
-        enabled = true,
-        contract = 1,
-        logging = {
-            level = 'info'
-        },
-        appearance = {
-            maxDocumentBytes = 65536
-        },
-        positionSyncMs = 30000,
-        death = {
-            respawnDelaySeconds = 60,
-            promptKey = 0x760A9C6F, -- G (kept separate from weapon reload on R)
-            cameraEnabled = true,
-            cameraOrbitSpeed = 4.0,
-            respawnHealth = 600,
-            doctors = {
-                {
-                    id = 'valentine', label = 'Valentine Medical',
-                    x = -288.882172, y = 811.387634, z = 119.385941, heading = 236.87
-                },
-                {
-                    id = 'saint_denis', label = 'Saint Denis Medical',
-                    x = 2732.895752, y = -1231.804321, z = 50.370411, heading = 69.18
-                },
-                {
-                    id = 'strawberry', label = 'Strawberry Medical',
-                    x = -1803.796997, y = -430.861938, z = 158.830292, heading = 72.78
-                }
+CharacterV2Config = {
+    -- Development slice only; not a production cutover.
+    development = true,
+    maxCharacters = 5,
+    identity = {
+        firstNameMaxBytes = 24,
+        lastNameMaxBytes = 24,
+        descriptionMaxBytes = 512,
+        birthDateMin = '1819-01-01',
+        birthDateMax = '1881-12-31'
+    },
+    appearance = { schemaVersion = 3, maxDocumentBytes = 65536 },
+    -- These presets initialize the network metaped's drawable slots after
+    -- SetPlayerModel. Saved components replace their visible outfit pieces.
+    -- Matches the v1 LoadPlayer defaults. Female preset 2 belongs to the old
+    -- creation-stage transition and includes the unwanted mask/red jacket.
+    playerBasePreset = { mp_male = 4, mp_female = 3 },
+    preview = {
+        selector = {
+            ped = { x = 124.4016, y = 3.9637, z = 102.8792, heading = 123.04 },
+            scenarioSettleMs = 1800,
+            scenarios = {
+                -- Disabled after live selector review; retained for easy
+                -- comparison while the final pose pool is being curated.
+                -- 'MP_COOP_LOBBY_STANDING_A',
+                -- 'MP_COOP_LOBBY_STANDING_C',
+                -- 'MP_COOP_LOBBY_STANDING_D',
+                'MP_LOBBY_SCENARIO_02',
+                -- 'MP_LOBBY_SCENARIO_04',
+                'MP_LOBBY_SCENARIO_07',
+                'WORLD_HUMAN_SMOKE_CARRYING'
+            },
+            camera = {
+                x = 121.8207, y = 2.3031, z = 103.1410,
+                rotX = -5.1234, rotY = 0.0, rotZ = -62.2142, fov = 38.0
             }
         },
-        spawnPoints = {
-            saint_denis = { label = 'Saint Denis', x = 2714.99, y = -1424.91, z = 46.45, heading = 143.0 },
-            rhodes = { label = 'Rhodes', x = 1300.1214599609, y = -1285.8166503906, z = 75.653411865234, heading = 52.365936279297 },
-            valentine = { label = 'Valentine', x = -273.9114074707, y = 794.712890625, z = 118.66342163086, heading = 158.85372924805 },
-            blackwater = { label = 'Blackwater', x = -686.24639892578, y = -1244.5211181641, z = 43.102550506592, heading = 83.719284057617 }
-        }
-    },
-    -- Gates the dev/test commands in client/services/character/main.lua
-    -- (new/teeth/check/spawn/endcam/endscript/rc). Those commands are also
-    -- now registered as ACE-restricted (command.<name>), so flipping this
-    -- back on for testing doesn't hand them to every player -- only
-    -- principals explicitly granted the ACE can run them.
-    DevMode = false,
-    DyeClothes = true,
-    Heights = {
-        0.8, 0.85, 0.9, 0.95, 1.0, 1.05, 1.1, 1.15, 1.2
-    },
-    defaults = {
-        lang = 'ro',
-        dob = {
-            start = '1826-01-01',
-            min = '1806-01-01',
-            max = '1906-01-01'
-        },
-        money = 0,
-        gold = 0,
-        tokens = 0,
-        xp = 0
-    },
-    Notify = "feather-menu", ----or use feather-core
-    MaxAllowedChars = 4,
-
-    -- Closed profile-input limits shared with the Contract 1 creation
-    -- validator. Model is deliberately a small allowlist.
-    Character = {
-        allowedModels = { mp_male = true, mp_female = true },
-        maxFirstNameLength = 24,
-        maxLastNameLength = 24,
-        maxDescLength = 512,
-        maxImgLength = 256,
-        deletion = {
-            requireConfirmation = true,
-            minimumAgeHours = 0,
-            recoveryDays = 30
-        }
-    },
-
-    SpawnProps = {
-        obj1 = {
-            name = 'mp005_s_posse_tent_bountyhunter07x',
-            x = 130.37,
-            y = -0.10,
-            z = 102.29,
-            h = 270.0
-        },
-        obj2 = {
-            name = 'mp005_s_posse_butcher01x',
-            x = 123.71,
-            y = 3.27,
-            z = 101.97,
-            h = 220.0
-
-        },
-        obj3 = {
-            name = 'p_campfire01x',
-            x = 122.19,
-            y = -0.90,
-            z = 101.95,
-            h = 90.0
-
-        },
-        obj4 = {
-            name = 'p_chair02x',
-            x = 124.93,
-            y = -4.01,
-            z = 102.18,
-            h = 240.0
-
-        }
-    },
-
-    CameraCoords = {
-        selection = {
-            x = 117.77,
-            y = 0.01,
-            z = 103.76,
-            h = -90.51,
-            zoom = 60.00
-        },
-        charcamera = {
-            [1] = { x = 122.0727, y = 2.45, z = 103.54, h = 310.48, zoom = 80.0 },
-            [2] = { x = 125.03, y = -0.32, z = 103.54, h = 272.14, zoom = 80.0 },
-            [3] = { x = 122.75, y = -3.46, z = 103.54, h = 262.80, zoom = 80.0 },
-            [4] = { x = 121.07, y = -2.83, z = 103.54, h = 264.52, zoom = 80.0 },
-            [5] = { x = 117.75, y = -2.82, z = 103.38, h = 272.14, zoom = 80.0 },
-            [6] = { x = 119.69, y = -4.50, z = 103.38, h = 272.14, zoom = 80.0 },
-        },
-        creation = {
-            x = 2551.30, y = -1170.09, z = 54.0, h = 0.75, zoom = 50.0
-        }
-    },
-
-    SpawnCoords = {
-        creation = {
-            x = 2553.15283203125, y = -1161.277587890625, z = 53.6835250854492
-        },
-
-        gotocoords = { x = 2551.22, y = -1167.70, z = 53.68 },
-
-        charspots = {
-            [1] = { x = 124.40160369873047, y = 3.96372103691101, z = 102.87928009033203 },
-            [2] = { x = 126.94853973388672, y = -0.33047696948051, z = 103.12394714355469 },
-            [3] = { x = 124.45506286621094, y = -3.68904304504394, z = 103.14924621582031 },
-            [4] = { x = 122.08714294433594, y = -2.90044069290161, z = 103.03951263427735 },
-            [5] = { x = 122.08714294433594, y = -4.90044069290161, z = 103.03951263427735 },
-            [6] = { x = 122.08714294433594, y = -6.90044069290161, z = 103.03951263427735 },
-            [7] = { x = 120.08714294433594, y = -2.90044069290161, z = 103.03951263427735 },
-        },
-
-        towns = {
-            {
-                --set to train coords still
-                name = 'Saint Denis',                                                            --Name of Area
-                arrival = 'Wagon',                                                               --Method of arriving (Train,Wagon,Horse,Boat)
-                --tip = " " --Info to give to the player, optional
-                cameracoords = { x = 2849.20, y = -1619.75, z = 97.54, h = 33.30, zoom = 80.0 }, -- Camera Coords for the cinematic scene
-                startcoords = { x = 2774.99, y = -1351.91, z = 46.45, h = 143.0 },               -- Cinimatic Scene Start Coords
-                gotocoords = { x = 2714.99, y = -1424.91, z = 46.45, h = 143.0 },                -- Cinimatic Scene Destination Coords
+        creator = {
+            ped = { x = 2551.2200, y = -1167.7000, z = 53.6835, heading = 180.75 },
+            defaultView = 'full',
+            pageViews = {
+                general = 'full', face = 'face', body = 'full', hair = 'face',
+                makeup = 'face', spawn = 'full', review = 'full'
             },
-
-            {
-                name = 'Rhodes',
-                arrival = 'Wagon',
-                --tip = " "
-                cameracoords = { x = 1302.3477783203, y = -1285.8200683594, z = 75.749298095703, h = 242.23068237305, zoom = 60.0 },
-                startcoords = { x = 1335.205078125, y = -1210.04296875, z = 80.691871643066, h = 148.88484191895 },
-                gotocoords = { x = 1300.1214599609, y = -1285.8166503906, z = 75.653411865234, h = 52.365936279297 },
-            },
-            {
-                name = 'Valentine',
-                arrival = 'Horse',
-                --tip = " "
-                cameracoords = { x = -248.94729614258, y = 798.03393554688, z = 166.78594970703, h = 94.020202636719, zoom = 60.0 },
-                startcoords = { x = -244.72610473633, y = 839.16955566406, z = 122.93338012695, h = 131.92630004883 },
-                gotocoords = { x = -273.9114074707, y = 794.712890625, z = 118.66342163086, h = 158.85372924805 },
-            },
-            {
-                name = 'Blackwater',
-                arrival = 'Boat',
-                --tip = " "
-                cameracoords = { x = -720.31, y = -1278.59, z = 42.23, h = 90.0, zoom = 60.0 },
-                startcoords = { x = -644.51879882812, y = -1275.9403076172, z = 40.128196716309, h = 267.40234375 },
-                gotocoords = { x = -686.24639892578, y = -1244.5211181641, z = 43.102550506592, h = 83.719284057617 },
-
-            },
-        }
+            views = {
+                full = { label = 'Full Body', x = 2551.1057, y = -1169.8320, z = 53.6426,
+                    rotX = -1.8421, rotY = 0.0, rotZ = 2.4902, fov = 50.0 },
+                upper = { label = 'Upper Body', x = 2551.0530, y = -1169.1630, z = 54.0829,
+                    rotX = -4.1390, rotY = 0.0, rotZ = 0.7499, fov = 44.25 },
+                face = { label = 'Face', x = 2551.0720, y = -1169.3289, z = 54.4293,
+                    rotX = -4.1390, rotY = 0.0, rotZ = 0.7499, fov = 20.50 },
+                lower = { label = 'Lower Body', x = 2551.1580, y = -1169.4940, z = 53.3575,
+                    rotX = -4.1390, rotY = 0.0, rotZ = 0.7499, fov = 38.25 }
+            }
+        },
+        modelTimeoutMs = 10000,
+        collisionTimeoutMs = 5000
+    },
+    spawnPoints = {
+        saint_denis = { label = 'Saint Denis', x = 2714.99, y = -1424.91, z = 46.45, heading = 143.0 },
+        rhodes = { label = 'Rhodes', x = 1300.1214599609, y = -1285.8166503906, z = 75.653411865234, heading = 52.365936279297 },
+        valentine = { label = 'Valentine', x = -273.9114074707, y = 794.712890625, z = 118.66342163086, heading = 158.85372924805 },
+        blackwater = { label = 'Blackwater', x = -686.24639892578, y = -1244.5211181641, z = 43.102550506592, heading = 83.719284057617 }
     }
 }
