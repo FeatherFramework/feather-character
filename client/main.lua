@@ -7,6 +7,7 @@ local booted = false
 local draft = {}
 local requestKey
 local generation = 0
+local activationLogoutRequested = false
 local CloseMenu, Begin
 
 pcall(function() exports.spawnmanager:setAutoSpawn(false) end)
@@ -45,6 +46,7 @@ local function Run(operation, fn, finally)
         if not ok then
             Log(operation .. ' failed', problem)
             if operation == 'enter world' and CharacterV2Flow.State().phase == 'activating' then
+                pcall(CharacterV2Arrival.Cleanup)
                 local called, aborted = pcall(Rpc, 'character.activation.abort.v1', {})
                 Log('activation: abort', called and (aborted.code or tostring(aborted.ok)) or aborted)
                 CharacterV2Flow.Reset()
@@ -495,7 +497,11 @@ OpenCreator = function()
             { value = 'valentine', label = 'Valentine' },
             { value = 'rhodes', label = 'Rhodes' },
             { value = 'saint_denis', label = 'Saint Denis' },
-            { value = 'blackwater', label = 'Blackwater' }
+            { value = 'blackwater', label = 'Blackwater' },
+            { value = 'strawberry', label = 'Strawberry' },
+            { value = 'van_horn', label = 'Van Horn' },
+            { value = 'armadillo', label = 'Armadillo' },
+            { value = 'tumbleweed', label = 'Tumbleweed' }
         }
     }, function(event) draft.spawnPointId = event.value end)
     elements.review = Require(Menu:AddElement(menuId, pages.review, 'textdisplay', {
@@ -522,7 +528,7 @@ OpenCreator = function()
                 if not created.ok then Log('creation rejected', created.message) return end
                 Log('creation: saved', created.value.characterId)
                 requestKey = nil
-                CharacterV2EnterWorld(created.value.characterId)
+                CharacterV2EnterWorld(created.value.characterId, { afterCreation = true })
             end)
             return
         end
@@ -629,6 +635,8 @@ OpenSelection = function()
         }
     end
     local characterSwitch
+    local debugTown = 'valentine'
+    local debugSpawnSequence = 'direct'
     characterSwitch = Add(page, 'arrows', { key = 'character', label = 'Character', value = selectedIndex,
         options = characterOptions }, function(event)
         if busy then return end
@@ -646,10 +654,51 @@ OpenSelection = function()
             end
         end)
     end)
+    if CharacterV2Config.debug
+        and CharacterV2Config.debug.selectorSpawnSequence == true then
+        Add(page, 'dropdown', {
+            key = 'debug-spawn-town',
+            label = 'Spawn town',
+            value = debugTown,
+            options = {
+                { value = 'valentine', label = 'Valentine' },
+                { value = 'saint_denis', label = 'Saint Denis' },
+                { value = 'strawberry', label = 'Strawberry' },
+                { value = 'rhodes', label = 'Rhodes' },
+                { value = 'blackwater', label = 'Blackwater' },
+                { value = 'van_horn', label = 'Van Horn' },
+                { value = 'armadillo', label = 'Armadillo' },
+                { value = 'tumbleweed', label = 'Tumbleweed' }
+            }
+        }, function(event)
+            debugTown = event.value
+        end)
+        Add(page, 'dropdown', {
+            key = 'debug-spawn-sequence',
+            label = 'Spawn sequence',
+            value = debugSpawnSequence,
+            options = {
+                { value = 'direct', label = 'Direct' },
+                { value = 'horse', label = 'Horse' }
+            }
+        }, function(event)
+            debugSpawnSequence = event.value
+        end)
+    end
     Add(page, 'button', { key = 'enter', label = 'Enter world' },
         function()
             local selected = profiles[selectedIndex]
-            Run('enter world', function() CharacterV2EnterWorld(selected.characterId) end)
+            local enterOptions
+            if CharacterV2Config.debug
+                and CharacterV2Config.debug.selectorSpawnSequence == true then
+                enterOptions = {
+                    debugSpawnTown = debugTown,
+                    debugSpawnSequence = debugSpawnSequence
+                }
+            end
+            Run('enter world', function()
+                CharacterV2EnterWorld(selected.characterId, enterOptions)
+            end)
         end)
     Add(page, 'button', { key = 'delete', label = 'Delete character' }, function()
         if busy then return end
@@ -713,13 +762,35 @@ local function AwaitRuntimeReady(timeoutMs)
     return false
 end
 
-function CharacterV2EnterWorld(characterId)
+function CharacterV2EnterWorld(characterId, options)
+    options = options or {}
+    activationLogoutRequested = false
     Log('activation: requesting', characterId)
     local activated = Rpc('character.activate.v1', { characterId = characterId })
     Require(activated, 'Activate character')
     Require(CharacterV2Flow.Transition('activating'), 'Activation transition')
     local value = activated.value
     local spawn = value.spawn and value.spawn.position
+    local spawnPointId = value.spawn and value.spawn.spawnPointId
+    local debugSpawnSequence
+    if CharacterV2Config.debug
+        and CharacterV2Config.debug.selectorSpawnSequence == true
+        and type(options.debugSpawnTown) == 'string'
+        and (options.debugSpawnSequence == 'direct' or options.debugSpawnSequence == 'horse') then
+        debugSpawnSequence = options.debugSpawnSequence
+        spawnPointId = options.debugSpawnTown
+        local direct = CharacterV2Config.spawnPoints[spawnPointId]
+        if type(direct) ~= 'table' then
+            error('The selected debug town has no configured direct spawn.', 0)
+        end
+        if debugSpawnSequence == 'horse'
+            and type(CharacterV2Config.arrivals.towns[spawnPointId]) ~= 'table' then
+            error('The selected debug town has no configured horse arrival.', 0)
+        end
+        spawn = direct
+        Log('activation: debug spawn sequence', ('type=%s town=%s'):format(
+            debugSpawnSequence, spawnPointId))
+    end
     if type(spawn) ~= 'table' or type(value.appearance) ~= 'table' then
         error('Activation did not contain a spawn plan and appearance.', 0)
     end
@@ -753,28 +824,68 @@ function CharacterV2EnterWorld(characterId)
     if renderReady ~= true and renderReady ~= 1 then error('Network player ped did not render.', 0) end
     Log('activation: applying appearance')
     Require(CharacterV2Appearance.Apply(ped, value.appearance.document), 'Apply appearance')
-    RequestCollisionAtCoord(spawn.x, spawn.y, spawn.z)
-    SetEntityCoords(ped, spawn.x, spawn.y, spawn.z, false, false, false, false)
-    SetEntityHeading(ped, spawn.heading or 0.0)
-    local collisionDeadline = GetGameTimer() + 5000
-    while not HasCollisionLoadedAroundEntity(ped) and GetGameTimer() < collisionDeadline do
+    local function CancelActivationForLogout()
+        if not activationLogoutRequested then return false end
+        activationLogoutRequested = false
+        CharacterV2Arrival.Cleanup()
+        Require(Rpc('character.activation.abort.v1', {}), 'Cancel activation for logout')
+        generation = generation + 1
+        TriggerEvent('Feather:Character:Logout', {
+            characterId = characterId, reason = 'logout'
+        })
+        CharacterV2Flow.Reset()
+        Begin()
+        return true
+    end
+    if CancelActivationForLogout() then return end
+    local arrivalPlayed = false
+    local configuredArrival = type(spawnPointId) == 'string'
+        and CharacterV2Config.arrivals
+        and CharacterV2Config.arrivals.towns[spawnPointId]
+    local playHorseArrival = debugSpawnSequence == 'horse'
+        or (options.afterCreation == true and value.spawn.mode == 'first_spawn'
+            and configuredArrival and configuredArrival.type == 'horse')
+    if playHorseArrival and type(spawnPointId) == 'string' then
+        Log('arrival: requesting', spawnPointId)
+        local forcedType = debugSpawnSequence == 'horse' and 'horse' or nil
+        local arrival = CharacterV2Arrival.Play(spawnPointId, ped, forcedType)
+        if CancelActivationForLogout() then return end
+        if arrival.ok then
+            arrivalPlayed = true
+            Log('arrival: completed', spawnPointId)
+        else
+            Log('arrival: direct fallback', ('code=%s message=%s'):format(
+                tostring(arrival.code), tostring(arrival.message)))
+            if not IsScreenFadedOut() then
+                DoScreenFadeOut(250)
+                while not IsScreenFadedOut() do Wait(0) end
+            end
+        end
+    end
+    if not arrivalPlayed then
         RequestCollisionAtCoord(spawn.x, spawn.y, spawn.z)
-        Wait(0)
+        SetEntityCoords(ped, spawn.x, spawn.y, spawn.z, false, false, false, false)
+        SetEntityHeading(ped, spawn.heading or 0.0)
+        local collisionDeadline = GetGameTimer() + 5000
+        while not HasCollisionLoadedAroundEntity(ped) and GetGameTimer() < collisionDeadline do
+            RequestCollisionAtCoord(spawn.x, spawn.y, spawn.z)
+            Wait(0)
+        end
+        if not HasCollisionLoadedAroundEntity(ped) then
+            error('Authorized spawn collision did not load.', 0)
+        end
+        if PlaceEntityOnGroundProperly(ped) == false then
+            error('Authorized spawn ground placement failed.', 0)
+        end
+        FreezeEntityPosition(ped, false)
+        SetEntityVisible(ped, true)
+        DisplayRadar(true)
     end
-    if not HasCollisionLoadedAroundEntity(ped) then
-        error('Authorized spawn collision did not load.', 0)
-    end
-    if PlaceEntityOnGroundProperly(ped) == false then
-        error('Authorized spawn ground placement failed.', 0)
-    end
-    FreezeEntityPosition(ped, false)
-    SetEntityVisible(ped, true)
-    DisplayRadar(true)
     Log('activation: completing spawn')
     Require(Rpc('character.spawn.complete.v1', {}), 'Complete spawn')
     currentCharacterId = characterId
     Require(CharacterV2Flow.Transition('world'), 'World transition')
-    DoScreenFadeIn(450)
+    if not IsScreenFadedIn() then DoScreenFadeIn(450) end
     local lifecycle = {
         id = characterId, characterId = characterId,
         first_name = value.profile.firstName, last_name = value.profile.lastName,
@@ -828,8 +939,15 @@ Begin = function()
 end
 
 RegisterCommand('logout', function()
+    if CharacterV2Flow.State().phase == 'activating' then
+        activationLogoutRequested = true
+        CharacterV2Arrival.Cleanup()
+        Log('activation: logout requested')
+        return
+    end
     if not currentCharacterId then return end
     Run('logout', function()
+        CharacterV2Arrival.Cleanup()
         local previous = currentCharacterId
         Require(CharacterV2Checkpoints.Run({ characterId = previous, reason = 'logout' }),
             'Logout checkpoint')
@@ -844,6 +962,7 @@ end, false)
 RegisterCommand('savequit', function()
     if not currentCharacterId then return end
     Run('save and quit', function()
+        CharacterV2Arrival.Cleanup()
         local previous = currentCharacterId
         Require(CharacterV2Checkpoints.Run({ characterId = previous, reason = 'save_quit' }),
             'Save and quit checkpoint')

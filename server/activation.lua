@@ -4,6 +4,7 @@ CharacterV2Activation = {}
 
 local selectionRouteId
 local pending = {}
+local active = {}
 
 local function Fail(code, message)
     return CharacterV2Result.Err(code, message)
@@ -40,6 +41,7 @@ local function EndSession(source, sessionId, reason)
     if type(leaving) == 'table' and leaving.ok and leaving.value.sessionId == sessionId then
         exports['feather-core']:CompleteSessionLeaving(source, sessionId)
     end
+    active[source] = nil
 end
 
 function CharacterV2Activation.Activate(source, accountId, characterId)
@@ -64,6 +66,7 @@ function CharacterV2Activation.Activate(source, accountId, characterId)
     local session = exports['feather-core']:ActivateSession(source, characterId)
     if type(session) ~= 'table' or not session.ok then return session end
     local sessionId = session.value.sessionId
+    active[source] = { accountId = accountId, characterId = characterId, sessionId = sessionId }
     local wallets = exports['feather-economy']:EnsureCharacterWallets({ characterId = characterId })
     if type(wallets) ~= 'table' or not wallets.ok then
         EndSession(source, sessionId, 'wallet_provision_failed')
@@ -112,6 +115,7 @@ function CharacterV2Activation.Abort(source)
         expected.characterId, expected.sessionId)
     local completed = exports['feather-core']:CompleteSessionLeaving(source, expected.sessionId)
     if type(completed) ~= 'table' or not completed.ok then return completed end
+    active[source] = nil
     Publish('character.left.v1', source, expected.accountId,
         expected.characterId, expected.sessionId)
     return CharacterV2Result.Ok({ aborted = true })
@@ -129,6 +133,7 @@ function CharacterV2Activation.Logout(source, context, position, reason)
     Publish('character.leaving.v1', source, context.accountId, context.characterId, context.sessionId)
     local completed = exports['feather-core']:CompleteSessionLeaving(source, context.sessionId)
     if type(completed) ~= 'table' or not completed.ok then return completed end
+    active[source] = nil
     Publish('character.left.v1', source, context.accountId, context.characterId, context.sessionId)
     return CharacterV2Result.Ok({ left = true, sessionId = context.sessionId })
 end
@@ -143,7 +148,19 @@ function CharacterV2Activation.Quit(source, context, position)
     return CharacterV2Result.Ok({ saved = true, disconnecting = true })
 end
 
-AddEventHandler('playerDropped', function() pending[source] = nil end)
+AddEventHandler('playerDropped', function()
+    pending[source] = nil
+    active[source] = nil
+end)
 AddEventHandler('onResourceStop', function(resource)
     if resource == 'feather-routing' then selectionRouteId = nil end
+    if resource ~= GetCurrentResourceName() then return end
+    for playerSource, context in pairs(active) do
+        Publish('character.leaving.v1', playerSource, context.accountId,
+            context.characterId, context.sessionId)
+        EndSession(playerSource, context.sessionId, 'character_resource_stopped')
+        Publish('character.left.v1', playerSource, context.accountId,
+            context.characterId, context.sessionId)
+        pending[playerSource] = nil
+    end
 end)
