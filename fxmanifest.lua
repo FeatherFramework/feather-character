@@ -6,7 +6,7 @@ lua54 'yes'
 description 'Feather Character clean-room rewrite (first-playable development slice)'
 author 'Feather Framework'
 name 'feather-character'
-version '0.5.1'
+version '0.6.0'
 
 shared_scripts {
     'config.lua',
@@ -19,7 +19,7 @@ shared_scripts {
 }
 
 server_scripts {
-    '@oxmysql/lib/MySQL.lua',
+    '@feather-mysql/lib/DB.lua',
     'server/schema.lua',
     'server/migrate.lua',
     'server/profiles.lua',
@@ -38,7 +38,7 @@ client_scripts {
 }
 
 dependencies {
-    'oxmysql',
+    'feather-mysql',
     'feather-core',
     'feather-routing',
     'feather-economy',

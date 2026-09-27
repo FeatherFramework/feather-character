@@ -45,6 +45,9 @@ local function Start()
         and (oldState == 'started' or oldState == 'starting') then
         error('Stop feather-character before starting feather-character-v2; both own character.*.v1 routes.')
     end
+    health.phase = 'waiting_for_database'
+    DB.awaitReady()
+    health.phase = 'migration'
     local migration = CharacterV2Migration.Run()
     if not migration.ok then error(('Migration failed: %s'):format(migration.code)) end
     health.phase = 'registering'
@@ -132,19 +135,19 @@ local function Start()
     end, Position, 256)
     local provider = {
         GetIdentity = function(characterId)
-            local row = MySQL.single.await([[
+            local row = DB.one([[
                 SELECT `character_id`, `account_id`, `status` FROM `fc2_characters`
                 WHERE `character_id` = ? LIMIT 1
-            ]], { characterId })
+            ]], characterId)
             if not row then return CharacterV2Result.Err('not_found', 'Character not found.') end
             return CharacterV2Result.Ok({ characterId = row.character_id,
                 accountId = row.account_id, status = row.status })
         end,
         GetProfile = function(characterId)
-            local row = MySQL.single.await([[
+            local row = DB.one([[
                 SELECT `account_id` FROM `fc2_characters`
                 WHERE `character_id` = ? AND `status` = 'active' LIMIT 1
-            ]], { characterId })
+            ]], characterId)
             if not row then return CharacterV2Result.Err('not_found', 'Character not found.') end
             return CharacterV2Profiles.Get(row.account_id, characterId)
         end,
