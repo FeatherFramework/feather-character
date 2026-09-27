@@ -17,18 +17,15 @@ function CharacterV2Migration.Run()
             or type(schema.statements) ~= 'table' or #schema.statements == 0 then
             return CharacterV2Result.Err('invalid_schema', 'The v2 schema definition is incomplete.')
         end
-        local checksum = MySQL.scalar.await('SELECT SHA2(?, 256)', {
-            table.concat(schema.statements, '\n-- statement boundary --\n')
-        })
+        local checksum = DB.value('SELECT SHA2(?, 256)', table.concat(schema.statements, '\n-- statement boundary --\n'))
         if type(checksum) ~= 'string' or #checksum ~= 64 then
             return CharacterV2Result.Err('checksum_unavailable', 'The schema checksum could not be computed.')
         end
 
-        MySQL.query.await(ledgerStatement)
-        local rows = MySQL.query.await(
+        DB.exec(ledgerStatement)
+        local rows = DB.query(
             'SELECT `version`, `checksum` FROM `fc2_schema_migrations` WHERE `version` = ? LIMIT 1',
-            { schema.version }
-        ) or {}
+            schema.version) or {}
         if rows[1] then
             if rows[1].checksum ~= checksum then
                 return CharacterV2Result.Err('schema_drift',
@@ -39,11 +36,10 @@ function CharacterV2Migration.Run()
 
         -- MySQL DDL is not rolled back like ordinary row writes. Each table
         -- definition is idempotent, and the ledger is inserted only afterward.
-        for _, statement in ipairs(schema.statements) do MySQL.query.await(statement) end
-        MySQL.insert.await(
+        for _, statement in ipairs(schema.statements) do DB.exec(statement) end
+        DB.insert(
             'INSERT INTO `fc2_schema_migrations` (`version`, `checksum`) VALUES (?, ?)',
-            { schema.version, checksum }
-        )
+            schema.version, checksum)
         return CharacterV2Result.Ok({ version = schema.version, applied = true })
     end, debug.traceback)
     if success then return outcome end

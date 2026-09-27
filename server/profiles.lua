@@ -75,7 +75,7 @@ local function Digest(draft, document)
         draft.firstName, draft.lastName, draft.dateOfBirth, draft.model,
         draft.spawnPointId, draft.description, document
     }, '\n')
-    local digest = MySQL.scalar.await('SELECT SHA2(?, 256)', { content })
+    local digest = DB.value('SELECT SHA2(?, 256)', content)
     if type(digest) ~= 'string' or #digest ~= 64 then return nil end
     return digest
 end
@@ -111,20 +111,20 @@ function CharacterV2Profiles.Create(accountId, requestKey, input)
     end
 
     local bodyResult, bodyError
-    local called, committed = pcall(MySQL.startTransaction, function(query)
+    local called, committed = pcall(DB.transaction, function(tx)
         local executed, result = pcall(function()
-            query('INSERT INTO `fc2_accounts` (`account_id`) VALUES (?) ON DUPLICATE KEY UPDATE `account_id` = VALUES(`account_id`)', { accountId })
-            query('SELECT `account_id` FROM `fc2_accounts` WHERE `account_id` = ? FOR UPDATE', { accountId })
-            query([[
+            tx.exec('INSERT INTO `fc2_accounts` (`account_id`) VALUES (?) ON DUPLICATE KEY UPDATE `account_id` = VALUES(`account_id`)', accountId)
+            tx.query('SELECT `account_id` FROM `fc2_accounts` WHERE `account_id` = ? FOR UPDATE', accountId)
+            tx.exec([[
                 INSERT IGNORE INTO `fc2_creation_requests`
                     (`account_id`, `request_key`, `payload_digest`, `status`)
                 VALUES (?, ?, ?, 'pending')
-            ]], { accountId, requestKey, digest })
-            local requests = query([[
+            ]], accountId, requestKey, digest)
+            local requests = tx.query([[
                 SELECT `payload_digest`, `status`, `character_id`
                 FROM `fc2_creation_requests`
                 WHERE `account_id` = ? AND `request_key` = ? FOR UPDATE
-            ]], { accountId, requestKey }) or {}
+            ]], accountId, requestKey) or {}
             local request = requests[1]
             if not request then
                 return CharacterV2Result.Err('database_unavailable', 'Creation request could not be locked.')
@@ -140,40 +140,40 @@ function CharacterV2Profiles.Create(accountId, requestKey, input)
                 return CharacterV2Result.Err('creation_conflict', 'Creation request is inconsistent.')
             end
 
-            local counts = query([[
+            local counts = tx.query([[
                 SELECT COUNT(*) AS `total` FROM `fc2_characters`
                 WHERE `account_id` = ? AND `status` = 'active'
-            ]], { accountId }) or {}
+            ]], accountId) or {}
             if (tonumber(counts[1] and counts[1].total) or 0) >= CharacterV2Config.maxCharacters then
                 return CharacterV2Result.Err('character_limit', 'This account has reached its character limit.')
             end
-            local uuids = query('SELECT UUID() AS `character_id`') or {}
+            local uuids = tx.query('SELECT UUID() AS `character_id`') or {}
             local characterId = uuids[1] and uuids[1].character_id
             if not Uuid(characterId) then
                 return CharacterV2Result.Err('database_unavailable', 'Character identity could not be generated.')
             end
-            query([[
+            tx.exec([[
                 INSERT INTO `fc2_characters`
                     (`character_id`, `account_id`, `first_name`, `last_name`, `date_of_birth`,
                      `model`, `description`, `status`)
                 VALUES (?, ?, ?, ?, ?, ?, ?, 'active')
-            ]], { characterId, accountId, draft.firstName, draft.lastName,
-                draft.dateOfBirth, draft.model, draft.description })
-            query([[
+            ]], characterId, accountId, draft.firstName, draft.lastName,
+                draft.dateOfBirth, draft.model, draft.description)
+            tx.exec([[
                 INSERT INTO `fc2_appearances`
                     (`character_id`, `schema_version`, `revision`, `document`)
                 VALUES (?, ?, 1, ?)
-            ]], { characterId, CharacterV2Config.appearance.schemaVersion, document })
-            query([[
+            ]], characterId, CharacterV2Config.appearance.schemaVersion, document)
+            tx.exec([[
                 INSERT INTO `fc2_spawn_states`
                     (`character_id`, `mode`, `spawn_point_id`)
                 VALUES (?, 'first_spawn', ?)
-            ]], { characterId, draft.spawnPointId })
-            query([[
+            ]], characterId, draft.spawnPointId)
+            tx.exec([[
                 UPDATE `fc2_creation_requests`
                 SET `status` = 'completed', `character_id` = ?
                 WHERE `account_id` = ? AND `request_key` = ?
-            ]], { characterId, accountId, requestKey })
+            ]], characterId, accountId, requestKey)
             return CharacterV2Result.Ok({ characterId = characterId, idempotent = false })
         end)
         if not executed then bodyError = tostring(result) return false end
@@ -205,13 +205,13 @@ function CharacterV2Profiles.UpdatePosition(accountId, characterId, position)
         or heading < -360 or heading > 360 then
         return CharacterV2Result.Err('position_invalid', 'Character position is outside world bounds.')
     end
-    local changed = MySQL.update.await([[
+    local changed = DB.exec([[
         UPDATE `fc2_spawn_states` s
         INNER JOIN `fc2_characters` c ON c.`character_id` = s.`character_id`
         SET s.`mode` = 'last_position', s.`position_x` = ?, s.`position_y` = ?,
             s.`position_z` = ?, s.`heading` = ?, s.`revision` = s.`revision` + 1
         WHERE s.`character_id` = ? AND c.`account_id` = ? AND c.`status` = 'active'
-    ]], { x, y, z, heading, characterId, accountId })
+    ]], x, y, z, heading, characterId, accountId)
     if tonumber(changed) ~= 1 then return CharacterV2Result.Err('not_found', 'Character was not found.') end
     return CharacterV2Result.Ok(true)
 end
@@ -220,13 +220,13 @@ function CharacterV2Profiles.List(accountId)
     if not Uuid(accountId) then
         return CharacterV2Result.Err('invalid_input', 'Account identity is required.')
     end
-    local rows = MySQL.query.await([[
+    local rows = DB.query([[
         SELECT `character_id`, `first_name`, `last_name`, `date_of_birth`,
                `model`, `description`, `status`
         FROM `fc2_characters`
         WHERE `account_id` = ? AND `status` = 'active'
         ORDER BY `created_at`, `character_id`
-    ]], { accountId }) or {}
+    ]], accountId) or {}
     local profiles = {}
     for index, row in ipairs(rows) do profiles[index] = PublicProfile(row) end
     return CharacterV2Result.Ok(profiles)
@@ -237,11 +237,11 @@ function CharacterV2Profiles.Delete(accountId, characterId)
         return CharacterV2Result.Err('invalid_input',
             'Account and character identities are required.')
     end
-    local changed = MySQL.update.await([[
+    local changed = DB.exec([[
         UPDATE `fc2_characters`
         SET `status` = 'deleted', `deleted_at` = CURRENT_TIMESTAMP(3)
         WHERE `account_id` = ? AND `character_id` = ? AND `status` = 'active'
-    ]], { accountId, characterId })
+    ]], accountId, characterId)
     if tonumber(changed) ~= 1 then
         return CharacterV2Result.Err('not_found', 'Character was not found.')
     end
@@ -252,13 +252,13 @@ function CharacterV2Profiles.Get(accountId, characterId)
     if not Uuid(accountId) or not Uuid(characterId) then
         return CharacterV2Result.Err('invalid_input', 'Account and character identities are required.')
     end
-    local row = MySQL.single.await([[
+    local row = DB.one([[
         SELECT `character_id`, `first_name`, `last_name`, `date_of_birth`,
                `model`, `description`, `status`
         FROM `fc2_characters`
         WHERE `account_id` = ? AND `character_id` = ? AND `status` = 'active'
         LIMIT 1
-    ]], { accountId, characterId })
+    ]], accountId, characterId)
     if not row then return CharacterV2Result.Err('not_found', 'Character was not found.') end
     return CharacterV2Result.Ok(PublicProfile(row))
 end
@@ -267,13 +267,13 @@ function CharacterV2Profiles.GetAppearance(accountId, characterId)
     if not Uuid(accountId) or not Uuid(characterId) then
         return CharacterV2Result.Err('invalid_input', 'Account and character identities are required.')
     end
-    local row = MySQL.single.await([[
+    local row = DB.one([[
         SELECT a.`schema_version`, a.`revision`, a.`document`, c.`model`
         FROM `fc2_appearances` a
         INNER JOIN `fc2_characters` c ON c.`character_id` = a.`character_id`
         WHERE c.`account_id` = ? AND c.`character_id` = ? AND c.`status` = 'active'
         LIMIT 1
-    ]], { accountId, characterId })
+    ]], accountId, characterId)
     if not row then return CharacterV2Result.Err('not_found', 'Appearance was not found.') end
     local schemaVersion = tonumber(row.schema_version)
     local decoded, document = pcall(json.decode, row.document)
@@ -306,14 +306,14 @@ function CharacterV2Profiles.GetSpawnState(accountId, characterId)
     if not Uuid(accountId) or not Uuid(characterId) then
         return CharacterV2Result.Err('invalid_input', 'Account and character identities are required.')
     end
-    local row = MySQL.single.await([[
+    local row = DB.one([[
         SELECT s.`mode`, s.`spawn_point_id`, s.`position_x`, s.`position_y`,
                s.`position_z`, s.`heading`, s.`revision`
         FROM `fc2_spawn_states` s
         INNER JOIN `fc2_characters` c ON c.`character_id` = s.`character_id`
         WHERE c.`account_id` = ? AND c.`character_id` = ? AND c.`status` = 'active'
         LIMIT 1
-    ]], { accountId, characterId })
+    ]], accountId, characterId)
     if not row then return CharacterV2Result.Err('not_found', 'Spawn state was not found.') end
     return CharacterV2Result.Ok({
         mode = row.mode, spawnPointId = row.spawn_point_id,

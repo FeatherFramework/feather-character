@@ -8,7 +8,7 @@ Feather Framework RedM server.
 
 Install and start these resources before `feather-character`:
 
-- `oxmysql`
+- `feather-mysql`
 - `feather-core`
 - `feather-routing`
 - `feather-economy`
@@ -25,7 +25,7 @@ versions use the same resource name and character contracts.
 4. Add the resources to `server.cfg` in dependency order:
 
 ```cfg
-ensure oxmysql
+ensure feather-mysql
 ensure feather-core
 ensure feather-routing
 ensure feather-economy
@@ -36,7 +36,9 @@ ensure feather-character
 5. Start the server and run `CharacterV2Status` in the server console.
 6. Allow players to connect only after the command reports `state=ready`.
 
-Database migrations run automatically. The resource creates and maintains its
+Character's server scripts import `@feather-mysql/lib/DB.lua` and use plain
+`DB.*` calls. On startup it waits for the database, then database migrations
+run automatically. The resource creates and maintains its
 own `fc2_*` tables. It does not import or modify legacy character tables.
 
 ## Basic configuration
