@@ -195,6 +195,30 @@ RegisterCommand('CharacterV2Status', function(source)
         tostring(health.failure or 'none')))
 end, true)
 
+-- Optional Chat integration: no manifest/dependency change or Character restart
+-- required for later Chat restarts once this code is loaded normally.
+local chatSuggestionsRegistered = false
+local function RegisterChatSuggestions()
+    if chatSuggestionsRegistered or GetResourceState('feather-chat') ~= 'started' then return end
+    local health = exports['feather-chat']:GetHealth()
+    if not health.ok or health.value.state ~= 'ready' then return end
+    for _, definition in ipairs({
+        { key='feather-character.logout', trigger='/logout', description='Log out to character selection' },
+        { key='feather-character.savequit', trigger='/savequit', description='Save your character and quit the game' }
+    }) do
+        local result = exports['feather-chat']:RegisterSuggestion(definition)
+        if not result.ok and result.code ~= 'conflict' then
+            print('[feather-character] chat suggestion registration failed code=' .. tostring(result.code)); return
+        end
+    end
+    chatSuggestionsRegistered = true
+end
+AddEventHandler('chat.ready.v1', RegisterChatSuggestions)
+AddEventHandler('onResourceStop', function(resource)
+    if resource == 'feather-chat' then chatSuggestionsRegistered = false end
+end)
+CreateThread(RegisterChatSuggestions)
+
 CreateThread(function()
     local ok, failure = xpcall(Start, debug.traceback)
     if not ok then
