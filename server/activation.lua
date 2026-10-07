@@ -1,3 +1,14 @@
+local function medicalEnabled()
+    local state = GetResourceState('feather-medical')
+    if state == 'missing' then return false end
+    if state ~= 'started' then return nil end
+    local called, health = pcall(function() return exports['feather-medical']:GetHealth() end)
+    if not called or type(health) ~= 'table' or type(health.enabled) ~= 'boolean' then return nil end
+    if health.enabled == false then return false end
+    if health.state ~= 'ready' then return nil end
+    return true
+end
+
 -- The server owns selection routing, sessions, wallet provisioning and spawn
 -- coordinates. Both new and existing characters activate through this path.
 CharacterV2Activation = {}
@@ -54,6 +65,7 @@ function CharacterV2Activation.Activate(source, accountId, characterId)
     local point = CharacterV2Config.spawnPoints[spawn.value.spawnPointId]
     local position = spawn.value.mode == 'last_position' and spawn.value.position or point
     if type(position) ~= 'table' then return Fail('spawn_invalid', 'The saved spawn point is unavailable.') end
+    local medical
 
     local economy = exports['feather-economy']:AwaitReady(30000)
     if type(economy) ~= 'table' or not economy.ok then
@@ -75,6 +87,24 @@ function CharacterV2Activation.Activate(source, accountId, characterId)
     if exports['feather-core']:IsSessionCurrent(source, sessionId, characterId) ~= true then
         return Fail('session_stale', 'Character session changed during activation.')
     end
+    local medicalEnabledNow = medicalEnabled()
+    if medicalEnabledNow == nil then
+        EndSession(source, sessionId, 'medical_unavailable')
+        return Fail('medical_unavailable', 'Medical is installed but unavailable.')
+    end
+    if medicalEnabledNow then
+        local called, result = pcall(function() return exports['feather-medical']:PrepareCharacter(characterId, source, sessionId) end)
+        if not called or type(result) ~= 'table' or not result.ok then
+            local detail = not called and tostring(result) or type(result) == 'table' and tostring(result.code) or 'invalid_result'
+            print('[feather-character] Medical preparation failed: ' .. detail)
+            EndSession(source, sessionId, 'medical_provision_failed')
+            return Fail('medical_unavailable', 'Medical enrollment or restoration is unavailable (' .. (called and type(result) == 'table' and tostring(result.code) or 'export_failed') .. ').')
+        end
+        medical = result.value
+    end
+    if exports['feather-core']:IsSessionCurrent(source, sessionId, characterId) ~= true then
+        return Fail('session_stale', 'Character session changed during Medical restoration.')
+    end
     local announced = Publish('character.ready.v1', source, accountId, characterId, sessionId)
     if type(announced) ~= 'table' or not announced.ok then
         EndSession(source, sessionId, 'ready_event_failed')
@@ -82,12 +112,30 @@ function CharacterV2Activation.Activate(source, accountId, characterId)
     end
     pending[source] = { accountId = accountId, characterId = characterId, sessionId = sessionId }
     return CharacterV2Result.Ok({
-        session = session.value, profile = profile.value, appearance = appearance.value,
+        session = session.value, profile = profile.value, appearance = appearance.value, medical = medical,
         spawn = { characterId = characterId, sessionId = sessionId,
             mode = spawn.value.mode, spawnPointId = spawn.value.spawnPointId,
             position = { x = position.x, y = position.y, z = position.z, heading = position.heading } }
     })
 end
+
+exports('GetMedicalReadySession', function(source)
+    local key = active[source] and source or active[tonumber(source)] and tonumber(source) or tostring(source)
+    local expected = active[key]
+    if pending[key] or not expected
+        or exports['feather-core']:IsSessionCurrent(source, expected.sessionId, expected.characterId) ~= true then
+        return {ok = false, code = 'not_ready'}
+    end
+    return {ok = true, value = {characterId = expected.characterId, sessionId = expected.sessionId}}
+end)
+
+exports('GetMedicalRecoveryDestination', function(key)
+    if GetInvokingResource() ~= 'feather-medical' then return {ok = false, code = 'forbidden'} end
+    key = key or 'valentine'
+    local point = CharacterV2Config.spawnPoints[key]
+    if not point then return {ok = false, code = 'spawn_invalid'} end
+    return {ok = true, value = {id = key, x = point.x, y = point.y, z = point.z, heading = point.heading}}
+end)
 
 function CharacterV2Activation.CompleteSpawn(source, context)
     local expected = pending[source]

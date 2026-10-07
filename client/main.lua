@@ -1,6 +1,7 @@
 local Menu = exports['feather-menu-v2']
 local menuId
 local currentCharacterId
+local currentSessionId
 local opening = false
 local busy = false
 local booted = false
@@ -9,8 +10,6 @@ local requestKey
 local generation = 0
 local activationLogoutRequested = false
 local CloseMenu, Begin
-
-pcall(function() exports.spawnmanager:setAutoSpawn(false) end)
 
 local function Log(stage, detail)
     print(('[feather-character-v2] %s%s'):format(stage,
@@ -842,9 +841,9 @@ function CharacterV2EnterWorld(characterId, options)
     local configuredArrival = type(spawnPointId) == 'string'
         and CharacterV2Config.arrivals
         and CharacterV2Config.arrivals.towns[spawnPointId]
-    local playHorseArrival = debugSpawnSequence == 'horse'
+    local playHorseArrival = (not value.medical or value.medical.lifeState == 'alive') and (debugSpawnSequence == 'horse'
         or (options.afterCreation == true and value.spawn.mode == 'first_spawn'
-            and configuredArrival and configuredArrival.type == 'horse')
+            and configuredArrival and configuredArrival.type == 'horse'))
     if playHorseArrival and type(spawnPointId) == 'string' then
         Log('arrival: requesting', spawnPointId)
         local forcedType = debugSpawnSequence == 'horse' and 'horse' or nil
@@ -882,8 +881,10 @@ function CharacterV2EnterWorld(characterId, options)
         DisplayRadar(true)
     end
     Log('activation: completing spawn')
+    if value.medical then Require(CharacterV2Medical.ApplyCondition(value.medical), 'Restore Medical condition') end
     Require(Rpc('character.spawn.complete.v1', {}), 'Complete spawn')
     currentCharacterId = characterId
+    currentSessionId = value.session.sessionId
     Require(CharacterV2Flow.Transition('world'), 'World transition')
     if not IsScreenFadedIn() then DoScreenFadeIn(450) end
     local lifecycle = {
@@ -975,6 +976,12 @@ end, false)
 exports('HasActiveCharacter', function()
     return currentCharacterId ~= nil
 end)
+
+CharacterV2Medical.GetContext = function()
+    if not currentCharacterId or CharacterV2Flow.State().phase ~= 'world' then return nil end
+    return {characterId = currentCharacterId, sessionId = currentSessionId}
+end
+exports('GetMedicalContext', CharacterV2Medical.GetContext)
 
 CreateThread(Begin)
 AddEventHandler('playerSpawned', Begin)
