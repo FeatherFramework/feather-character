@@ -177,6 +177,16 @@ the town's safe Direct spawn.
 
 ## Operational notes
 
+- Character suppresses generic automatic spawnmanager spawning and reasserts
+  ownership after map/resource starts. Do not run resources that call
+  `spawnPlayer` directly or replace its callback; they can replace the character.
+- This guard preserves the ped on death. Persisted death, doctor respawn,
+  ailments and authorized recovery still require the Medical lifecycle in the
+  framework docs. Staff revive remains the existing Admin path.
+- After this manifest update, restart the test server and verify male/female
+  death past the default respawn timer, appearance, location, staff revive,
+  map start and spawnmanager restart in game.
+
 - Restarting `feather-character` while players are connected is not a supported
   production workflow. Character lifecycle integrations in Inventory, Settings,
   and other resources can also be interrupted.
@@ -188,3 +198,14 @@ the town's safe Direct spawn.
 
 Architecture plans and development documents are maintained separately in the
 [Feather Framework Docs repository](https://github.com/DavFount/feather-framework-docs/tree/main/feather-character).
+
+
+## Medical integration
+
+Medical settings live in feather-medical/config.lua. Character checks Medical's
+GetHealth export during activation. Missing Medical retains normal behavior;
+explicitly disabled Medical also retains normal behavior. Installed but stopped,
+unavailable or invalid Medical blocks activation rather than clearing death.
+Start Medical before Character. Persistent death defaults on. Hospital recovery
+is selected by Medical; temporary fallback uses Config.medical.temporarySpawnPoint.
+Update Character, Medical and Admin together; see Medical's owner README.
