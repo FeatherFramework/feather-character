@@ -24,7 +24,10 @@ function CharacterV2Checkpoints.Run(context)
     for name, registration in pairs(registrations) do
         if GetResourceState(registration.owner) == 'started' then
             local called, result = pcall(function()
-                return exports[registration.owner][registration.exportName](context)
+                -- CFX's export proxy consumes the first argument as self.
+                -- Dynamic method lookup still needs the resource receiver.
+                local provider=exports[registration.owner]
+                return provider[registration.exportName](provider,context)
             end)
             if not called or type(result) ~= 'table' or not result.ok then
                 return CharacterV2Result.Err('checkpoint_failed',
