@@ -122,25 +122,38 @@ function CharacterV2Preview.Open(viewName, model)
         -- ped inherits a real grounded matrix instead of being teleported from
         -- an unrelated spawn position.
         SetEntityVisible(playerPed, false)
-        FreezeEntityPosition(playerPed, false)
+        -- Keep the source anchored while the distant stage streams. Unfreezing
+        -- before collision is ready can let it fall away from the requested
+        -- location; a previous selector may also have disabled its collision.
+        FreezeEntityPosition(playerPed, true)
         if not activeSelectorGround then
+            SetEntityCollision(playerPed, true, true)
             RequestCollisionAtCoord(position.x, position.y, position.z)
             SetEntityCoords(playerPed, position.x, position.y, position.z,
                 false, false, false, false)
-            local sourceCollisionDeadline = GetGameTimer()
-                + CharacterV2Config.preview.collisionTimeoutMs
-            while ticket == generation and GetGameTimer() < sourceCollisionDeadline do
+            local sourceCollisionStarted = GetGameTimer()
+            local timeout = CharacterV2Config.preview.collisionTimeoutMs
+            while ticket == generation and PlayerPedId() == playerPed and DoesEntityExist(playerPed)
+                and (GetGameTimer() - sourceCollisionStarted) % 4294967296 < timeout do
                 RequestCollisionAtCoord(position.x, position.y, position.z)
-                if HasCollisionLoadedAroundEntity(playerPed) then break end
+                if NativeTrue(HasCollisionLoadedAroundEntity(playerPed)) then break end
                 Wait(0)
             end
-            if ticket ~= generation or not HasCollisionLoadedAroundEntity(playerPed) then
+            if ticket ~= generation then
+                return CharacterV2Result.Err('preview_cancelled', 'The selector preview was cancelled.')
+            end
+            if PlayerPedId() ~= playerPed or not DoesEntityExist(playerPed)
+                or not NativeTrue(HasCollisionLoadedAroundEntity(playerPed)) then
+                CharacterV2Preview.Close()
                 return CharacterV2Result.Err('preview_timeout',
-                    'The selector stage collision did not load.')
+                    ('The selector stage collision did not load within %sms.'):format(timeout))
             end
             SetEntityHeading(playerPed, position.heading or 0.0)
             PlaceEntityOnGroundProperly(playerPed)
             Wait(100)
+            if ticket ~= generation then
+                return CharacterV2Result.Err('preview_cancelled', 'The selector preview was cancelled.')
+            end
             local resolved = GetEntityCoords(playerPed)
             activeSelectorGround = { x = resolved.x, y = resolved.y, z = resolved.z }
         end

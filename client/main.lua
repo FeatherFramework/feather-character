@@ -10,6 +10,8 @@ local requestKey
 local generation = 0
 local activationLogoutRequested = false
 local CloseMenu, Begin
+local selectionPreviewFailure
+local selectionRetryAvailable = false
 
 local function Log(stage, detail)
     print(('[feather-character-v2] %s%s'):format(stage,
@@ -112,6 +114,9 @@ end
 
 local function Preview(view, model, appearance, reveal)
     local opened = CharacterV2Preview.Open(view, model)
+    if view == 'selector' and type(opened) == 'table' and not opened.ok then
+        selectionPreviewFailure = opened.code
+    end
     Require(opened, 'Open preview')
     Log('presentation:', ('view=%s ped=%s player=%s'):format(
         view, tostring(opened.value.ped), tostring(opened.value.ped == PlayerPedId())))
@@ -913,31 +918,76 @@ function CharacterV2EnterWorld(characterId, options)
     end)
 end
 
-Begin = function()
+local function BootstrapSelection()
+    while not NetworkIsSessionStarted() or PlayerPedId() == 0 do Wait(250) end
+    SetEntityVisible(PlayerPedId(), false)
+    FreezeEntityPosition(PlayerPedId(), true)
+    DisplayRadar(false)
+    local routed
+    for _ = 1, 20 do
+        routed = Rpc('character.selection.route.enter.v1', {})
+        if routed.ok then break end
+        Wait(1000)
+    end
+    Require(routed, 'Enter selection route')
+    Require(CharacterV2Flow.Transition('selection'), 'Begin selection')
+    OpenSelection()
+end
+
+local function CleanupSelectionBootstrap()
+    local menuClosed = pcall(CloseMenu)
+    local previewClosed, closed = pcall(CharacterV2Preview.Close)
+    local playerHeld = pcall(function()
+        local ped = PlayerPedId()
+        if ped and ped ~= 0 and DoesEntityExist(ped) then
+            SetEntityVisible(ped, false)
+            SetEntityAlpha(ped, 0, false)
+            FreezeEntityPosition(ped, true)
+        end
+    end)
+    return menuClosed and previewClosed and type(closed) == 'table' and closed.ok and playerHeld
+end
+
+Begin = function(manualRetry)
     local phase = CharacterV2Flow.State().phase
     if opening or currentCharacterId or phase == 'selection'
         or phase == 'creator' or phase == 'activating' then return end
+    if selectionRetryAvailable and manualRetry ~= true then return end
     opening = true
+    selectionRetryAvailable = false
     CreateThread(function()
-        local ok, problem = xpcall(function()
-            while not NetworkIsSessionStarted() or PlayerPedId() == 0 do Wait(250) end
-            SetEntityVisible(PlayerPedId(), false)
-            FreezeEntityPosition(PlayerPedId(), true)
-            DisplayRadar(false)
-            local routed
-            for _ = 1, 20 do
-                routed = Rpc('character.selection.route.enter.v1', {})
-                if routed.ok then break end
-                Wait(1000)
+        for attempt = 1, 3 do
+            selectionPreviewFailure = nil
+            local ok, problem = xpcall(BootstrapSelection, debug.traceback)
+            if ok then break end
+            Log('bootstrap failed', ('attempt=%s/3 %s'):format(attempt, tostring(problem)))
+            local failedPhase = CharacterV2Flow.State().phase
+            if currentCharacterId or failedPhase == 'activating' or failedPhase == 'world' then break end
+            if not CleanupSelectionBootstrap() then
+                Log('selection: cleanup failed', 'Automatic retry blocked; reconnect the client.')
+                break
             end
-            Require(routed, 'Enter selection route')
-            Require(CharacterV2Flow.Transition('selection'), 'Begin selection')
-            OpenSelection()
-        end, debug.traceback)
-        if not ok then Log('bootstrap failed', problem) end
+            CharacterV2Flow.Reset()
+            local retryable = failedPhase == 'selection' and
+                (selectionPreviewFailure == 'preview_timeout' or selectionPreviewFailure == 'model_timeout'
+                    or selectionPreviewFailure == 'preview_render_timeout')
+            if not retryable or attempt == 3 then
+                selectionRetryAvailable = true
+                Log('selection: unavailable', 'Use characterSelectionRetry in F8 to retry; no character was activated.')
+                break
+            end
+            Log('selection: retrying', ('attempt=%s/3 after preview streaming timeout'):format(attempt + 1))
+            Wait(1000)
+        end
         opening = false
     end)
 end
+
+RegisterCommand('characterSelectionRetry', function()
+    if not selectionRetryAvailable or opening or currentCharacterId
+        or CharacterV2Flow.State().phase ~= 'idle' then return end
+    Begin(true)
+end, false)
 
 RegisterCommand('logout', function()
     if CharacterV2Flow.State().phase == 'activating' then
