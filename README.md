@@ -53,6 +53,41 @@ Edit `config.lua` to configure:
 - selector and creator presentation settings;
 - model and collision timeouts.
 
+### Selection and creation weather
+
+`feather-weather` is an optional presentation provider, not a mandatory Character dependency.
+Start it before Character when installed. Weather `0.1.1` admits `feather-character`
+at maximum priority 10 by default; for an existing/custom Weather config, add
+`['feather-character'] = { maxPriority=10 }` to `overrideOwners` and restart Weather.
+Character never needs an entry in Weather's server mutation allowlist.
+
+`sceneEnvironment` configures separate selector/creator presets (both default to
+fixed noon/sunny), a 1-second weather transition, calm wind, and primary snow coverage.
+The client reuses one local handle when cycling characters or switching between
+selection and creation. It renews the 120-second lifetime every 30 seconds, so long
+creator sessions stay consistent. Set `enabled=false` to keep shared conditions.
+Use finite limits: priority `0..100` within the Weather owner policy, TTL `2..3600`
+within Weather's configured maximum, renewal `1000..TTL*500` milliseconds, readiness
+wait `0..10000` milliseconds, and transition `0..300` seconds. Preset clock values
+are seconds of week `0..<604800`; weather names must be accepted by Weather.
+
+Character requests the scene before opening/revealing its preview. It waits at most
+5 seconds for application by default, then continues with background recovery.
+Missing, unready, denied, or restarting Weather cannot prevent character use. F8
+reports degraded environment status rather than altering global weather or calling
+weather natives directly. `characterWeatherStatus` prints view, status, and handle
+presence in F8; `active` confirms effective requested channels, not visual proof.
+
+Activation releases the override while faded out, before leaving the selection
+route and before direct spawn or horse arrival. The newest shared conditions then
+apply. Bootstrap cleanup and Character stop release its handle too; Weather's
+owner-stop cleanup/TTL is an additional safety net. Weather restarting during a
+selector/creator scene invalidates the handle and triggers reacquisition when ready;
+restarting it during gameplay never acquires a Character scene override.
+
+No bucket change, admin permission, appearance document, or persisted character
+state is changed by this integration. Stable previews remain a separate consumer.
+
 Each selectable town requires an entry in `spawnPoints`. This position is used
 for Direct spawning and as the safe fallback when a cinematic cannot finish.
 

@@ -1,4 +1,16 @@
 CharacterV2Config = {
+    -- Optional Feather Weather presentation. Missing/unready Weather never blocks login.
+    -- The same owned handle spans selector/creator and renews until scene exit.
+    sceneEnvironment = {
+        enabled = true,
+        priority = 10,
+        ttlSeconds = 120,
+        renewIntervalMs = 30000,
+        readyTimeoutMs = 5000,
+        transitionSeconds = 1,
+        selector = { clock = 12 * 3600, weather = 'sunny' },
+        creator = { clock = 12 * 3600, weather = 'sunny' }
+    },
     debug = {
         selectorSpawnSequence = false
     },
