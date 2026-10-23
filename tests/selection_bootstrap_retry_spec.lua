@@ -3,7 +3,7 @@ local originalPrint=print
 local function run(mode)
  dofile('config.lua'); dofile('shared/result.lua'); dofile('client/flow.lua')
  local threads,handlers,commands,logs,registered={},{},{},{},{}
- local attempts,closed,opened,reads=0,0,0,0
+ local attempts,closed,opened,reads,weatherEntered,weatherLeft=0,0,0,0,0,0
  local succeed=mode=='eventual'
  local hidden,frozen=false,false
  print=function(v) logs[#logs+1]=v end
@@ -18,6 +18,11 @@ local function run(mode)
  DisplayRadar=function() end; DoScreenFadeOut=function() end
  IsScreenFadedIn=function() return true end; TriggerEvent=function() end
  CharacterV2Medical={}
+ CharacterV2Environment={Enter=function(view)
+  assert(view=='selector'); weatherEntered=weatherEntered+1
+ end,Leave=function(reason)
+  assert(reason=='bootstrap_cleanup'); weatherLeft=weatherLeft+1
+ end}
  CharacterV2Appearance={InitializePed=function() return CharacterV2Result.Ok(true) end,
   Apply=function() return CharacterV2Result.Ok(true) end}
  CharacterV2Preview={Open=function()
@@ -75,6 +80,8 @@ local function run(mode)
   assert(attempts==1 and closed==0 and CharacterV2Flow.State().phase=='activating','never reset an activation/world owner')
  end
  assert(reads<=12,'retries remain bounded read-only RPC work')
+ assert(weatherEntered==attempts,'every actual selector preview requests its environment')
+ assert(weatherLeft==closed,'every bootstrap preview cleanup releases scene intent/handle')
 end
 for _,mode in ipairs({'eventual','all_fail','fatal','cleanup_failure','activation_race'}) do run(mode) end
 print=originalPrint

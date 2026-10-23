@@ -46,7 +46,8 @@ local function Run(operation, fn, finally)
         local ok, problem = xpcall(fn, debug.traceback)
         if not ok then
             Log(operation .. ' failed', problem)
-            if operation == 'enter world' and CharacterV2Flow.State().phase == 'activating' then
+            if (operation == 'enter world' or operation == 'creation')
+                and CharacterV2Flow.State().phase == 'activating' then
                 pcall(CharacterV2Arrival.Cleanup)
                 local called, aborted = pcall(Rpc, 'character.activation.abort.v1', {})
                 Log('activation: abort', called and (aborted.code or tostring(aborted.ok)) or aborted)
@@ -55,6 +56,7 @@ local function Run(operation, fn, finally)
                 if not IsScreenFadedOut() then DoScreenFadeOut(250) Wait(300) end
                 pcall(CloseMenu)
                 pcall(CharacterV2Preview.Close)
+                CharacterV2Environment.Leave('activation_abort')
                 Begin()
             elseif not IsScreenFadedIn() then
                 DoScreenFadeIn(350)
@@ -113,6 +115,7 @@ local function ShowMenu(pageId)
 end
 
 local function Preview(view, model, appearance, reveal)
+    CharacterV2Environment.Enter(view)
     local opened = CharacterV2Preview.Open(view, model)
     if view == 'selector' and type(opened) == 'table' and not opened.ok then
         selectionPreviewFailure = opened.code
@@ -802,6 +805,7 @@ function CharacterV2EnterWorld(characterId, options)
     Wait(400)
     CloseMenu()
     CharacterV2Preview.Close()
+    CharacterV2Environment.Leave('activation')
     Log('activation: leaving selection route')
     Require(Rpc('character.selection.route.leave.v1', {}), 'Leave selection route')
     local hash = joaat(value.profile.model)
@@ -935,6 +939,7 @@ local function BootstrapSelection()
 end
 
 local function CleanupSelectionBootstrap()
+    CharacterV2Environment.Leave('bootstrap_cleanup')
     local menuClosed = pcall(CloseMenu)
     local previewClosed, closed = pcall(CharacterV2Preview.Close)
     local playerHeld = pcall(function()
