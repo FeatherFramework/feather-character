@@ -7,6 +7,12 @@ local activeHorse
 local activeCamera
 local generation = 0
 local controlsLocked = false
+local runningTicket
+local NativeWait = Wait
+local function Wait(ms)
+    NativeWait(ms)
+    if runningTicket and runningTicket ~= generation then error('arrival_cancelled', 0) end
+end
 
 local function Ok(value)
     return CharacterV2Result.Ok(value)
@@ -84,42 +90,13 @@ local function CreateFollowCamera(horse, spec)
     return true
 end
 
-local function BeginFleeCleanup(horse, spec)
-    local ticket = generation
-    SetEntityInvincible(horse, false)
-    SetBlockingOfNonTemporaryEvents(horse, false)
-    SetPedCanRagdoll(horse, true)
-    Citizen.InvokeNative(0x22B0D0E37CCB840D,
-        horse,
-        PlayerPedId(),
-        spec.fleeDistance,
-        spec.fleeTimeoutMs,
-        spec.fleeType,
-        spec.fleeSpeed
-    )
-    Log('horse fleeing', ('ped=%s fadeAfterMs=%s'):format(horse, spec.fadeAfterMs))
-    CreateThread(function()
-        Wait(spec.fadeAfterMs)
-        if ticket ~= generation or horse ~= activeHorse or not DoesEntityExist(horse) then return end
-        local started = GetGameTimer()
-        while ticket == generation and horse == activeHorse and DoesEntityExist(horse) do
-            local progress = math.min((GetGameTimer() - started) / spec.fadeDurationMs, 1.0)
-            SetEntityAlpha(horse, math.floor(255 * (1.0 - progress)), false)
-            if progress >= 1.0 then break end
-            Wait(0)
-        end
-        if ticket == generation and horse == activeHorse then
-            DeleteOwnedHorse()
-            Log('horse cleanup complete')
-        end
-    end)
-end
-
 local function PlayHorse(townKey, town, playerPed)
     local horseSpec = town.horse
     if not IsScreenFadedOut() then
         DoScreenFadeOut(250)
-        while not IsScreenFadedOut() do Wait(0) end
+        local fadeDeadline = GetGameTimer() + 2000
+        while not IsScreenFadedOut() and GetGameTimer() < fadeDeadline do Wait(0) end
+        if not IsScreenFadedOut() then DoScreenFadeOut(0) end
     end
     local hash = LoadModel(horseSpec.model, CharacterV2Config.arrivals.modelTimeoutMs)
     if not hash then return Fail('arrival_model_timeout', 'The arrival horse model did not load.') end
@@ -241,10 +218,13 @@ local function PlayHorse(townKey, town, playerPed)
     Log('player fully dismounted', ('horse=%s'):format(horse))
 
     ClearPedTasks(playerPed)
-    DestroyOwnedCamera(true)
-    DisplayRadar(true)
+    DoScreenFadeOut(250)
+    local fadeDeadline = GetGameTimer() + 2000
+    while not IsScreenFadedOut() and GetGameTimer() < fadeDeadline do Wait(0) end
+    if not IsScreenFadedOut() then DoScreenFadeOut(0) end
+    DestroyOwnedCamera(false)
+    DeleteOwnedHorse()
     controlsLocked = false
-    BeginFleeCleanup(horse, horseSpec.cleanup)
     Log('horse complete', ('town=%s'):format(townKey))
     return Ok({ played = true, type = 'horse', town = townKey })
 end
@@ -258,11 +238,14 @@ function CharacterV2Arrival.Play(townKey, playerPed, requestedType)
     if arrivalType ~= 'horse' then
         return Fail('arrival_unsupported', 'This arrival type is not implemented yet.')
     end
+    runningTicket = generation
     local ok, result = xpcall(function() return PlayHorse(townKey, town, playerPed) end, debug.traceback)
+    runningTicket = nil
     if not ok then
         if not IsScreenFadedOut() then
             DoScreenFadeOut(250)
             Wait(300)
+            DoScreenFadeOut(0)
         end
         CharacterV2Arrival.Cleanup()
         return Fail('arrival_failed', tostring(result))
@@ -272,6 +255,7 @@ function CharacterV2Arrival.Play(townKey, playerPed, requestedType)
         if not IsScreenFadedOut() then
             DoScreenFadeOut(250)
             Wait(300)
+            DoScreenFadeOut(0)
         end
         CharacterV2Arrival.Cleanup()
         return failure

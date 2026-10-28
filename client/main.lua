@@ -9,6 +9,7 @@ local draft = {}
 local requestKey
 local generation = 0
 local activationLogoutRequested = false
+local activatingSessionId
 local CloseMenu, Begin
 local selectionPreviewFailure
 local selectionRetryAvailable = false
@@ -235,18 +236,20 @@ OpenCreator = function()
         end
         return options
     end
+    local function HairText(key, fallback)
+        return CharacterV2Locale and CharacterV2Locale.Text('character.hair.' .. key) or fallback
+    end
     local function StyleOptions(groups)
-        local options = { { value = 0, label = 'None' } }
-        for index = 1, #groups do options[#options + 1] = { value = index, label = 'Style ' .. index } end
+        local options = { { value = 0, label = HairText('none', 'None') } }
+        for index = 1, #groups do options[#options + 1] = { value = index, label = CharacterV2HairCatalog.StyleLabel(groups[index][1], index) } end
         return options
     end
-    local hairColors = { 'Blonde', 'Brown', 'Dark Brown', 'Dark Blonde', 'Dark Ginger',
-        'Dark Grey', 'Ginger', 'Grey', 'Black', 'Light Blonde', 'Light Brown',
-        'Light Ginger', 'Light Grey', 'Medium Brown', 'Platinum', 'Silver', 'Uncle Grey' }
+    local hairColors = { 'blonde', 'brown', 'dark_brown', 'dark_blonde', 'dark_ginger', 'dark_grey', 'ginger', 'grey', 'black', 'light_blonde', 'light_brown', 'light_ginger', 'light_grey', 'medium_brown', 'platinum', 'silver', 'uncle_grey' }
     local function VariantOptions(group)
         local options = {}
         for index = 1, #(group or {}) do
-            options[index] = { value = index, label = hairColors[index] or ('Variant ' .. index) }
+            options[index] = { value = index, label = hairColors[index] and HairText('color.' .. hairColors[index], hairColors[index])
+                or (HairText('variant', 'Variant') .. ' ' .. index) }
         end
         return options
     end
@@ -438,7 +441,7 @@ OpenCreator = function()
             draft.appearance.attributes[categoryName] = { hash = 0 }
             draft.appearance.attributes[variantName] = { hash = 0 }
             Require(Menu:UpdateElement(menuId, pages.hair, hairElements[kind .. 'Variant'], {
-                options = { { value = 1, label = 'None' } }, value = 1, disabled = true
+                options = { { value = 1, label = HairText('none', 'None') } }, value = 1, disabled = true
             }), 'Disable ' .. kind .. ' variant')
         else
             local group = groups[hairSelection[kind]]
@@ -460,7 +463,7 @@ OpenCreator = function()
         ApplyDraftAppearance()
     end
     local hairGroups = CharacterV2HairCatalog.Groups(draft.model, 'hair')
-    hairElements.hairCategory = Require(Menu:AddElement(menuId, pages.hair, 'dropdown', {
+    hairElements.hairCategory = Require(Menu:AddElement(menuId, pages.hair, 'arrows', {
         key = 'hair-style', label = 'Hair style', value = 1, options = StyleOptions(hairGroups)
     }, function(event) SelectHairStyle('hair', event.value) end), 'Add hair style').elementId
     hairElements.hairVariant = Require(Menu:AddElement(menuId, pages.hair, 'arrows', {
@@ -473,7 +476,7 @@ OpenCreator = function()
     }, function(event) SelectHairStyle('beard', event.value) end), 'Add beard style').elementId
     hairElements.beardVariant = Require(Menu:AddElement(menuId, pages.hair, 'arrows', {
         key = 'beard-variant', label = 'Facial hair color', value = 1,
-        options = { { value = 1, label = 'None' } }, disabled = true
+        options = { { value = 1, label = HairText('none', 'None') } }, disabled = true
     }, function(event) SelectHairVariant('beard', event.value) end), 'Add beard variant').elementId
     ResetHairControls = function()
         local groups = CharacterV2HairCatalog.Groups(draft.model, 'hair')
@@ -486,11 +489,11 @@ OpenCreator = function()
         hairSelection.beard = 0
         Require(Menu:UpdateElement(menuId, pages.hair, hairElements.beardCategory, {
             options = male and StyleOptions(CharacterV2HairCatalog.Groups(draft.model, 'beard'))
-                or { { value = 0, label = 'Not available' } },
+                or { { value = 0, label = HairText('unavailable', 'Not available') } },
             value = 0, disabled = not male
         }), 'Reset beard styles')
         Require(Menu:UpdateElement(menuId, pages.hair, hairElements.beardVariant, {
-            options = { { value = 1, label = 'None' } }, value = 1, disabled = true
+            options = { { value = 1, label = HairText('none', 'None') } }, value = 1, disabled = true
         }), 'Reset beard variants')
     end
     ResetOverlayControls = CharacterV2OverlayMenu.Build({
@@ -769,6 +772,13 @@ local function AwaitRuntimeReady(timeoutMs)
     return false
 end
 
+RegisterNetEvent('feather-character:spawnExpired', function(sessionId)
+    if sessionId ~= activatingSessionId then return end
+    activationLogoutRequested = true
+    DoScreenFadeOut(0)
+    CharacterV2Arrival.Cleanup()
+end)
+
 function CharacterV2EnterWorld(characterId, options)
     options = options or {}
     activationLogoutRequested = false
@@ -777,6 +787,7 @@ function CharacterV2EnterWorld(characterId, options)
     Require(activated, 'Activate character')
     Require(CharacterV2Flow.Transition('activating'), 'Activation transition')
     local value = activated.value
+    activatingSessionId = value.session.sessionId
     local spawn = value.spawn and value.spawn.position
     local spawnPointId = value.spawn and value.spawn.spawnPointId
     local debugSpawnSequence
@@ -806,8 +817,9 @@ function CharacterV2EnterWorld(characterId, options)
     CloseMenu()
     CharacterV2Preview.Close()
     CharacterV2Environment.Leave('activation')
-    Log('activation: leaving selection route')
-    Require(Rpc('character.selection.route.leave.v1', {}), 'Leave selection route')
+    Log('activation: entering private spawn route')
+    Require(Rpc('character.spawn.prepare.v1', { town = debugSpawnSequence and spawnPointId or nil, sessionId = activatingSessionId }),
+        'Prepare private spawn route')
     local hash = joaat(value.profile.model)
     RequestModel(hash)
     local deadline = GetGameTimer() + 10000
@@ -836,7 +848,7 @@ function CharacterV2EnterWorld(characterId, options)
         if not activationLogoutRequested then return false end
         activationLogoutRequested = false
         CharacterV2Arrival.Cleanup()
-        Require(Rpc('character.activation.abort.v1', {}), 'Cancel activation for logout')
+        Require(Rpc('character.activation.abort.v1', { sessionId = activatingSessionId }), 'Cancel activation for logout')
         generation = generation + 1
         TriggerEvent('Feather:Character:Logout', {
             characterId = characterId, reason = 'logout'
@@ -870,7 +882,17 @@ function CharacterV2EnterWorld(characterId, options)
             end
         end
     end
-    if not arrivalPlayed then
+    CharacterV2Arrival.Cleanup()
+    local reveal
+    local revealDeadline = GetGameTimer() + 20000
+    repeat
+        if CancelActivationForLogout() then return end
+        reveal = Rpc('character.spawn.reveal.v1', { arrived = arrivalPlayed, sessionId = activatingSessionId })
+        if reveal.ok or reveal.code ~= 'spawn_occupied' then break end
+        Wait(1000)
+    until GetGameTimer() >= revealDeadline
+    spawn = Require(reveal, 'Prepare shared-world reveal').position
+    do
         RequestCollisionAtCoord(spawn.x, spawn.y, spawn.z)
         SetEntityCoords(ped, spawn.x, spawn.y, spawn.z, false, false, false, false)
         SetEntityHeading(ped, spawn.heading or 0.0)
@@ -889,11 +911,23 @@ function CharacterV2EnterWorld(characterId, options)
         SetEntityVisible(ped, true)
         DisplayRadar(true)
     end
+    FreezeEntityPosition(ped, true)
     Log('activation: completing spawn')
     if value.medical then Require(CharacterV2Medical.ApplyCondition(value.medical), 'Restore Medical condition') end
-    Require(Rpc('character.spawn.complete.v1', {}), 'Complete spawn')
+    if CancelActivationForLogout() then return end
+    local completed
+    local completeDeadline = GetGameTimer() + 5000
+    repeat
+        if CancelActivationForLogout() then return end
+        completed = Rpc('character.spawn.complete.v1', { sessionId = activatingSessionId })
+        if completed.ok or completed.code ~= 'spawn_not_ready' then break end
+        Wait(1000)
+    until GetGameTimer() >= completeDeadline
+    Require(completed, 'Complete spawn')
+    FreezeEntityPosition(ped, false)
     currentCharacterId = characterId
     currentSessionId = value.session.sessionId
+    activatingSessionId = nil
     Require(CharacterV2Flow.Transition('world'), 'World transition')
     if not IsScreenFadedIn() then DoScreenFadeIn(450) end
     local lifecycle = {
@@ -1041,5 +1075,14 @@ exports('GetMedicalContext', CharacterV2Medical.GetContext)
 CreateThread(Begin)
 AddEventHandler('playerSpawned', Begin)
 AddEventHandler('onClientResourceStop', function(resource)
-    if resource == GetCurrentResourceName() then CloseMenu() end
+    if resource == GetCurrentResourceName() then
+        CloseMenu()
+        if activatingSessionId then
+            local ped = PlayerPedId()
+            ClearPedTasksImmediately(ped)
+            FreezeEntityPosition(ped, false)
+            SetEntityVisible(ped, true)
+            DoScreenFadeIn(0)
+        end
+    end
 end)

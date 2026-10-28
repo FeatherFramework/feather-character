@@ -28,6 +28,8 @@ server_scripts {
 }
 
 client_scripts {
+    'client/locale.lua',
+    'translations/*.lua',
     'client/spawn_ownership.lua',
     'client/flow.lua',
     'client/environment.lua',

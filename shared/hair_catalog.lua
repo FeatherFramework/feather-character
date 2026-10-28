@@ -16,3 +16,93 @@ function CharacterV2HairCatalog.Contains(model, kind, hash)
     return false
 end
 
+
+-- Exact component names from rdr3_discoveries/clothes/cloth_hash_names.lua.
+local styles = {
+    [88214985] = { key = 'character.hair.female.027', number = 27 }, -- CLOTHING_ITEM_F_HAIR_027_BLONDE
+    [96942958] = { key = 'character.hair.male.004', number = 4 }, -- CLOTHING_ITEM_M_HAIR_004_BLONDE
+    [121268493] = { key = 'character.hair.female.010', number = 10 }, -- CLOTHING_ITEM_F_HAIR_010_BLONDE
+    [133371048] = { key = 'character.hair.female.301', number = 301 }, -- CLOTHING_ITEM_F_HAIR_301_UNCLE_GREY
+    [182670013] = { key = 'character.hair.male.300', number = 300 }, -- CLOTHING_ITEM_M_HAIR_300_LIGHT_BROWN
+    [248711205] = { key = 'character.beard.male.016', number = 16 }, -- CLOTHING_ITEM_M_BEARD_016_BLONDE
+    [306678665] = { key = 'character.beard.male.004', number = 4 }, -- CLOTHING_ITEM_M_BEARD_004_BLONDE
+    [354937489] = { key = 'character.beard.male.007', number = 7 }, -- CLOTHING_ITEM_M_BEARD_007_BLONDE
+    [390637164] = { key = 'character.beard.male.018', number = 18 }, -- CLOTHING_ITEM_M_BEARD_018_BLONDE
+    [477432347] = { key = 'character.hair.female.002', number = 2 }, -- CLOTHING_ITEM_F_HAIR_002_BLONDE
+    [480662374] = { key = 'character.hair.female.003', number = 3 }, -- CLOTHING_ITEM_F_HAIR_003_BLONDE
+    [482292860] = { key = 'character.hair.male.012', number = 12 }, -- CLOTHING_ITEM_M_HAIR_012_BLONDE
+    [560477017] = { key = 'character.beard.male.001', number = 1 }, -- CLOTHING_ITEM_M_BEARD_001_BLONDE
+    [915512969] = { key = 'character.hair.female.023', number = 23 }, -- CLOTHING_ITEM_F_HAIR_023_BLONDE
+    [927821405] = { key = 'character.hair.female.024', number = 24 }, -- CLOTHING_ITEM_F_HAIR_024_BLONDE
+    [934537342] = { key = 'character.beard.male.010', number = 10 }, -- CLOTHING_ITEM_M_BEARD_010_BLONDE
+    [1025183400] = { key = 'character.hair.male.006', number = 6 }, -- CLOTHING_ITEM_M_HAIR_006_BLONDE
+    [1186635858] = { key = 'character.hair.male.013', number = 13 }, -- CLOTHING_ITEM_M_HAIR_013_BLONDE
+    [1303356467] = { key = 'character.hair.male.024', number = 24 }, -- CLOTHING_ITEM_M_HAIR_024_BLONDE
+    [1400480499] = { key = 'character.beard.male.024', number = 24 }, -- CLOTHING_ITEM_M_BEARD_024_BLONDE
+    [1414303182] = { key = 'character.hair.male.002', number = 2 }, -- CLOTHING_ITEM_M_HAIR_002_BLONDE
+    [1437370193] = { key = 'character.beard.male.012', number = 12 }, -- CLOTHING_ITEM_M_BEARD_012_BLONDE
+    [1480607404] = { key = 'character.hair.male.028', number = 28 }, -- CLOTHING_ITEM_M_HAIR_028_BLONDE
+    [1529984470] = { key = 'character.hair.male.003', number = 3 }, -- CLOTHING_ITEM_M_HAIR_003_BLONDE
+    [1560191357] = { key = 'character.hair.female.014', number = 14 }, -- CLOTHING_ITEM_F_HAIR_014_BLONDE
+    [1597397871] = { key = 'character.beard.male.008', number = 8 }, -- CLOTHING_ITEM_M_BEARD_008_BLONDE
+    [1604665635] = { key = 'character.hair.male.023', number = 23 }, -- CLOTHING_ITEM_M_HAIR_023_BLONDE
+    [1613479242] = { key = 'character.hair.female.013', number = 13 }, -- CLOTHING_ITEM_F_HAIR_013_BLONDE
+    [1658129915] = { key = 'character.beard.male.011', number = 11 }, -- CLOTHING_ITEM_M_BEARD_011_BLONDE
+    [1769735681] = { key = 'character.hair.male.025', number = 25 }, -- CLOTHING_ITEM_M_HAIR_025_BLONDE
+    [1882197063] = { key = 'character.beard.male.009', number = 9 }, -- CLOTHING_ITEM_M_BEARD_009_BLONDE
+    [1906774516] = { key = 'character.beard.male.002', number = 2 }, -- CLOTHING_ITEM_M_BEARD_002_BLONDE
+    [1917811014] = { key = 'character.hair.female.021', number = 21 }, -- CLOTHING_ITEM_F_HAIR_021_BLONDE
+    [2112480140] = { key = 'character.hair.male.001', number = 1 }, -- CLOTHING_ITEM_M_HAIR_001_BLONDE
+    [2143613419] = { key = 'character.hair.female.028', number = 28 }, -- CLOTHING_ITEM_F_HAIR_028_BLONDE
+    [2174658263] = { key = 'character.hair.female.022', number = 22 }, -- CLOTHING_ITEM_F_HAIR_022_BLONDE
+    [2216002083] = { key = 'character.hair.male.014', number = 14 }, -- CLOTHING_ITEM_M_HAIR_014_BLONDE
+    [2228517358] = { key = 'character.hair.male.005', number = 5 }, -- CLOTHING_ITEM_M_HAIR_005_BLONDE
+    [2240841015] = { key = 'character.hair.male.011', number = 11 }, -- CLOTHING_ITEM_M_HAIR_011_BLONDE
+    [2249755552] = { key = 'character.hair.female.020', number = 20 }, -- CLOTHING_ITEM_F_HAIR_020_BLONDE
+    [2288776154] = { key = 'character.hair.male.016', number = 16 }, -- CLOTHING_ITEM_M_HAIR_016_BLONDE
+    [2295166995] = { key = 'character.hair.female.015', number = 15 }, -- CLOTHING_ITEM_F_HAIR_015_BLONDE
+    [2344611188] = { key = 'character.hair.male.021', number = 21 }, -- CLOTHING_ITEM_M_HAIR_021_BLONDE
+    [2415588384] = { key = 'character.beard.male.017', number = 17 }, -- CLOTHING_ITEM_M_BEARD_017_BLONDE
+    [2506655238] = { key = 'character.hair.female.008', number = 8 }, -- CLOTHING_ITEM_F_HAIR_008_BLONDE
+    [2682500828] = { key = 'character.hair.female.011', number = 11 }, -- CLOTHING_ITEM_F_HAIR_011_BLONDE
+    [2836117189] = { key = 'character.beard.male.014', number = 14 }, -- CLOTHING_ITEM_M_BEARD_014_BLONDE
+    [2841000722] = { key = 'character.hair.male.020', number = 20 }, -- CLOTHING_ITEM_M_HAIR_020_BLONDE
+    [2879633831] = { key = 'character.hair.male.019', number = 19 }, -- CLOTHING_ITEM_M_HAIR_019_BLONDE
+    [2997748201] = { key = 'character.hair.male.009', number = 9 }, -- CLOTHING_ITEM_M_HAIR_009_BLONDE
+    [3055193076] = { key = 'character.hair.female.012', number = 12 }, -- CLOTHING_ITEM_F_HAIR_012_BLONDE
+    [3157863298] = { key = 'character.hair.female.007', number = 7 }, -- CLOTHING_ITEM_F_HAIR_007_BLONDE
+    [3169600415] = { key = 'character.beard.male.013', number = 13 }, -- CLOTHING_ITEM_M_BEARD_013_BLONDE
+    [3202209652] = { key = 'character.beard.male.019', number = 19 }, -- CLOTHING_ITEM_M_BEARD_019_BLONDE
+    [3270933002] = { key = 'character.beard.male.015', number = 15 }, -- CLOTHING_ITEM_M_BEARD_015_BLONDE
+    [3370600127] = { key = 'character.hair.male.008', number = 8 }, -- CLOTHING_ITEM_M_HAIR_008_BLONDE
+    [3446625095] = { key = 'character.hair.female.025', number = 25 }, -- CLOTHING_ITEM_F_HAIR_025_BLONDE
+    [3593465254] = { key = 'character.beard.male.005', number = 5 }, -- CLOTHING_ITEM_M_BEARD_005_BLONDE
+    [3595472271] = { key = 'character.hair.male.017', number = 17 }, -- CLOTHING_ITEM_M_HAIR_017_BLONDE
+    [3644947867] = { key = 'character.hair.male.022', number = 22 }, -- CLOTHING_ITEM_M_HAIR_022_BLONDE
+    [3678086192] = { key = 'character.beard.male.020', number = 20 }, -- CLOTHING_ITEM_M_BEARD_020_BLONDE
+    [3720555038] = { key = 'character.beard.male.022', number = 22 }, -- CLOTHING_ITEM_M_BEARD_022_BLONDE
+    [3727020008] = { key = 'character.hair.male.007', number = 7 }, -- CLOTHING_ITEM_M_HAIR_007_BLONDE
+    [3805554892] = { key = 'character.beard.male.006', number = 6 }, -- CLOTHING_ITEM_M_BEARD_006_BLONDE
+    [3887861344] = { key = 'character.hair.female.001', number = 1 }, -- CLOTHING_ITEM_F_HAIR_001_BLONDE
+    [3909933651] = { key = 'character.hair.male.015', number = 15 }, -- CLOTHING_ITEM_M_HAIR_015_BLONDE
+    [3939138320] = { key = 'character.beard.male.023', number = 23 }, -- CLOTHING_ITEM_M_BEARD_023_BLONDE
+    [3946673397] = { key = 'character.hair.male.018', number = 18 }, -- CLOTHING_ITEM_M_HAIR_018_BLONDE
+    [3965585130] = { key = 'character.beard.male.003', number = 3 }, -- CLOTHING_ITEM_M_BEARD_003_BLONDE
+    [3981330188] = { key = 'character.hair.female.004', number = 4 }, -- CLOTHING_ITEM_F_HAIR_004_BLONDE
+    [3991177694] = { key = 'character.hair.female.026', number = 26 }, -- CLOTHING_ITEM_F_HAIR_026_BLONDE
+    [4056827265] = { key = 'character.hair.female.005', number = 5 }, -- CLOTHING_ITEM_F_HAIR_005_BLONDE
+    [4137407896] = { key = 'character.hair.male.010', number = 10 }, -- CLOTHING_ITEM_M_HAIR_010_BLONDE
+    [4175818022] = { key = 'character.hair.female.019', number = 19 }, -- CLOTHING_ITEM_F_HAIR_019_BLONDE
+    [4178651078] = { key = 'character.hair.female.017', number = 17 }, -- CLOTHING_ITEM_F_HAIR_017_BLONDE
+    [4207646230] = { key = 'character.hair.female.016', number = 16 }, -- CLOTHING_ITEM_F_HAIR_016_BLONDE
+    [4210106379] = { key = 'character.hair.female.018', number = 18 }, -- CLOTHING_ITEM_F_HAIR_018_BLONDE
+    [4213681404] = { key = 'character.hair.female.006', number = 6 }, -- CLOTHING_ITEM_F_HAIR_006_BLONDE
+    [4214953211] = { key = 'character.beard.male.021', number = 21 }, -- CLOTHING_ITEM_M_BEARD_021_BLONDE
+    [4232584509] = { key = 'character.hair.female.009', number = 9 }, -- CLOTHING_ITEM_F_HAIR_009_BLONDE
+}
+function CharacterV2HairCatalog.StyleLabel(hash, index)
+    local style = styles[hash]
+    if not CharacterV2Locale then return string.format('Style %02d', style and style.number or index) end
+    local name = CharacterV2Locale.Text(style and style.key or 'character.hair.style')
+    return name .. string.format(' %02d', style and style.number or index)
+end

@@ -152,8 +152,23 @@ Use one of these values:
 
 Horse arrivals keep the screen black while the player and horse are prepared.
 The screen fades in after road navigation begins. At the destination, the
-player dismounts naturally and the temporary horse flees before fading out and
-being deleted.
+player dismounts naturally, then the screen fades out and the temporary horse
+and camera are deleted before shared-world handoff. The horse remains local to
+this private cinematic; nearby world players see only the completed reveal.
+The old `horse.cleanup` flee/fade settings are retained for config compatibility
+but no longer run after the ride.
+
+Each pending activation uses its own Feather Routing route (`relaxed`, population
+disabled), including direct placement. Selection moves directly into that route.
+The server reserves the configured arrival destination, or the configured town
+spawn if the destination is occupied, with three metres of player clearance.
+Direct fallback uses the authorized direct spawn. If all applicable positions
+are occupied, Character waits privately for up to 20 seconds and then returns to
+selection. Collision/ground placement and replicated position checks happen
+before route release. The server expires unfinished private spawns after 180
+seconds. Logout/cancellation, disconnect and owner stop release owned routes;
+resource-stop recovery places pending players at their authorized direct spawn.
+Do not restart Character or Routing during active arrivals as a normal operation.
 
 Horse arrivals run only after initial character creation. Returning characters
 load at their last saved position. If an arrival cannot load, mount, navigate,
@@ -244,3 +259,37 @@ unavailable or invalid Medical blocks activation rather than clearing death.
 Start Medical before Character. Persistent death defaults on. Hospital recovery
 is selected by Medical; temporary fallback uses Config.medical.temporarySpawnPoint.
 Update Character, Medical and Admin together; see Medical's owner README.
+
+## Creator hairstyle controls
+
+Hair style uses left/right arrows, including None. Hair and beard names and
+colors live in `translations/en_us.lua`, using Character-owned keys registered
+through Core's account-scoped locale. Missing locale entries fall back to
+English. Additional `translations/*.lua` files call `CharacterV2Locale.Register`
+with their locale name and translated keys. Labels are read when creator
+controls are built or refreshed; reopen the creator after changing language.
+
+Each name is separate from its stable game-data style number. For example:
+
+```lua
+['character.hair.male.004'] = 'Center Part',
+['character.hair.color.blonde'] = 'Blonde',
+['character.beard.male.001'] = 'Beard',
+```
+
+The UI appends ` 04` to `Center Part`; do not include the number in the translated
+name. Keys use verified technical component IDs, not a translated name or array
+position. Numbers of 100 or higher retain their full number. Style numbers may
+have gaps where the underlying catalog does. There are 27 male hair, 29 female
+hair and 24 male beard name entries, with 17 shared hair/beard color entries.
+Names remain `Style`/`Beard` placeholders until the complete catalogs receive
+visual naming review. No descriptive names have been guessed for unseen styles.
+
+Color selections, appearance persistence and model filtering retain their
+existing hash-based behavior. Facial hair retains its existing dropdown and
+male-only filtering. The verified technical component names remain in
+`shared/hair_catalog.lua` comments for catalog mapping and support.
+
+The translation-file addition changes the manifest: run `refresh` before the
+operator-coordinated Character restart. Do not restart during active character
+flows.

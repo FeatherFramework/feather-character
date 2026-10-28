@@ -11,6 +11,7 @@ local function run(mode, phase)
     function Wait(ms) timer=timer+math.max(ms,1) end
     function CreateThread(fn) threads[#threads+1]=fn end
     function AddEventHandler() end
+    function RegisterNetEvent() end
     function RegisterCommand(name,fn) commands[name]=fn end
     function GetCurrentResourceName() return 'feather-character' end
     function PlayerId() return 1 end
@@ -60,8 +61,10 @@ local function run(mode, phase)
         if name=='character.activate.v1' then
             return CharacterV2Result.Ok({profile={model='mp_male'},appearance={document={}},session={sessionId='s'},
                 spawn={mode='first_spawn',spawnPointId='valentine',position={x=1,y=2,z=3}}})
-        elseif name=='character.selection.route.leave.v1' then
+        elseif name=='character.spawn.prepare.v1' then
             assert(released,'release must precede routing back to gameplay')
+        elseif name=='character.spawn.reveal.v1' then
+            return CharacterV2Result.Ok({position={x=1,y=2,z=3}})
         elseif name=='character.spawn.complete.v1' then
             assert(released); completed=true
         elseif name=='character.activation.abort.v1' then aborted=true

@@ -101,12 +101,27 @@ local function Start()
         if not Account(context) then return CharacterV2Result.Err('unauthenticated', 'Account required.') end
         return CharacterV2Activation.Activate(source, context.accountId, payload.characterId)
     end, Character, 128)
-    Route('character.spawn.complete.v1', function(_, source, context)
+    Route('character.spawn.prepare.v1', function(payload, source, context)
+        if payload.sessionId ~= context.sessionId then return CharacterV2Result.Err('session_stale', 'Activation changed.') end
+        return CharacterV2Activation.PrepareSpawn(source, context, payload)
+    end, function(payload)
+        return type(payload) == 'table' and (payload.town == nil or type(payload.town) == 'string')
+    end, 128, true)
+    Route('character.spawn.reveal.v1', function(payload, source, context)
+        if payload.sessionId ~= context.sessionId then return CharacterV2Result.Err('session_stale', 'Activation changed.') end
+        return CharacterV2Activation.PrepareReveal(source, context, payload)
+    end, function(payload)
+        return type(payload) == 'table' and type(payload.arrived) == 'boolean'
+    end, 128, true)
+    Route('character.spawn.complete.v1', function(payload, source, context)
+        if payload.sessionId ~= context.sessionId then return CharacterV2Result.Err('session_stale', 'Activation changed.') end
         return CharacterV2Activation.CompleteSpawn(source, context)
-    end, Empty, 64, true)
-    Route('character.activation.abort.v1', function(_, source)
-        return CharacterV2Activation.Abort(source)
-    end, Empty, 64)
+    end, function(payload) return type(payload) == 'table' and type(payload.sessionId) == 'string' end, 128, true)
+    Route('character.activation.abort.v1', function(payload, source, context)
+        return CharacterV2Activation.Abort(source, payload.sessionId or context.sessionId)
+    end, function(payload)
+        return type(payload) == 'table' and (payload.sessionId == nil or type(payload.sessionId) == 'string')
+    end, 128)
     Route('character.position.update.v1', function(payload, source, context)
         if exports['feather-core']:IsSessionCurrent(source, context.sessionId, context.characterId) ~= true then
             return CharacterV2Result.Err('session_stale', 'Character session changed.')
