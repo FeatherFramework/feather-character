@@ -299,3 +299,19 @@ color selector; switching to the female model disables facial-hair selection. Th
 The translation-file addition changes the manifest: run `refresh` before the
 operator-coordinated Character restart. Do not restart during active character
 flows.
+
+
+## Fresh creator appearance
+
+Entering Character Create, including after logout and when changing creator
+model, rebuilds the player metaped even when the model matches the previous
+character. Before applying the neutral preset and canonical base outfit/hair,
+Character clears its old face texture, wetness, blood/damage decals, dirt and
+decorations. The creator receives the fresh default appearance rather than the
+logged-out character's facial details. A second visual clean runs after default
+application and before reveal.
+
+Empty overlay lists actively replace the face texture with a clean base; they
+also clear the last overlay when its creator control is set to None. Saved
+characters still receive their own persisted overlays in selection/world entry.
+This visual reset does not change saved appearance, health or world weather.

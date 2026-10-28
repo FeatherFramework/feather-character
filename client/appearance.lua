@@ -68,7 +68,8 @@ CharacterV2Appearance.RemoveComponent = RemoveComponent
 
 local function ApplyOverlays(ped, document)
     ReleaseOverlayTexture()
-    if type(document.overlays) ~= 'table' or next(document.overlays) == nil then return true end
+    -- An empty list must still replace the ped's inherited head texture.
+    local overlays = type(document.overlays) == 'table' and document.overlays or {}
     local albedo = document.attributes.Albedo and document.attributes.Albedo.hash
     if type(albedo) ~= 'number' then return false end
     local female = GetEntityModel(ped) == joaat('mp_female')
@@ -77,10 +78,10 @@ local function ApplyOverlays(ped, document)
     overlayTexture = Citizen.InvokeNative(0xC5E7204F322E49EB, albedo, normal, material)
     if overlayTexture == -1 then return false end
     local categories = {}
-    for category in pairs(document.overlays) do categories[#categories + 1] = category end
+    for category in pairs(overlays) do categories[#categories + 1] = category end
     table.sort(categories)
     for _, category in ipairs(categories) do
-        local overlay = document.overlays[category]
+        local overlay = overlays[category]
         local catalog = CharacterV2OverlayCatalog.Get(category)
         local textureHash = catalog and catalog.ids[overlay.textureId]
         if textureHash then
@@ -113,6 +114,23 @@ local function ApplyOverlays(ped, document)
     -- texture that was just attached.
     Citizen.InvokeNative(0xCC8CA3E88256E58F, ped, false, true, true, true, false)
     return true
+end
+
+-- Creator-only visual hygiene; never change world/selector saved appearance.
+function CharacterV2Appearance.CleanCreatorPed(ped)
+    Citizen.InvokeNative(0x9C720776DAA43E7E, ped) -- CLEAR_PED_WETNESS
+    Citizen.InvokeNative(0xF9CFF5BB70E8A2CB, ped, 0.0) -- _SET_PED_WETNESS_AMOUNT
+    Citizen.InvokeNative(0x8FE22675A5A45817, ped) -- CLEAR_PED_BLOOD_DAMAGE
+    Citizen.InvokeNative(0x523C79AEEFCC4A2A, ped, 10, 'ALL') -- CLEAR_PED_DAMAGE_DECAL_BY_ZONE
+    Citizen.InvokeNative(0x6585D955A68452A5, ped) -- CLEAR_PED_ENV_DIRT
+    Citizen.InvokeNative(0xE3144B932DFDFF65, ped, 0.0, -1, true, true) -- _SET_PED_DIRT_CLEANED
+    Citizen.InvokeNative(0x0E5173C163976E38, ped) -- CLEAR_PED_DECORATIONS
+end
+
+function CharacterV2Appearance.ResetCreatorPed(ped)
+    ReleaseOverlayTexture()
+    ClearPedTasksImmediately(ped)
+    CharacterV2Appearance.CleanCreatorPed(ped)
 end
 
 function CharacterV2Appearance.InitializePed(ped, model)

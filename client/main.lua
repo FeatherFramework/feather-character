@@ -129,6 +129,7 @@ local function Preview(view, model, appearance, reveal)
     local document = appearance
         or (model == 'mp_female' and CharacterV2Defaults.Female or CharacterV2Defaults.Male)
     Require(CharacterV2Appearance.Apply(opened.value.ped, document), 'Apply preview appearance')
+    if view == 'creator' then CharacterV2Appearance.CleanCreatorPed(opened.value.ped) end
     if view == 'selector' and reveal ~= false then
         local posed = Require(CharacterV2Preview.PoseSelector(), 'Pose selector preview')
         Log('selector pose', ('scenario=%s active=%s groundZ=%s settledZ=%s'):format(
