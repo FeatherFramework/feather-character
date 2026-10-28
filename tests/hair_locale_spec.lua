@@ -21,11 +21,8 @@ for _,model in ipairs({'mp_male','mp_female'}) do
   for index,group in ipairs(CharacterV2HairCatalog.Groups(model,kind)) do
    local label=CharacterV2HairCatalog.StyleLabel(group[1],index)
    assert(label:match(' %d+$'),label)
-   if kind=='hair' then
-    assert(not label:match('^Style '),'reviewed hairstyles must have descriptive names')
-   else
-    assert(label:match('^Beard %d+$'),'unreviewed beards keep placeholders')
-   end
+   assert(not label:match('^Style ') and not label:match('^Beard %d+$'),
+    'reviewed hair and facial-hair styles must have descriptive names')
   end
  end
 end

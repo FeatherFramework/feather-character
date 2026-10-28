@@ -274,7 +274,7 @@ Each name is separate from its stable game-data style number. For example:
 ```lua
 ['character.hair.male.004'] = 'Center Part',
 ['character.hair.color.blonde'] = 'Blonde',
-['character.beard.male.001'] = 'Beard',
+['character.beard.male.001'] = 'Chevron Moustache',
 ```
 
 The UI appends ` 04` to `Center Part`; do not include the number in the translated
@@ -282,14 +282,14 @@ name. Keys use verified technical component IDs, not a translated name or array
 position. Numbers of 100 or higher retain their full number. Style numbers may
 have gaps where the underlying catalog does. There are 27 male hair, 29 female
 hair and 24 male beard name entries, with 17 shared hair/beard color entries.
-All 56 hairstyle names are descriptive labels based on the supplied male/female
-creator screenshots, not official Rockstar names. Beard names remain `Beard`
-placeholders pending their screenshot review. Names can be edited independently
+All 56 hairstyle and 24 facial-hair names are descriptive labels based on the
+supplied creator screenshots, not official Rockstar names. Names can be edited independently
 of catalog identifiers and automatically appended numbers.
 
 Color selections, appearance persistence and model filtering retain their
-existing hash-based behavior. Facial hair retains its existing dropdown and
-male-only filtering. The verified technical component names remain in
+existing hash-based behavior. Facial hair uses the same left/right arrows as hairstyles and retains
+male-only filtering. None clears the facial-hair components and disables its
+color selector; switching to the female model disables facial-hair selection. The verified technical component names remain in
 `shared/hair_catalog.lua` comments for catalog mapping and support.
 
 The translation-file addition changes the manifest: run `refresh` before the

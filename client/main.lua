@@ -470,7 +470,7 @@ OpenCreator = function()
         key = 'hair-variant', label = 'Hair color', value = 1, options = VariantOptions(hairGroups[1])
     }, function(event) SelectHairVariant('hair', event.value) end), 'Add hair variant').elementId
     local beardGroups = CharacterV2HairCatalog.Groups('mp_male', 'beard')
-    hairElements.beardCategory = Require(Menu:AddElement(menuId, pages.hair, 'dropdown', {
+    hairElements.beardCategory = Require(Menu:AddElement(menuId, pages.hair, 'arrows', {
         key = 'beard-style', label = 'Facial hair (male only)', value = 0,
         options = StyleOptions(beardGroups)
     }, function(event) SelectHairStyle('beard', event.value) end), 'Add beard style').elementId
