@@ -315,3 +315,31 @@ Empty overlay lists actively replace the face texture with a clean base; they
 also clear the last overlay when its creator control is set to None. Saved
 characters still receive their own persisted overlays in selection/world entry.
 This visual reset does not change saved appearance, health or world weather.
+
+
+## Admin profile search provider
+
+The server-only `character-profile` provider (contract 1) exposes
+`SearchProfiles(query, page, limit)` with `profileSearch = 1`. The actual invoking
+resource must be `feather-admin`; other/missing callers receive `forbidden`.
+There is no client search RPC. Admin remains responsible for `staff.search`
+permission, inbound rate limits, account hierarchy and role filtering.
+
+`query` is a string of at most 96 bytes, without control characters; surrounding
+whitespace is trimmed. Empty query lists active profiles. Search supports literal
+first/last/full-name substrings and exact character/account UUIDs. SQL wildcard
+characters are escaped. Matching case/accents follow the database collation.
+`page` is an integer 1-1000; `limit` is an integer 1-100. Invalid inputs return
+`invalid_input`. Database failure returns `database_unavailable` without SQL text.
+
+Success is `{ok=true,value={profiles={...},page=page,limit=limit,hasNext=boolean}}`.
+Rows contain `characterId`, `accountId`, `firstName`, `lastName` and `status`.
+Only active profiles are returned, ordered by last name, first name and UUID.
+Deleted profiles, DOB, descriptions and appearance data are excluded.
+Pagination fetches one lookahead row; it is bounded offset pagination rather
+than a snapshot. Admin filters staff hierarchy/role after paging, so a page may
+be shorter than the limit while more raw results exist.
+
+This additive provider method uses Admin's existing staff-search screen. No
+Admin restart, schema migration or manifest refresh is required by this change;
+coordinate Character activation/restart outside active character flows.

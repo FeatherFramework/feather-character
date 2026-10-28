@@ -167,6 +167,7 @@ local function Start()
             return CharacterV2Profiles.Get(row.account_id, characterId)
         end,
         ListProfiles = CharacterV2Profiles.List,
+        SearchProfiles = CharacterV2Profiles.SearchProfiles,
         OwnsCharacter = function(accountId, characterId)
             local result = CharacterV2Profiles.Get(accountId, characterId)
             if result.ok then return CharacterV2Result.Ok({ owned = true }) end
@@ -184,7 +185,7 @@ local function Start()
     local registered = exports['feather-core']:RegisterProvider(
         'character-profile', GetCurrentResourceName(), provider, {
             contract = 1, capabilities = {
-                profiles = 1, ownership = 1, currentProfile = 1, identity = 1
+                profiles = 1, ownership = 1, currentProfile = 1, identity = 1, profileSearch = 1
             },
             default = true, health = function() return CharacterV2Result.Ok({ state = health.state }) end
         })

@@ -324,3 +324,40 @@ function CharacterV2Profiles.GetSpawnState(accountId, characterId)
         revision = tonumber(row.revision)
     })
 end
+
+
+-- Privileged server provider method. Admin owns staff permission/hierarchy checks.
+function CharacterV2Profiles.SearchProfiles(query, page, limit)
+    if GetInvokingResource() ~= 'feather-admin' then
+        return CharacterV2Result.Err('forbidden', 'Profile search is restricted to Admin.')
+    end
+    local function Integer(value, maximum)
+        return type(value) == 'number' and value >= 1 and value <= maximum and value % 1 == 0
+    end
+    if type(query) ~= 'string' or #query > 96 or query:find('%c')
+        or not Integer(page, 1000) or not Integer(limit, 100) then
+        return CharacterV2Result.Err('invalid_input', 'A bounded query and integer page/limit are required.')
+    end
+    query = query:match('^%s*(.-)%s*$')
+    local pattern = '%' .. query:gsub('!', '!!'):gsub('%%', '!%%'):gsub('_', '!_') .. '%'
+    local called, rows = pcall(DB.query, [[
+        SELECT `character_id`, `account_id`, `first_name`, `last_name`, `status`
+        FROM `fc2_characters`
+        WHERE `status` = 'active' AND (
+            `first_name` LIKE ? ESCAPE '!' OR `last_name` LIKE ? ESCAPE '!'
+            OR CONCAT_WS(' ', `first_name`, `last_name`) LIKE ? ESCAPE '!'
+            OR `character_id` = ? OR `account_id` = ?)
+        ORDER BY `last_name`, `first_name`, `character_id`
+        LIMIT ? OFFSET ?
+    ]], pattern, pattern, pattern, query, query, limit + 1, (page - 1) * limit)
+    if not called or type(rows) ~= 'table' then
+        return CharacterV2Result.Err('database_unavailable', 'Profile search is unavailable.')
+    end
+    local profiles = {}
+    for index = 1, math.min(#rows, limit) do
+        local row = rows[index]
+        profiles[index] = { characterId = row.character_id, accountId = row.account_id,
+            firstName = row.first_name, lastName = row.last_name, status = row.status }
+    end
+    return CharacterV2Result.Ok({ profiles = profiles, page = page, limit = limit, hasNext = #rows > limit })
+end
