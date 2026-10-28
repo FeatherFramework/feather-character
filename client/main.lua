@@ -883,16 +883,21 @@ function CharacterV2EnterWorld(characterId, options)
         end
     end
     CharacterV2Arrival.Cleanup()
+    FreezeEntityPosition(ped, true)
     local reveal
     local revealDeadline = GetGameTimer() + 20000
     repeat
         if CancelActivationForLogout() then return end
         reveal = Rpc('character.spawn.reveal.v1', { arrived = arrivalPlayed, sessionId = activatingSessionId })
-        if reveal.ok or reveal.code ~= 'spawn_occupied' then break end
+        if reveal.ok or reveal.code ~= 'spawn_not_ready' then break end
         Wait(1000)
     until GetGameTimer() >= revealDeadline
-    spawn = Require(reveal, 'Prepare shared-world reveal').position
-    do
+    local revealPlan = Require(reveal, 'Prepare shared-world reveal')
+    if arrivalPlayed and revealPlan.preservePosition ~= true then
+        error('The arrival handoff did not preserve the dismount position.', 0)
+    end
+    spawn = revealPlan.position
+    if not arrivalPlayed then
         RequestCollisionAtCoord(spawn.x, spawn.y, spawn.z)
         SetEntityCoords(ped, spawn.x, spawn.y, spawn.z, false, false, false, false)
         SetEntityHeading(ped, spawn.heading or 0.0)
@@ -911,6 +916,7 @@ function CharacterV2EnterWorld(characterId, options)
         SetEntityVisible(ped, true)
         DisplayRadar(true)
     end
+    if not HasCollisionLoadedAroundEntity(ped) then error('Arrival collision is not ready.', 0) end
     FreezeEntityPosition(ped, true)
     Log('activation: completing spawn')
     if value.medical then Require(CharacterV2Medical.ApplyCondition(value.medical), 'Restore Medical condition') end

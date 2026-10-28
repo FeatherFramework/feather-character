@@ -44,18 +44,42 @@ end
 local c1,r1=activate(1); local c2,r2=activate(2); assert(r1~=r2)
 assert(not CharacterV2Activation.LeaveSelection(1).ok)
 assert(not CharacterV2Activation.PrepareReveal(1,{sessionId='stale'},{arrived=true}).ok)
-local a=CharacterV2Activation.PrepareReveal(1,c1,{arrived=true}); assert(a.ok)
-local b=CharacterV2Activation.PrepareReveal(2,c2,{arrived=true}); assert(b.ok)
-assert(a.value.position.x~=b.value.position.x,'concurrent reveal must reserve distinct configured positions')
-assert(not CharacterV2Activation.CompleteSpawn(1,c1).ok,'replicated placement must be verified')
-positions[1]=a.value.position; assert(CharacterV2Activation.CompleteSpawn(1,c1).ok)
-assert(not routes[r1] and not membership[1])
+-- Replication must reach the authorized arrival area before a bucket-only reveal.
+assert(CharacterV2Activation.PrepareReveal(1,c1,{arrived=true}).code=='spawn_not_ready')
+local destination=CharacterV2Config.arrivals.towns.valentine.destination
+positions[1]={x=destination.x+4,y=destination.y+2,z=destination.z}
+positions[2]={x=positions[1].x,y=positions[1].y,z=positions[1].z}
+positions[3]={x=positions[1].x,y=positions[1].y,z=positions[1].z}
+local a=CharacterV2Activation.PrepareReveal(1,c1,{arrived=true}); assert(a.ok and a.value.preservePosition)
+assert(a.value.position.x==positions[1].x and a.value.position.y==positions[1].y)
+local b=CharacterV2Activation.PrepareReveal(2,c2,{arrived=true}); assert(b.ok and b.value.preservePosition)
+assert(b.value.position.x==positions[2].x, 'nearby world player and concurrent arrival must not block or move either rider')
+local dismounted=positions[1]
+assert(CharacterV2Activation.CompleteSpawn(1,c1).ok)
+assert(positions[1]==dismounted and not routes[r1] and not membership[1], 'completion only changes route')
+assert(CharacterV2Activation.CompleteSpawn(2,c2).ok, 'shared proximity must not block completion')
+assert(not routes[r2] and not membership[2])
+-- Keep subsequent abort/recovery scenarios independent of completed arrivals.
+c2,r2=activate(2)
 assert(CharacterV2Activation.Abort(2).ok); assert(not routes[r2] and membership[2])
 assert(CharacterV2Activation.Abort(2).ok,'expired abort is idempotent')
 -- Old timeout cannot touch a newer session or somebody else's route.
-local c3,r3=activate(2); timers[2](); assert(membership[2]==r3)
+local c3,r3=activate(2)
+positions[3]=CharacterV2Config.spawnPoints.valentine
+local direct=CharacterV2Activation.PrepareReveal(2,c3,{arrived=false})
+assert(direct.ok and not direct.value.preservePosition)
+assert(direct.value.position.x==CharacterV2Config.spawnPoints.valentine.x)
+assert(not CharacterV2Activation.CompleteSpawn(2,c3).ok, 'direct placement is still required')
+timers[3](); assert(membership[2]==r3)
 membership[2]='another-owner'; assert(CharacterV2Activation.Abort(2).ok); assert(membership[2]=='another-owner' and not routes[r3])
 local c4,r4=activate(2); timers[#timers](); assert(not routes[r4] and sessions[2]==nil and membership[2])
 local c5,r5=activate(2); source=2; handlers.playerDropped(); assert(not routes[r5])
 local c6,r6=activate(2); handlers.onResourceStop('feather-character'); assert(not routes[r6])
-print('PASS arrival routing: distinct routes, reservations/fallback, stale session/timer/owner, placement, abort, timeout, disconnect, owner stop (mocked ports)')
+local c7,r7=activate(2)
+local directNearPlayer=CharacterV2Activation.PrepareReveal(2,c7,{arrived=false})
+assert(directNearPlayer.ok and not directNearPlayer.value.preservePosition)
+positions[2]=directNearPlayer.value.position
+positions[3]=directNearPlayer.value.position
+assert(CharacterV2Activation.CompleteSpawn(2,c7).ok, 'nearby player cannot block direct spawn')
+assert(not routes[r7] and not membership[2])
+print('PASS arrival routing: distinct routes, unchanged dismount reveal, nearby/concurrent players allowed, direct fallback, stale session/timer/owner, placement, abort, timeout, disconnect, owner stop (mocked ports)')

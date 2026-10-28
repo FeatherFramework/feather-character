@@ -102,26 +102,6 @@ function CharacterV2Activation.PrepareSpawn(source, context, payload)
     return CharacterV2Result.Ok({ isolated = true })
 end
 
-local function Occupied(source, point)
-    for _, other in ipairs(GetPlayers()) do
-        other = tonumber(other)
-        if other ~= source and GetPlayerRoutingBucket(other) == 0 then
-            local ped = GetPlayerPed(other)
-            if ped ~= 0 then
-                local pos = GetEntityCoords(ped)
-                if (pos.x-point.x)^2 + (pos.y-point.y)^2 + (pos.z-point.z)^2 < 9 then return true end
-            end
-        end
-    end
-    for other, entry in pairs(pending) do
-        if other ~= source and entry.reveal then
-            local pos = entry.reveal
-            if (pos.x-point.x)^2 + (pos.y-point.y)^2 + (pos.z-point.z)^2 < 9 then return true end
-        end
-    end
-    return false
-end
-
 function CharacterV2Activation.PrepareReveal(source, context, payload)
     local expected = pending[source]
     if not expected or expected.sessionId ~= context.sessionId or not expected.routeId
@@ -129,16 +109,27 @@ function CharacterV2Activation.PrepareReveal(source, context, payload)
         or exports['feather-core']:IsSessionCurrent(source, context.sessionId, context.characterId) ~= true then
         return Fail('session_stale', 'The private spawn route is no longer current.')
     end
-    if expected.reveal then return CharacterV2Result.Ok({ position = expected.reveal }) end
-    -- Use server-configured coordinates only. If occupied, wait privately and fail boundedly.
-    local point = expected.position
-    local town = CharacterV2Config.arrivals.towns[expected.town]
-    if payload.arrived and town and not Occupied(source, town.destination) then
-        point = town.destination
+    if expected.reveal then
+        return CharacterV2Result.Ok({ position = expected.reveal, preservePosition = expected.preservePosition == true })
     end
-    if Occupied(source, point) then return Fail('spawn_occupied', 'The spawn position is occupied.') end
+    local point = expected.position
+    if payload.arrived then
+        -- Read the network player's actual dismount position, never a client coordinate.
+        -- The configured endpoint bounds authorization; it is not a teleport target.
+        local town = CharacterV2Config.arrivals.towns[expected.town]
+        local ped = GetPlayerPed(source)
+        if not town or ped == 0 then return Fail('spawn_not_ready', 'Arrival position is unavailable.') end
+        local coords = GetEntityCoords(ped)
+        local destination = town.destination
+        local radius = (tonumber(town.horse and town.horse.arrivalRadius) or 6) + 15
+        if (coords.x-destination.x)^2 + (coords.y-destination.y)^2 + (coords.z-destination.z)^2 > radius^2 then
+            return Fail('spawn_not_ready', 'Waiting for the arrival position to replicate.')
+        end
+        point = { x = coords.x, y = coords.y, z = coords.z }
+    end
     expected.reveal = { x = point.x, y = point.y, z = point.z, heading = point.heading }
-    return CharacterV2Result.Ok({ position = expected.reveal })
+    expected.preservePosition = payload.arrived == true
+    return CharacterV2Result.Ok({ position = expected.reveal, preservePosition = expected.preservePosition })
 end
 
 local function EndSession(source, sessionId, reason)
@@ -246,8 +237,7 @@ function CharacterV2Activation.CompleteSpawn(source, context)
     local ped = GetPlayerPed(source)
     local coords = ped ~= 0 and GetEntityCoords(ped)
     local point = expected.reveal
-    if not coords or (coords.x-point.x)^2 + (coords.y-point.y)^2 + (coords.z-point.z)^2 > 25
-        or Occupied(source, point) then
+    if not coords or (coords.x-point.x)^2 + (coords.y-point.y)^2 + (coords.z-point.z)^2 > 25 then
         return Fail('spawn_not_ready', 'Authorized reveal position is not ready.')
     end
     local left = exports['feather-routing']:LeaveRoute(source)

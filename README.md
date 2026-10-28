@@ -160,12 +160,16 @@ but no longer run after the ride.
 
 Each pending activation uses its own Feather Routing route (`relaxed`, population
 disabled), including direct placement. Selection moves directly into that route.
-The server reserves the configured arrival destination, or the configured town
-spawn if the destination is occupied, with three metres of player clearance.
-Direct fallback uses the authorized direct spawn. If all applicable positions
-are occupied, Character waits privately for up to 20 seconds and then returns to
-selection. Collision/ground placement and replicated position checks happen
-before route release. The server expires unfinished private spawns after 180
+Successful horse arrivals keep the exact dismount position and facing: after
+private cleanup under fade, Character only returns the player to the shared
+route. It does not teleport, turn or snap the player to the ground again.
+Nearby players and concurrent arrivals do not block either horse handoff or
+direct spawn; normal shared-world collision handles proximity. Direct spawning
+and failed-ride fallback still place the player at the authorized direct spawn.
+Character waits up to 20 seconds for the server-observed arrival position to
+reach the configured destination area before handoff; those coordinates are
+only an authorization boundary, not a placement target. Session/route and
+replicated position readiness checks still happen before route release. The server expires unfinished private spawns after 180
 seconds. Logout/cancellation, disconnect and owner stop release owned routes;
 resource-stop recovery places pending players at their authorized direct spawn.
 Do not restart Character or Routing during active arrivals as a normal operation.

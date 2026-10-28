@@ -7,6 +7,7 @@ local function run(mode, phase)
     local commands,threads,registered={},{},{}
     local released,arrival,completed,aborted=false,false,false,false
     local timer=0
+    local moves,headings,grounds=0,0,0
     function GetGameTimer() timer=timer+10; return timer end
     function Wait(ms) timer=timer+math.max(ms,1) end
     function CreateThread(fn) threads[#threads+1]=fn end
@@ -23,14 +24,14 @@ local function run(mode, phase)
     function SetPlayerModel() assert(released,'environment must release before world model load') end
     function SetModelAsNoLongerNeeded() end
     function SetEntityCollision() end
-    function SetEntityCoords() end
-    function SetEntityHeading() end
+    function SetEntityCoords() moves=moves+1 end
+    function SetEntityHeading() headings=headings+1 end
     function FreezeEntityPosition() end
     function SetEntityVisible() end
     function DisplayRadar() end
     function RequestCollisionAtCoord() end
     function HasCollisionLoadedAroundEntity() return true end
-    function PlaceEntityOnGroundProperly() return true end
+    function PlaceEntityOnGroundProperly() grounds=grounds+1; return true end
     function NetworkIsPlayerActive() return true end
     function IsScreenFadedIn() return true end
     function IsScreenFadingIn() return false end
@@ -64,7 +65,7 @@ local function run(mode, phase)
         elseif name=='character.spawn.prepare.v1' then
             assert(released,'release must precede routing back to gameplay')
         elseif name=='character.spawn.reveal.v1' then
-            return CharacterV2Result.Ok({position={x=1,y=2,z=3}})
+            return CharacterV2Result.Ok({position={x=1,y=2,z=3},preservePosition=arrival})
         elseif name=='character.spawn.complete.v1' then
             assert(released); completed=true
         elseif name=='character.activation.abort.v1' then aborted=true
@@ -79,6 +80,9 @@ local function run(mode, phase)
     else
         assert(ok,problem); assert(completed and CharacterV2Flow.State().phase=='world')
         assert(arrival==(phase=='creator'))
+        local placements = arrival and 0 or 1
+        assert(moves==placements and headings==placements and grounds==placements,
+            'successful horse handoff must not reposition, turn or ground-snap the rider')
     end
 end
 for _,case in ipairs({{'normal','selection'},{'normal','creator'},{'appearance_failure','creator'},{'cancel_logout','selection'}}) do
