@@ -282,8 +282,10 @@ name. Keys use verified technical component IDs, not a translated name or array
 position. Numbers of 100 or higher retain their full number. Style numbers may
 have gaps where the underlying catalog does. There are 27 male hair, 29 female
 hair and 24 male beard name entries, with 17 shared hair/beard color entries.
-Names remain `Style`/`Beard` placeholders until the complete catalogs receive
-visual naming review. No descriptive names have been guessed for unseen styles.
+All 56 hairstyle names are descriptive labels based on the supplied male/female
+creator screenshots, not official Rockstar names. Beard names remain `Beard`
+placeholders pending their screenshot review. Names can be edited independently
+of catalog identifiers and automatically appended numbers.
 
 Color selections, appearance persistence and model filtering retain their
 existing hash-based behavior. Facial hair retains its existing dropdown and

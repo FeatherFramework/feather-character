@@ -20,14 +20,19 @@ for _,model in ipairs({'mp_male','mp_female'}) do
  for _,kind in ipairs({'hair','beard'}) do
   for index,group in ipairs(CharacterV2HairCatalog.Groups(model,kind)) do
    local label=CharacterV2HairCatalog.StyleLabel(group[1],index)
-   assert(label:match(kind=='hair' and '^Style %d+$' or '^Beard %d+$'),label)
+   assert(label:match(' %d+$'),label)
+   if kind=='hair' then
+    assert(not label:match('^Style '),'reviewed hairstyles must have descriptive names')
+   else
+    assert(label:match('^Beard %d+$'),'unreviewed beards keep placeholders')
+   end
   end
  end
 end
 -- A name can change without changing identifiers or storing the number in translations.
 local hash=96942958
 local before=CharacterV2HairCatalog.Groups('mp_male','hair')[4][1]
-english['character.hair.male.004']='Center Part'
+assert(english['character.hair.male.004']=='Center Part')
 assert(CharacterV2HairCatalog.StyleLabel(hash,4)=='Center Part 04')
 CharacterV2Locale.Register('test', {['character.hair.male.004']='Part 100%', ['character.hair.color.blonde']='Test blonde'})
 lang='test'
