@@ -98,7 +98,7 @@ function CharacterV2Preview.Open(viewName, model)
     end
 
     local playerPed = PlayerPedId()
-    if GetEntityModel(playerPed) ~= hash then
+    if viewName == 'creator' or GetEntityModel(playerPed) ~= hash then
         SetPlayerModel(PlayerId(), hash, false)
         playerPed = PlayerPedId()
     end
@@ -111,6 +111,7 @@ function CharacterV2Preview.Open(viewName, model)
     -- fully hidden until its preset and saved/default appearance are complete.
     SetEntityVisible(playerPed, false)
     SetEntityAlpha(playerPed, 0, false)
+    if viewName == 'creator' then CharacterV2Appearance.ResetCreatorPed(playerPed) end
     if not PrepareBaseMetaped(playerPed, model) then
         return CharacterV2Result.Err('preview_render_timeout', 'The player metaped did not initialize.')
     end

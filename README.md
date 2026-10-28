@@ -152,8 +152,27 @@ Use one of these values:
 
 Horse arrivals keep the screen black while the player and horse are prepared.
 The screen fades in after road navigation begins. At the destination, the
-player dismounts naturally and the temporary horse flees before fading out and
-being deleted.
+player dismounts naturally, then the screen fades out and the temporary horse
+and camera are deleted before shared-world handoff. The horse remains local to
+this private cinematic; nearby world players see only the completed reveal.
+The old `horse.cleanup` flee/fade settings are retained for config compatibility
+but no longer run after the ride.
+
+Each pending activation uses its own Feather Routing route (`relaxed`, population
+disabled), including direct placement. Selection moves directly into that route.
+Successful horse arrivals keep the exact dismount position and facing: after
+private cleanup under fade, Character only returns the player to the shared
+route. It does not teleport, turn or snap the player to the ground again.
+Nearby players and concurrent arrivals do not block either horse handoff or
+direct spawn; normal shared-world collision handles proximity. Direct spawning
+and failed-ride fallback still place the player at the authorized direct spawn.
+Character waits up to 20 seconds for the server-observed arrival position to
+reach the configured destination area before handoff; those coordinates are
+only an authorization boundary, not a placement target. Session/route and
+replicated position readiness checks still happen before route release. The server expires unfinished private spawns after 180
+seconds. Logout/cancellation, disconnect and owner stop release owned routes;
+resource-stop recovery places pending players at their authorized direct spawn.
+Do not restart Character or Routing during active arrivals as a normal operation.
 
 Horse arrivals run only after initial character creation. Returning characters
 load at their last saved position. If an arrival cannot load, mount, navigate,
@@ -244,3 +263,83 @@ unavailable or invalid Medical blocks activation rather than clearing death.
 Start Medical before Character. Persistent death defaults on. Hospital recovery
 is selected by Medical; temporary fallback uses Config.medical.temporarySpawnPoint.
 Update Character, Medical and Admin together; see Medical's owner README.
+
+## Creator hairstyle controls
+
+Hair style uses left/right arrows, including None. Hair and beard names and
+colors live in `translations/en_us.lua`, using Character-owned keys registered
+through Core's account-scoped locale. Missing locale entries fall back to
+English. Additional `translations/*.lua` files call `CharacterV2Locale.Register`
+with their locale name and translated keys. Labels are read when creator
+controls are built or refreshed; reopen the creator after changing language.
+
+Each name is separate from its stable game-data style number. For example:
+
+```lua
+['character.hair.male.004'] = 'Center Part',
+['character.hair.color.blonde'] = 'Blonde',
+['character.beard.male.001'] = 'Chevron Moustache',
+```
+
+The UI appends ` 04` to `Center Part`; do not include the number in the translated
+name. Keys use verified technical component IDs, not a translated name or array
+position. Numbers of 100 or higher retain their full number. Style numbers may
+have gaps where the underlying catalog does. There are 27 male hair, 29 female
+hair and 24 male beard name entries, with 17 shared hair/beard color entries.
+All 56 hairstyle and 24 facial-hair names are descriptive labels based on the
+supplied creator screenshots, not official Rockstar names. Names can be edited independently
+of catalog identifiers and automatically appended numbers.
+
+Color selections, appearance persistence and model filtering retain their
+existing hash-based behavior. Facial hair uses the same left/right arrows as hairstyles and retains
+male-only filtering. None clears the facial-hair components and disables its
+color selector; switching to the female model disables facial-hair selection. The verified technical component names remain in
+`shared/hair_catalog.lua` comments for catalog mapping and support.
+
+The translation-file addition changes the manifest: run `refresh` before the
+operator-coordinated Character restart. Do not restart during active character
+flows.
+
+
+## Fresh creator appearance
+
+Entering Character Create, including after logout and when changing creator
+model, rebuilds the player metaped even when the model matches the previous
+character. Before applying the neutral preset and canonical base outfit/hair,
+Character clears its old face texture, wetness, blood/damage decals, dirt and
+decorations. The creator receives the fresh default appearance rather than the
+logged-out character's facial details. A second visual clean runs after default
+application and before reveal.
+
+Empty overlay lists actively replace the face texture with a clean base; they
+also clear the last overlay when its creator control is set to None. Saved
+characters still receive their own persisted overlays in selection/world entry.
+This visual reset does not change saved appearance, health or world weather.
+
+
+## Admin profile search provider
+
+The server-only `character-profile` provider (contract 1) exposes
+`SearchProfiles(query, page, limit)` with `profileSearch = 1`. The actual invoking
+resource must be `feather-admin`; other/missing callers receive `forbidden`.
+There is no client search RPC. Admin remains responsible for `staff.search`
+permission, inbound rate limits, account hierarchy and role filtering.
+
+`query` is a string of at most 96 bytes, without control characters; surrounding
+whitespace is trimmed. Empty query lists active profiles. Search supports literal
+first/last/full-name substrings and exact character/account UUIDs. SQL wildcard
+characters are escaped. Matching case/accents follow the database collation.
+`page` is an integer 1-1000; `limit` is an integer 1-100. Invalid inputs return
+`invalid_input`. Database failure returns `database_unavailable` without SQL text.
+
+Success is `{ok=true,value={profiles={...},page=page,limit=limit,hasNext=boolean}}`.
+Rows contain `characterId`, `accountId`, `firstName`, `lastName` and `status`.
+Only active profiles are returned, ordered by last name, first name and UUID.
+Deleted profiles, DOB, descriptions and appearance data are excluded.
+Pagination fetches one lookahead row; it is bounded offset pagination rather
+than a snapshot. Admin filters staff hierarchy/role after paging, so a page may
+be shorter than the limit while more raw results exist.
+
+This additive provider method uses Admin's existing staff-search screen. No
+Admin restart, schema migration or manifest refresh is required by this change;
+coordinate Character activation/restart outside active character flows.

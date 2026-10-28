@@ -42,9 +42,94 @@ function CharacterV2Activation.EnterSelection(source)
 end
 
 function CharacterV2Activation.LeaveSelection(source)
+    if pending[source] then return Fail('conflict', 'An activation is still pending.') end
     local left = exports['feather-routing']:LeaveRoute(source)
     if type(left) ~= 'table' or not left.ok then return left end
     return CharacterV2Result.Ok({ routed = false })
+end
+
+-- Pending spawn routes remain private through model setup, ride and collision readiness.
+local function CurrentRoute(source, expected)
+    local result = exports['feather-routing']:GetPlayerRoute(source)
+    return result and result.ok and result.value and result.value.routeId == expected.routeId
+end
+
+local function DeleteSpawnRoute(source, expected, recover)
+    if not expected or not expected.routeId then return end
+    if recover and CurrentRoute(source, expected) then
+        local ped = GetPlayerPed(source)
+        local point = expected.position
+        if ped ~= 0 and point then
+            SetEntityCoords(ped, point.x, point.y, point.z, false, false, false, false)
+        end
+    end
+    -- Delete only this activation's handle; never LeaveRoute against a newer owner.
+    exports['feather-routing']:DeleteRoute(expected.routeId)
+    expected.routeId = nil
+end
+
+function CharacterV2Activation.PrepareSpawn(source, context, payload)
+    local expected = pending[source]
+    if not expected or expected.sessionId ~= context.sessionId
+        or exports['feather-core']:IsSessionCurrent(source, context.sessionId, context.characterId) ~= true then
+        return Fail('session_stale', 'No current pending spawn exists.')
+    end
+    if expected.routeId then return CharacterV2Result.Ok({ isolated = true }) end
+    if payload.town ~= nil then
+        if not CharacterV2Config.debug or not CharacterV2Config.debug.selectorSpawnSequence
+            or not CharacterV2Config.spawnPoints[payload.town] then
+            return Fail('spawn_invalid', 'Debug destination is not authorized.')
+        end
+        expected.position = CharacterV2Config.spawnPoints[payload.town]
+        expected.town = payload.town
+    end
+    local created = exports['feather-routing']:CreateRoute({
+        key = 'character-arrival-' .. tostring(source) .. '-' .. tostring(context.sessionId),
+        mode = 'relaxed', populationEnabled = false
+    })
+    if not created or not created.ok then return created end
+    expected.routeId = created.value.routeId
+    local joined = exports['feather-routing']:JoinRoute(expected.routeId, source)
+    if not joined or not joined.ok then DeleteSpawnRoute(source, expected); return joined end
+    SetTimeout(180000, function()
+        if pending[source] ~= expected or not expected.routeId then return end
+        TriggerClientEvent('feather-character:spawnExpired', source, expected.sessionId)
+        -- Return to selection privately before deleting the expired arrival route.
+        if CurrentRoute(source, expected) then CharacterV2Activation.EnterSelection(source) end
+        DeleteSpawnRoute(source, expected)
+        if pending[source] == expected then CharacterV2Activation.Abort(source) end
+    end)
+    return CharacterV2Result.Ok({ isolated = true })
+end
+
+function CharacterV2Activation.PrepareReveal(source, context, payload)
+    local expected = pending[source]
+    if not expected or expected.sessionId ~= context.sessionId or not expected.routeId
+        or not CurrentRoute(source, expected)
+        or exports['feather-core']:IsSessionCurrent(source, context.sessionId, context.characterId) ~= true then
+        return Fail('session_stale', 'The private spawn route is no longer current.')
+    end
+    if expected.reveal then
+        return CharacterV2Result.Ok({ position = expected.reveal, preservePosition = expected.preservePosition == true })
+    end
+    local point = expected.position
+    if payload.arrived then
+        -- Read the network player's actual dismount position, never a client coordinate.
+        -- The configured endpoint bounds authorization; it is not a teleport target.
+        local town = CharacterV2Config.arrivals.towns[expected.town]
+        local ped = GetPlayerPed(source)
+        if not town or ped == 0 then return Fail('spawn_not_ready', 'Arrival position is unavailable.') end
+        local coords = GetEntityCoords(ped)
+        local destination = town.destination
+        local radius = (tonumber(town.horse and town.horse.arrivalRadius) or 6) + 15
+        if (coords.x-destination.x)^2 + (coords.y-destination.y)^2 + (coords.z-destination.z)^2 > radius^2 then
+            return Fail('spawn_not_ready', 'Waiting for the arrival position to replicate.')
+        end
+        point = { x = coords.x, y = coords.y, z = coords.z }
+    end
+    expected.reveal = { x = point.x, y = point.y, z = point.z, heading = point.heading }
+    expected.preservePosition = payload.arrived == true
+    return CharacterV2Result.Ok({ position = expected.reveal, preservePosition = expected.preservePosition })
 end
 
 local function EndSession(source, sessionId, reason)
@@ -56,6 +141,7 @@ local function EndSession(source, sessionId, reason)
 end
 
 function CharacterV2Activation.Activate(source, accountId, characterId)
+    if pending[source] then return Fail('conflict', 'An activation is already pending.') end
     local profile = CharacterV2Profiles.Get(accountId, characterId)
     if not profile.ok then return profile end
     local appearance = CharacterV2Profiles.GetAppearance(accountId, characterId)
@@ -110,7 +196,8 @@ function CharacterV2Activation.Activate(source, accountId, characterId)
         EndSession(source, sessionId, 'ready_event_failed')
         return Fail('event_failed', 'Character readiness could not be announced.')
     end
-    pending[source] = { accountId = accountId, characterId = characterId, sessionId = sessionId }
+    pending[source] = { accountId = accountId, characterId = characterId, sessionId = sessionId,
+        position = position, town = spawn.value.spawnPointId }
     return CharacterV2Result.Ok({
         session = session.value, profile = profile.value, appearance = appearance.value, medical = medical,
         spawn = { characterId = characterId, sessionId = sessionId,
@@ -144,6 +231,18 @@ function CharacterV2Activation.CompleteSpawn(source, context)
         or exports['feather-core']:IsSessionCurrent(source, context.sessionId, context.characterId) ~= true then
         return Fail('session_stale', 'No current pending spawn exists.')
     end
+    if not expected.reveal or not CurrentRoute(source, expected) then
+        return Fail('spawn_not_ready', 'Private spawn placement is required.')
+    end
+    local ped = GetPlayerPed(source)
+    local coords = ped ~= 0 and GetEntityCoords(ped)
+    local point = expected.reveal
+    if not coords or (coords.x-point.x)^2 + (coords.y-point.y)^2 + (coords.z-point.z)^2 > 25 then
+        return Fail('spawn_not_ready', 'Authorized reveal position is not ready.')
+    end
+    local left = exports['feather-routing']:LeaveRoute(source)
+    if not left or not left.ok then return left end
+    DeleteSpawnRoute(source, expected)
     pending[source] = nil
     local announced = Publish('character.spawned.v1', source, context.accountId,
         context.characterId, context.sessionId)
@@ -153,9 +252,15 @@ function CharacterV2Activation.CompleteSpawn(source, context)
     return CharacterV2Result.Ok({ spawned = true, sessionId = context.sessionId })
 end
 
-function CharacterV2Activation.Abort(source)
+function CharacterV2Activation.Abort(source, sessionId)
     local expected = pending[source]
-    if not expected then return Fail('not_found', 'No pending activation exists.') end
+    if not expected then return CharacterV2Result.Ok({ aborted = false }) end
+    if sessionId and sessionId ~= expected.sessionId then return Fail('session_stale', 'Activation changed.') end
+    if expected.routeId and CurrentRoute(source, expected) then
+        local selected = CharacterV2Activation.EnterSelection(source)
+        if not selected or not selected.ok then return selected end
+    end
+    DeleteSpawnRoute(source, expected)
     pending[source] = nil
     local leaving = exports['feather-core']:BeginSessionLeaving(source, 'activation_failed')
     if type(leaving) ~= 'table' or not leaving.ok then return leaving end
@@ -173,9 +278,10 @@ function CharacterV2Activation.Logout(source, context, position, reason)
     if exports['feather-core']:IsSessionCurrent(source, context.sessionId, context.characterId) ~= true then
         return Fail('session_stale', 'The character session is no longer current.')
     end
+    if pending[source] then return Fail('conflict', 'Finish or abort activation before logout.') end
     local saved = CharacterV2Profiles.UpdatePosition(context.accountId, context.characterId, position)
     if not saved.ok then return saved end
-    pending[source] = nil
+    if pending[source] then return Fail('conflict', 'Finish or abort activation before logout.') end
     local leaving = exports['feather-core']:BeginSessionLeaving(source, reason or 'logout')
     if type(leaving) ~= 'table' or not leaving.ok then return leaving end
     Publish('character.leaving.v1', source, context.accountId, context.characterId, context.sessionId)
@@ -197,12 +303,22 @@ function CharacterV2Activation.Quit(source, context, position)
 end
 
 AddEventHandler('playerDropped', function()
+    DeleteSpawnRoute(source, pending[source])
     pending[source] = nil
     active[source] = nil
 end)
 AddEventHandler('onResourceStop', function(resource)
-    if resource == 'feather-routing' then selectionRouteId = nil end
+    if resource == 'feather-routing' then
+        selectionRouteId = nil
+        for playerSource, expected in pairs(pending) do
+            TriggerClientEvent('feather-character:spawnExpired', playerSource, expected.sessionId)
+            local ped = GetPlayerPed(playerSource)
+            if ped ~= 0 then SetEntityCoords(ped, expected.position.x, expected.position.y, expected.position.z, false, false, false, false) end
+            expected.routeId = nil
+        end
+    end
     if resource ~= GetCurrentResourceName() then return end
+    for playerSource, expected in pairs(pending) do DeleteSpawnRoute(playerSource, expected, true) end
     for playerSource, context in pairs(active) do
         Publish('character.leaving.v1', playerSource, context.accountId,
             context.characterId, context.sessionId)

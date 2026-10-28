@@ -6,7 +6,7 @@ lua54 'yes'
 description 'Feather Character clean-room rewrite (first-playable development slice)'
 author 'Feather Framework'
 name 'feather-character'
-version '0.7.3'
+version '0.7.4'
 
 shared_scripts {
     'config.lua',
@@ -28,6 +28,8 @@ server_scripts {
 }
 
 client_scripts {
+    'client/locale.lua',
+    'translations/*.lua',
     'client/spawn_ownership.lua',
     'client/flow.lua',
     'client/environment.lua',

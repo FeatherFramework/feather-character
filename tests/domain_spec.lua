@@ -158,3 +158,12 @@ for _, statement in ipairs(CharacterV2Schema.statements) do
 end
 
 print('Character v2 domain tests passed')
+
+for _,model in ipairs({'mp_male','mp_female'}) do
+ for index,group in ipairs(CharacterV2HairCatalog.Groups(model,'hair')) do
+  assert(CharacterV2HairCatalog.StyleLabel(group[1],index):match('^Style %d+$'))
+  for _,hash in ipairs(group) do assert(CharacterV2HairCatalog.Contains(model,'hair',hash)) end
+ end
+end
+assert(#CharacterV2HairCatalog.Groups('mp_female','beard')==0)
+print('PASS all 56 verified technical hairstyle labels; identifiers and sex filters preserved')

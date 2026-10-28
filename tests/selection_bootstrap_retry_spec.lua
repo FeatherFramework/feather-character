@@ -1,3 +1,4 @@
+function RegisterNetEvent() end
 -- Actual main.lua bootstrap with mocked read-only RPC/UI/presentation ports.
 local originalPrint=print
 local function run(mode)
